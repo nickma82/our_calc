@@ -1,4 +1,9 @@
 Jep, das ist der erste Test
+#commiten
+git commit -a
+#Runterladen
 git pull origin master
+#Hochladen
+
 
 Help: http://learn.github.com/
