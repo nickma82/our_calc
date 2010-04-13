@@ -1,0 +1,67 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fullpage}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[x11names]{xcolor}
+\usepackage[explicit]{titlesec}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{helvet}
+\definecolor{blau}{rgb}{0.31,0.50,0.74}
+\definecolor{hellblau}{rgb}{0.85,0.89,0.94}
+\titleformat{\section}[block]
+    {\bfseries\sffamily\MakeUppercase}
+    {\colorbox{blau}{\parbox[l][15pt][l]{\textwidth}{\color{white}\thesection\hspace{20pt}#1}}}
+    {10pt}
+    {}
+    \titlespacing*{\section}
+    {0pt}{0pt}{0pt}
+
+\titleformat{\subsection}[block]
+    {\normalfont\sffamily\MakeUppercase}
+    {\colorbox{hellblau}{\parbox[l][15pt][l]{\textwidth}{\color{black}\thesubsection\hspace{20pt}#1}}}
+    {10pt}
+    {}
+    \titlespacing*{\subsection}
+    {0pt}{0pt}{0pt}
+
+\titlespacing*{\section}{0pt}{10pt}{0pt}
+\titlespacing*{\subsection}{0pt}{15pt}{0pt}
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+
+\newcommand\HRule{\noindent\rule{\linewidth}{1.5pt}}
+\begin{document}
+
+\begin{titlepage}
+    \vspace*{\stretch{1}}
+    \HRule
+    \begin{center}
+        \LARGE Spezifikation \\ 
+        Taschenrechner
+    \end{center}
+    \HRule
+    \vspace*{\stretch{2}}
+    \begin{center}
+        \Large Hardware Modeling SS 2010 \\
+        
+     \end{center}
+    \vspace*{\stretch{3}}
+    \begin{center}
+        \large Gruppe  \\
+        \vspace{30pt}
+        \normalsize name \\
+        matnr \\
+        \vspace{15pt}
+        name \\
+        matr
+     \end{center}
+     \vspace*{\stretch{4}}
+ \end{titlepage}
+
+\end{document}

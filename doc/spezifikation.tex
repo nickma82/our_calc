@@ -1,0 +1,91 @@
+\documentclass[a4paper,10pt]{scrreprt}
+\usepackage[utf8]{inputenc}
+
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+
+% Title Page
+\title{asdf}
+\author{Nick Mayerhofer}
+\author{Lukas Petermann}
+
+
+\begin{document}
+%\maketitle
+
+% \begin{abstract}
+% Abstract
+% \end{abstract}
+
+\input{high_lvl_descr}
+
+\input{detailed_design}
+
+\section{Physical Interfaces}
+Die Physikalischen Interfaces der gesamten angeschlossenen Hardware, laesst sich
+in nachfolgender Pintabelle finden.
+\begin{table}[!ht]
+ \begin{center}
+  \begin{tabular}{|l|l|l|l|}
+   \hline Signal & Pin &Direction &Logic Level\\
+   sys\_clk & N3 & in & LVTTL\\
+   sys\_res\_n & AF17 & in & LVTT\\
+   btn\_a & A3 & in & LVTTL\\
+   uart\_cts & D20 & out & LVTTL\\
+   uart\_rts & D21 & in & LVTTL\\
+   uart\_txd & D22 & out & LVTTL\\
+   uart\_rxd & D23 & in & LVTTL\\
+   ps2\_data & E21 & bidirec & LVTTL\\
+   ps2\_clk & Y26 & bidirect & LVTTL\\
+   vga\_r0 & E22 & out & LVTTL\\
+   vga\_r1 & T4 & out & LVTTL\\
+   vga\_r2 & T7 & out & LVTTL\\
+   vga\_g0 & E23 & out & LVTTL\\
+   vga\_g1 & T5 & out & LVTTL\\
+   vga\_g2 & T24 & out & LVTTL\\
+   vga\_b0 & E24 & out & LVTTL\\
+   vga\_b1 & T6 & out & LVTTL\\
+   vga\_hsync\_n & F1 & out & LVTTL\\
+   vga\_vsync\_n & F2 & out & LVTTL\\
+   \hline
+  \end{tabular}
+ \end{center}
+\end{table}
+%\subsection{Interface to key pad}
+%\subsection{Interfaces to VGA, PS/2, RS232}
+\subsection{Reset und Clock}
+Der Reset wurde low active gewaehlt.
+
+Der VGA Controller wird über eine PLL auf 25.175 MHz getaktet. 
+Alle weiteren Controller benützen die externe Clockfrequenz
+des developer Boards von 33.33 MHz.
+
+\section{Logical Interfaces}
+\subsection{How to control the VGA component}
+\input{vga_controll}
+\subsection{How to read the keyboard input}
+\input{ps2_controll}
+
+\section{Behavioural Interface}
+\subsection{Output on the screen}
+\input{output_on_screen}
+\subsection{Output on the RS232}
+\input{rs232}
+\subsection{What about overflows?}
+\input{overflows}
+\subsection{Allowed keyboard input}
+\input{allowed_input}
+\subsection{Erroneous inputs}
+\input{erroneous_inputs}
+\subsection{Error messages}
+\input{error_messages}
+
+
+
+
+\end{document}
+
