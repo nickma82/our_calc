@@ -10,3 +10,23 @@ git pull origin master
 git push
 
 Help: http://learn.github.com/
+
+#Hirn einschalten, nur das nehmen was gebraucht wird
+Next steps:
+
+  mkdir our_calc
+  cd our_calc
+  git init
+  touch README
+  git add README
+  git commit -m 'first commit'
+  git remote add origin git@github.com:nickma82/our_calc.git
+  git push origin master
+      
+
+Existing Git Repo?
+
+  cd existing_git_repo
+  git remote add origin git@github.com:nickma82/our_calc.git
+  git push origin master
+      
