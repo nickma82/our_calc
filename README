@@ -1,9 +1,12 @@
 Jep, das ist der erste Test
+#Key erstellen (unix)
+ssh-keygen
+
 #commiten
 git commit -a
 #Runterladen
 git pull origin master
 #Hochladen
-
+git push
 
 Help: http://learn.github.com/
