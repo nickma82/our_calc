@@ -38,18 +38,17 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE ../src/calc_top.vhd
 	set_global_assignment -name VHDL_FILE ../src/calc_top_struct.vhd
 	#debounce
-	set_global_assignment -name VHDL_FILE ../src/counter.vhd
-	set_global_assignment -name VHDL_FILE ../src/counter_beh.vhd
-	set_global_assignment -name VHDL_FILE ../src/debounce.vhd
-	set_global_assignment -name VHDL_FILE ../src/debounce_fsm.vhd
-	set_global_assignment -name VHDL_FILE ../src/debounce_fsm_beh.vhd
-	set_global_assignment -name VHDL_FILE ../src/debounce_pkg.vhd
-	set_global_assignment -name VHDL_FILE ../src/debounce_struct.vhd
-	#set_global_assignment -name VHDL_FILE ../src/debounce_tb.vhd
-	set_global_assignment -name VHDL_FILE ../src/math_pkg.vhd
-	set_global_assignment -name VHDL_FILE ../src/sync.vhd
-	set_global_assignment -name VHDL_FILE ../src/sync_beh.vhd
-	set_global_assignment -name VHDL_FILE ../src/sync_pkg.vhd
+	set_global_assignment -name VHDL_FILE ../src/libs/counter.vhd
+	set_global_assignment -name VHDL_FILE ../src/libs/counter_beh.vhd
+	set_global_assignment -name VHDL_FILE ../src/debounce/debounce.vhd
+	set_global_assignment -name VHDL_FILE ../src/debounce/debounce_fsm.vhd
+	set_global_assignment -name VHDL_FILE ../src/debounce/debounce_fsm_beh.vhd
+	set_global_assignment -name VHDL_FILE ../src/debounce/debounce_pkg.vhd
+	set_global_assignment -name VHDL_FILE ../src/debounce/debounce_struct.vhd
+	set_global_assignment -name VHDL_FILE ../src/libs/math_pkg.vhd
+	set_global_assignment -name VHDL_FILE ../src/libs/sync.vhd
+	set_global_assignment -name VHDL_FILE ../src/libs/sync_beh.vhd
+	set_global_assignment -name VHDL_FILE ../src/libs/sync_pkg.vhd
 	
 	################ PINNING
 	#7Seg
@@ -83,7 +82,17 @@ if {$make_assignments} {
 	#ps2 (bidirectional)
 	set_location_assignment PIN_E21 -to ps2_data
 	set_location_assignment PIN_Y26 -to ps2_clk
-	
+	#vga
+	set_location_assignment PIN_E22 -to vga_r0
+	set_location_assignment PIN_T4 -to  vga_r1
+	set_location_assignment PIN_T7 -to vga_r2
+	set_location_assignment PIN_E23 -to vga_g0
+	set_location_assignment PIN_T5 -to vga_g1
+	set_location_assignment PIN_T24 -to vga_g2
+	set_location_assignment PIN_E24 -to vga_b0
+	set_location_assignment PIN_T6 -to vga_b1
+	set_location_assignment PIN_F1 -to vga_hsync_n
+	set_location_assignment PIN_F2 -to vga_vsync_n
 	
 	
 

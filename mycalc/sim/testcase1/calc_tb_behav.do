@@ -10,18 +10,18 @@ vmap work behav_work
 
 variable DIR ../../src
 #compile vhdl files
-vcom -work work $DIR/sync.vhd
-vcom -work work $DIR/sync_beh.vhd
-vcom -work work $DIR/sync_pkg.vhd
-vcom -work work $DIR/math_pkg.vhd
-vcom -work work $DIR/debounce.vhd
-vcom -work work $DIR/debounce_fsm.vhd
-vcom -work work $DIR/debounce_fsm_beh.vhd
-vcom -work work $DIR/debounce_pkg.vhd
-vcom -work work $DIR/debounce_struct.vhd
-vcom -work work $DIR/debounce_top.vhd
-vcom -work work $DIR/counter.vhd
-vcom -work work $DIR/counter_beh.vhd
+vcom -work work $DIR/libs/sync.vhd
+vcom -work work $DIR/libs/sync_beh.vhd
+vcom -work work $DIR/libs/sync_pkg.vhd
+vcom -work work $DIR/libs/math_pkg.vhd
+vcom -work work $DIR/debounce/debounce.vhd
+vcom -work work $DIR/debounce/debounce_fsm.vhd
+vcom -work work $DIR/debounce/debounce_fsm_beh.vhd
+vcom -work work $DIR/debounce/debounce_pkg.vhd
+vcom -work work $DIR/debounce/debounce_struct.vhd
+vcom -work work $DIR/debounce/debounce_top.vhd
+vcom -work work $DIR/libs/counter.vhd
+vcom -work work $DIR/libs/counter_beh.vhd
 vcom -work work $DIR/calc_top.vhd
 vcom -work work $DIR/calc_top_struct.vhd
 

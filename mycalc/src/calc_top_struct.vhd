@@ -11,6 +11,7 @@ architecture struct of calc_top is
 	constant BTN_A_RESET_VALUE : std_logic := '1';
 	
 	signal sys_res_n_sync, btn_a_sync : std_logic;
+	signal pll0: std_logic;
 	
 begin
 	sys_res_n_debounce_inst : debounce
@@ -46,5 +47,11 @@ begin
 	);
 	
 	led_a <= not(btn_a_sync);
+	
+	--pll_vga_clk: pll
+	--PORT MAP (
+	--	inclk0	 => inclk0_sig,
+	--	c0	 => c0_sig
+	--);
 	
 end architecture struct;
