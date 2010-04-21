@@ -30,10 +30,11 @@ vcom -work work $DIR/calc_top_struct.vhd
 vcom -work work calc_tb.vhd
 
 ## compile configuration file
-#vcom -work work config_behav.vhd
+vcom -work work config_behav.vhd
 
 ## start simulation
-#vsim -coverage work.conf
+#coverage zeigt %des Codes der Simuliert ist
+vsim -coverage work.conf
 vsim work.calc_tb
 
 view -undock wave
@@ -43,8 +44,10 @@ view -undock wave
 add wave *
 
 # add internal signals of unit under test
-add wave -divider CALC
+add wave -divider DEBOUNCE
+add wave uut/btn_a_sync
 add wave uut/btn_a_debounce_inst/cnt
+
 
 # auto-run simulation
 run 10 ms
