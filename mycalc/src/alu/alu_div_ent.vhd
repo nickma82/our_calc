@@ -9,9 +9,8 @@ use ieee.std_logic_1164.all;
 ENTITY alu_div_ent IS 
 	 PORT 
 	 ( 
+		 sys_clk, sys_res_n       : in    std_logic;
 		 aclr	:	IN  STD_LOGIC := '0';
-		 clk_en	:	IN  STD_LOGIC := '1';
-		 clock	:	IN  STD_LOGIC;
 		 dataa	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
 		 datab	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
 		 division_by_zero	:	OUT  STD_LOGIC;

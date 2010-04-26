@@ -8,9 +8,8 @@ end entity alu_tb;
 architecture behav of alu_tb is
   component alu_div_ent is
 	PORT (
+			 sys_clk, sys_res_n       : in    std_logic;
 			 aclr	:	IN  STD_LOGIC := '0';
-    		 clk_en	:	IN  STD_LOGIC := '1';
-    		 clock	:	IN  STD_LOGIC := '0';
     		 dataa	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
     		 datab	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
     		 division_by_zero	:	OUT  STD_LOGIC;
@@ -21,9 +20,11 @@ architecture behav of alu_tb is
   end component alu_div_ent;
   
   signal sys_clk, sys_res_n: std_logic;
-  signal btn_a, aclr, clk_en, division_by_zero, overflow, calc_finished: std_logic;
+  signal aclr, division_by_zero, overflow, calc_finished: std_logic;
   signal dataa, datab, result: STD_LOGIC_VECTOR (31 DOWNTO 0);
+  
   signal stop : boolean := false;
+  signal btn_a: std_logic;
 
 begin --behave
   uut : alu_div_ent
