@@ -3,3 +3,9 @@
 *.vstf
 *.wlf
 *.ini
+*.toc
+*.idx
+*.aux
+*.backup
+.metadata
+.project
