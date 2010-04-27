@@ -79,7 +79,47 @@ begin --behave
     -- coverage on
     
 
+    wait for 500 ns;
+    num(5 downto 0) <= "101010";
+    didend(5 downto 0) <= "000010";
+    wait for 10 ns;
+    div_en <= '1';
+    wait for 10 us;
+    div_en <= '0';
+    -- coverage off
+    assert result(3 downto 0) = "0101"
+    	 report "case fail"
+    	 severity failure;
+    -- coverage on
     
+ 
+    wait for 500 ns;
+    num(5 downto 0) <=    "111111";
+    didend(5 downto 0) <= "000001";
+    wait for 10 ns;
+    div_en <= '1';
+    wait for 10 us;
+    div_en <= '0';
+    -- coverage off
+    assert result(5 downto 0) = "111111"
+    	 report "case fail"
+    	 severity failure;
+    -- coverage on   
+	
+	
+	wait for 500 ns;
+    num <=    "11111111111111111111111111111111";
+    didend <= "00000000000000000000000000000010";
+    wait for 10 ns;
+    div_en <= '1';
+    wait for 10 us;
+    div_en <= '0';
+    -- coverage off
+    assert result = "01111111111111111111111111111111"
+    	 report "case fail"
+    	 severity failure;
+    -- coverage on 
+	
 	
     wait for 20 ms;
     stop <= true;

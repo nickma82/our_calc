@@ -59,13 +59,14 @@ div: process(sys_res_n, sys_clk)
                 calc_finished <= internal_calc_done;
             when others =>
                 if buf((2 * SIZE - 2) downto (SIZE - 1)) >= dbuf then
+                    
                     buf1 <= '0' & (buf((2 * SIZE - 3) downto (SIZE - 1)) - dbuf((SIZE - 2) downto 0));
                     buf2 <= buf2((SIZE - 2) downto 0) & '1';
-                    if sm = SIZE then
+                    --if sm = SIZE then
                         internal_calc_done <='1';
-                    end if;
+                    --end if;
                 else
-                	buf <= buf((2 * SIZE - 2) downto 0) & '0';
+                	buf <= buf((2 * SIZE - 2) downto 0) & '0'; --left shift
                 end if;
                 if sm /= SIZE then --set back sm
                 	sm <= sm + 1;
