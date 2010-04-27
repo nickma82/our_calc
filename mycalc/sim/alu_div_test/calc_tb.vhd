@@ -30,9 +30,9 @@ begin --behave
   uut : alu_div_ent
     port map
     (
+      sys_clk=>sys_clk,
+      sys_res_n=>sys_res_n,
       aclr=>aclr,
-      clk_en=>clk_en,
-      clock=> sys_clk,
       dataa=> dataa,
       datab=> datab,
       division_by_zero=>division_by_zero,
@@ -58,7 +58,6 @@ begin --behave
     btn_a <= '1';
     --RESET Pins
     aclr<= '0';
-    clk_en<='1';
     dataa <= (others => '0');
     datab <= (others => '0'); 
     wait for 100 ns;
@@ -74,6 +73,12 @@ begin --behave
     wait for 25 us;
     btn_a <= '0';
     wait for 175 us;
+    
+    sys_res_n <= '0';
+    wait for 100 ns;
+    sys_res_n <= '1';
+    
+    
     btn_a <= '1';
     wait for 1 us;
     btn_a <= '0';

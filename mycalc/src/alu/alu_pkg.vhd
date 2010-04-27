@@ -10,6 +10,7 @@ use ieee.std_logic_1164.all;
 
 
 package alu_pkg is
+    constant RESETVALUE : std_logic := '0';
 --   component debounce_fsm is
 --    generic
 --    (

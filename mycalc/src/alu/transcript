@@ -294,3 +294,5 @@ do calc_tb_behav.do
 # .main_pane.wave.interior.cs.body.pw.wf
 # 0 ns
 # 52500 us
+# ** Warning: (vsim-31) Unable to unlink file "/homes/s0726179/hwmod/our_calc/mycalc/sim/alu_div_test/behav_work/_opt__lock".
+# No such file or directory. (errno = ENOENT)
