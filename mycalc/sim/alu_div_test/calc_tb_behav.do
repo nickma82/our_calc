@@ -47,11 +47,16 @@ view -undock wave
 add wave *
 
 # add internal signals of unit under test
-add wave -divider DEBOUNCE
-#add wave uut/btn_a_sync
+add wave -divider DIV_MODULE
+add wave uut/sm
+add wave uut/buf
+add wave uut/dbuf
+add wave uut/rm
+add wave uut/buf1
+add wave uut/buf2
 #add wave uut/btn_a_debounce_inst/cnt
 
 
 # auto-run simulation
-run 50 ms
+run 1 ms
 wave zoomfull

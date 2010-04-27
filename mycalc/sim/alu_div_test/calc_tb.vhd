@@ -9,19 +9,20 @@ architecture behav of alu_tb is
   component alu_div_ent is
 	PORT (
 			 sys_clk, sys_res_n       : in    std_logic;
-			 aclr	:	IN  STD_LOGIC := '0';
-    		 dataa	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
-    		 datab	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
+			 div_en	:	IN  STD_LOGIC := '0';
+    		 num	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
+    		 didend	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
+    		 result	:	OUT  STD_LOGIC_VECTOR (31 DOWNTO 0);
+    		 
     		 division_by_zero	:	OUT  STD_LOGIC;
     		 overflow	:	OUT  STD_LOGIC;
-    		 result	:	OUT  STD_LOGIC_VECTOR (31 DOWNTO 0);
     		 calc_finished: OUT STD_LOGIC 
 	);
   end component alu_div_ent;
   
   signal sys_clk, sys_res_n: std_logic;
-  signal aclr, division_by_zero, overflow, calc_finished: std_logic;
-  signal dataa, datab, result: STD_LOGIC_VECTOR (31 DOWNTO 0);
+  signal div_en, division_by_zero, overflow, calc_finished: std_logic;
+  signal num, didend, result: STD_LOGIC_VECTOR (31 DOWNTO 0);
   
   signal stop : boolean := false;
   signal btn_a: std_logic;
@@ -32,9 +33,9 @@ begin --behave
     (
       sys_clk=>sys_clk,
       sys_res_n=>sys_res_n,
-      aclr=>aclr,
-      dataa=> dataa,
-      datab=> datab,
+      div_en=>div_en,
+      num=> num,
+      didend=> didend,
       division_by_zero=>division_by_zero,
       overflow=>overflow, 
       result=>result, 
@@ -57,60 +58,30 @@ begin --behave
     sys_res_n <= '0';
     btn_a <= '1';
     --RESET Pins
-    aclr<= '0';
-    dataa <= (others => '0');
-    datab <= (others => '0'); 
+    div_en<= '0';
+    num <= (others => '0');
+    didend <= (others => '0'); 
     wait for 100 ns;
     sys_res_n <= '1';
-    wait for 2 ms;
-    btn_a <= '0';
-    wait for 100 us;
-    btn_a <= '1';
-    wait for 50 us;
-    btn_a <= '0';
-    wait for 150 us;
-    btn_a <= '1';
-    wait for 25 us;
-    btn_a <= '0';
-    wait for 175 us;
+    -- BEGIN TESTS
     
-    sys_res_n <= '0';
-    wait for 100 ns;
-    sys_res_n <= '1';
+    wait for 500 ns;
+    num(3 downto 0) <= "1010";
+    didend(1 downto 0) <= "10";
+    wait for 10 ns;
+    div_en <= '1';
+    wait for 10 us;
+    div_en <= '0';
+    -- coverage off
+    assert result(3 downto 0) = "0101"
+    	 report "case fail"
+    	 severity failure;
+    -- coverage on
     
+
     
-    btn_a <= '1';
-    wait for 1 us;
-    btn_a <= '0';
-    wait for 2 ms;
-    btn_a <= '1';
-    wait for 100 us;
-    btn_a <= '0';
-    wait for 50 us;
-    btn_a <= '1';
-    wait for 150 us;
-    btn_a <= '0';
-    wait for 25 us;
-    btn_a <= '1';
-    wait for 175 us;
-    btn_a <= '0';
-    wait for 1 us;
-    btn_a <= '1';
-    wait for 2 ms;
-    btn_a <= '0';
-    wait for 100 us;
-    btn_a <= '1';
-    wait for 50 us;
-    btn_a <= '0';
-    wait for 150 us;
-    btn_a <= '1';
-    wait for 25 us;
-    btn_a <= '0';
-    wait for 175 us;
-    btn_a <= '1';
-    wait for 1 us;
-    btn_a <= '0';
-    wait for 2 ms;
+	
+    wait for 20 ms;
     stop <= true;
     wait;
   end process;
