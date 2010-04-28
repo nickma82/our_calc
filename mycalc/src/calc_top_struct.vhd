@@ -56,5 +56,9 @@ begin
 	);
 	
 	
+	----- CALC CONNECTIVITY
+	
+	
+	
 	
 end architecture struct;
