@@ -104,21 +104,30 @@ die gesamte Rechnung gestoppt und an den Ringbuffer und dem Output eine Fehlerme
 Das selbe passiert wenn der Parser in einem Rechenschritt nicht die erwartete Syntax bekommt.\\
 
 \subsection{Ringbuffer}
-Ringbuffer Funktionalitäten:
-\begin{itemize}
- \item Hinzufügen eines CHARs zu der aktuellen Zeile
- \item Löschen des letzten CHARs der aktuellen Zeile
- \item Wechseln in die nächste Zeile
- \item Auslesen einer gesamten Zeile mit konkreter Nummer
- \item Ressource blockierbarkeit
-\end{itemize}
-Aktuelle Zeile des Ringbuffers wird immer mit dem Wert 0 gekennzeichnet.
+
+Der Ringbuffer ist grundsätzlich, wie der Name vermuten lässt, als Ringbuffer Struktur mit 50 Zeilen
+zu je 81 Characters realisert. Es gibt einen Zeiger der auf die momentage Zeile zeigt. In dieser Zeile
+steht die Rechnung die über die Tastatur eingegeben wurde und wird später vom Parser zur Berechnung
+geholt. Wenn das Ergebnis vom Parser zu der Rechnung hinzugefügt wird, wird automatisch der interne Zeiger
+auf die nächste Zeile verwiesen und der Inhalt der Zeile gelöscht, falls bereits mehr als 50 Rechnungen
+eingegeben wurden.\\
+Der Ringbuffer bekommt vom Input, über \textit{inp\_new\_data} und \textit{inp\_data}, und vom Parser, 
+über \textit{pars\_new\_data} und \textit{pars\_data}, einzellne Characters zugeschickt.\\
+Diese Characters werden, solange nicht mehr als 70 Zeichen in einer Zeile sind, in den Speicher geschrieben.
+Vom Parser kriegt der Ringbuffer die einzellnen Zeichen des Ergebnisses. Das letzte Zeichen ist ein
+Sonderzeichen worauf der Ringbuffer die momemtane Zeile beendet und den internen Zeiger auf die nächste
+Zeile verweist und den Inhalt der Zeile löscht.\\
+Wenn der Ringbuffer beschäftigt ist setzt er \textit{rb\_busy} auf High und signalisiert den anderen
+Komponenten das keine neuen Zeichen gesendet werden dürfen.
+
 
 \subsection{RS232}
-Das RS232 Modul überwacht die Empfangsleitung und stellt nach Empfang die Daten auf einem 
-8 Bit Bus zur Verfügung.\\
-Beim Senden bezieht es 8 Bit von dem Eingangsbus und meldet den Versandt über ein ready Bit.
-
-Beide Modi arbeiten mit 8 Datenbits, einem Stopbit und keinem paritätsbit, bei einer
-Boudrate von 115`200
+Das RS232 Modul wurde möglichst einfach gehalten. Es wartet bis es über das Signal 
+\textit{tx\_go} vom SerialHandler der Befehl kommt neue Daten zu senden. Die Daten
+werden über \textit{tx\_data} gelesen und über den Bus gesendet. Außerdem
+hört die Komponente auf der Leitung ob Daten empfangen werden und signalisiert diese 
+mit dem \textit{rc\_recv} Signal. Die vom RS232 Interface empfangenen Daten können 
+dann über \textit{rx\_data} gelesen werden.\\
+Gesendet und empfangen wird mit 8 Datenbits, einem Stopbit und keinem Paritätsbit, bei einer
+Baudrate von 115`200.
 %Senden: TX->LOW alle 8.68us nächstes Bit, dann 1 zum Stoppen
