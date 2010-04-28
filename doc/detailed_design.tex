@@ -13,13 +13,58 @@
 % 	\item State machines
 % 	\end{itemize}
 % \end{itemize}
+
+\subsection{Input}
+Die Input Komponente empfängt die Scancodes vom PS2 Modul. Jedes Drücken der Tastatur löst ein bis drei Scancodes hintereinander aus.
+Hier wird zwischen zwei Tasten unterschieden. Normale Tasten senden einen Scancode beim Drücken und zwei Scancodes, wobei der erste immer 0xF0 ist, 
+beim Loslassen einer Taste und Sondertasten, wie etwa die Enter Taste auf dem Nummernblock, die beim Drücken zwei und beim Loslassen drei Scancodes 
+an die Input Komponente schickt. 
+Die empfangenen Codes werden mit einem Lookup Table verglichen.
+
+Unterscheidung der Empfangenen Daten:
+\begin{description}
+ \item[0-9,+,-,*,/]
+	\begin{itemize}
+		\item Wandeln der Scancodes in ASCII chars 
+		\item Speichern der Chars im RingBuffer
+		\item Senden der Chars an den Output
+	\end{itemize}
+ \item[Enter] Senden an Parser und Output
+ \item[Backspace] Senden an RingBuffer und Output
+ \item[Space] Senden an RingBuffer und Output
+ \item[Sonstige] Alle anderen Scancodes werden verworfen.
+ \end{description}
+
+Des Weiteren überwacht das Input Modul einen Button am development Board und sendet
+daraufhin eine Anfrage an den SerialHandler
+\subsection{Output}
+Das Output Modul bekommt vom Input und vom Parser Nachrichten\\
+\begin{description}
+ \item[Vom Input] wird jeder ASCII Code oder die Backspace Taste an den Output geschickt. Diese werden
+sofort an die VGA Komponente weiter gegeben und somit der Bildschirm aktualisiert. Hier wird auch überprüft ob
+schon 70 Zeichen in der Rechnung sind und reagiert dann dementsprechend nur noch auf die Backspace Taste die das letzte Zeichen
+löscht und den Cursor um eine Stelle nach hinten setzt.\\
+ \item[Der Parser] schickt das Ergebnis an den Output. Durch das Empfangen des Ergebnisses weiß die Komponente
+das die Rechnung vorbei ist. Es wird in die nächste Zeile gewechselt und danach ein '=' Zeichen und das Ergebnis
+dahinter auf den Bildschirm geschrieben. Danach wird wieder in die nächste Zeile gewechselt und der Cursor dorthin
+gesetzt. Somit kann die nächste Rechnung eingegeben werden.
+ \end{description}
+%TODO Signalnamen einsetzen
+Über drei Signale kommuniziert der Output mit dem VGA Modul. Das signalname signalisiert uns das das VGA Modul 
+frei ist und neue Befehle gesendet werden können. Wenn neue Befehle an den Output geschickt werden speichert das
+Modul die Befehle zwischen und wartet bis die VGA Komponente frei ist. Mit signame1 wird er Befehl
+gesendet und signame2 hilft beim Übernehmen des Signals.
+
+
 \subsection{ALU}
-Die Alu führt nach dem Startsignal die am \textit{operation}seingang gewählte 
-Rechenoperation ausgeführt. Dazu stehen folgende Optionen am operationseingang zur Verfügung:
+Die ALU wird vom Parser zum Lösen simpler Berechnungen genützt. An die beiden Daten Eingänge \textit{calc\_data} werden die Operanden
+und an \textit{calc\_operator} der Operator angelegt. Die Kodierung steht in folgender Tabelle:
+
 \begin{center}
 % use packages: array
 \begin{tabular}[!ht]{|l|l|l|}
-\hline Eingang (binär) & Rechenoperation & Rechnungsart\\ 
+\hline calc\_operator (binär) & Rechenoperation & Rechnungsart\\ 
+	\hline
 	00 & Addieren & Strichrechnung\\ 
 	01 & Subtrahieren & Strichrechnung\\ 
 	10 & Multiplizieren & Punktrechnung\\ 
@@ -27,14 +72,37 @@ Rechenoperation ausgeführt. Dazu stehen folgende Optionen am operationseingang 
  \hline
 \end{tabular}
 \end{center}
-Die division schneidet nachkommastellen ab.
-Die dafür benötigten Fälle werden anhand von cases unterschieden.
-\subsection{Parser}
-Den Parser arbeitet mit zwei Integer Puffern. \\
-Nach starten des Parsers werden sukzessive alle sich in einer Zeile befindenden CHARs durchgearbeitet.
 
-wird die erste Zahl gefiltert und in den \textit{Punktrechnungsbuffer} geschoben.
-Folgt eine
+Nachdem alle für die Berechnung benötigten Daten anliegen, wird mit dem Signal \textit{calc\_start} die Berechnung gestartet. \textit{calc\_finished}
+sagt dem Parser, dass die Berechnung fertig ist. Sollte ein Fehler aufgetreten sein wird am \textit{calc\_error} ein Fehlercode gespeichert, der vom
+Parser überprüft werden muss. Der Fehlercode steht in folgender Tabelle:
+
+\begin{center}
+% use packages: array
+\begin{tabular}[!ht]{|l|l|}
+\hline calc\_error (binär) & Fehler\\
+	\hline
+	00 & Fehlerfrei, Ergebnis gültig\\ 
+	01 & Division durch Null\\ 
+	10 & Overflow\\ 
+	11 & reserviert\\
+ \hline
+\end{tabular}
+\end{center}
+
+Sollte kein Fehler vorgekommen sein, kann der Parser das Ergebnis auf \textit{calc\_data} ablesen. 
+
+\subsection{Parser}
+Der Parser löst die Gleichung, indem er die Rechnung in für ihn lösbare simple Rechnungen zerlegt.
+Er wartet ihm durch den Input mit \textit{char\_EOL} gesagt wird die Rechnung zu lösen.\\
+Der Parser holt sich dann vom Ringbuffer die momentane Zeile. Dann durchsucht er die Rechnung nach 
+Punktrechnungen und löst diese der Reihe nach mit der ALU. Wenn keine mehr vorhanden sind wird
+die Rechnung erneut auf Strichrechnungen durchsucht und der Reihe nach gelöst bis das Ergebnis 
+fest steht.\\
+Sollte die ALU in einem Schritt einen Overflow oder einen Divison durch Null Fehler bekommen wird 
+die gesamte Rechnung gestoppt und an den Ringbuffer und dem Output eine Fehlermeldung geschickt.
+Das selbe passiert wenn der Parser in einem Rechenschritt nicht die erwartete Syntax bekommt.\\
+
 \subsection{Ringbuffer}
 Ringbuffer Funktionalitäten:
 \begin{itemize}
@@ -54,30 +122,3 @@ Beim Senden bezieht es 8 Bit von dem Eingangsbus und meldet den Versandt über e
 Beide Modi arbeiten mit 8 Datenbits, einem Stopbit und keinem paritätsbit, bei einer
 Boudrate von 115`200
 %Senden: TX->LOW alle 8.68us nächstes Bit, dann 1 zum Stoppen
-\subsection{Input}
-Input arbeitet die vom ps/2 Modul empfangenen Daten ab und sendet diese je nach Empfangsdaten weiter.\\
-Unterscheidung der Empfangenen Daten:
-\begin{description}
- \item[0-9,+,-,*,/] 
-	\begin{itemize}
-		\item Wandeln der Scancodes in ASCII chars 
-		\item Speichern der Chars im RingBuffer
-		\item Senden der Chars an den Output
-	\end{itemize}
- \item[Enter] Senden an Parser und Output
- \item[Backspace] Senden an RingBuffer und Output
- \item[Space] Senden an RingBuffer und Output
- \end{description}
-
-Des Weiteren überwacht das Input Modul einen Button am development Board und sendet
-daraufhin eine Anfrage an den SerialHandler
-\subsection{Output}
-Das output Modul verarbeitet die vom \textit{Input} und \textit{Parser} erhaltenen Daten indem er sie an das VGA-Modul schickt.
-
-\subsection{Logical Interfaces}
-\subsubsection{How to control the VGA component}
-Das Display steuern wir über das Command und Command\_Data Signal. Auf dem Command Signal legen wir unser gewünschtes Kommando an und auf dem Data Signal unsere Parameter.\\
-Wenn wir ein Zeichen hinzufügen dann setzen wir das entsprechende Kommando und über die Parameter setzen wir die Farbe und den ASCII Code des neuen Characters.
-\subsubsection{How to read the keyboard input}
-Pro Tastendruck können mehrere Scan Codes hintereinander geschickt werden. Dafür legt uns die Tastatur den ScanCode am Data Signal an und setzt das new\_Data Signal für einen Zyklus auf high.\\
-Wird eine Taste gedrückt, oder losgelassen, die aus mehreren Scancodes besteht, dann werden kurz hintereinander die Codes am Data Signal angelegt und geschickt.

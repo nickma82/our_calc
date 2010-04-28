@@ -1,4 +1,4 @@
-\documentclass[a4paper,10pt]{scrreprt}
+\documentclass[a4paper,12pt]{scrreprt}
 \usepackage[utf8]{inputenc}
 
 \usepackage[ngerman]{babel}
@@ -23,18 +23,20 @@
 \maketitle
 \tableofcontents
 
+%macht korrekte Nummerierung
+\renewcommand{\thesection}{\arabic{section}}
+
+\chapter{LU Hardware Modellierung}
 
 \input{einleitung}
 
 \input{requirements}
 
-\section{Testcase specification}
 \input{testcases}
 
 \input{high_lvl_descr}
 
 \input{detailed_design}
-
 
 
 \end{document}

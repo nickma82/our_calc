@@ -1,21 +1,52 @@
-\begin{description}
- \item[TC1] Addition zweier Zahlen
- \item[TC2] Subtraktion zweier Zahlen
- \item[TC3] Multiplikation zweier Zahlen
- \item[TC4] Division zweier Zahlen
- \item[TC5] Verkettung aller Grundrechnungsarten
- \item[TC6] Punkt vor Strichrechnung
- \item[TC7] zahlen nicht größer- $2^{31}-1$ bzw. nicht kleiner als -$2^{31}$
- \item[TC8] Division durch 0
- \item[TC9] zwei Operatoren hintereinander, 
- \item[TC10] Operator am Ende
- \item[TC11] Überlange Eingabe
- \item[TC12] Leertase erzeugt einen Abstand der bei der Berechnung ignoriert wird.
- \item[TC13] Backspace löscht uns das letzte Zeichen
- \item[TC14] Auslesen der History
- \item[TC15] Fehlermeldung für Division durch Null
- \item[TC16] Fehlermeldung für einen Syntax Fehler
- \item[TC17] Fehlermeldung für einen Overflow
- \item[TC18] Divisionen werden abgerundet
-\end{description}
+\section{Testcase specification}
 
+\begin{description}
+ \item[TC1] \textbf{Eingabe:} 40+33 *2/5-7\\
+  \textbf{Ausgabe:} \\
+  \textbf{deckt:} Req1, Req2, Req4, Req5, Req8
+
+ \item[TC2] \textbf{Eingabe:} 2147483648\\
+  \textbf{Ausgabe:} Overflow\\
+  \textbf{deckt:} Req2,
+
+\item[TC3] \textbf{Eingabe:} 45, dann 3*Backspace\\
+  \textbf{Ausgabe:} muss leer sein, kein Fehler durch löschen obwohl kein Zeichen da ist.\\
+  \textbf{deckt:} Req6, Req7
+
+\item[TC4] \textbf{Eingabe:} Eingabe von 71 Zeichen, Dann Backspace\\
+  \textbf{Ausgabe:} 71 Zeichen wird ignoriert und danach wird das 70Zeichen gelöscht und Zeiger nach hinten gesetzt\\
+  \textbf{deckt:} Req9
+
+ \item[TC5] \textbf{Eingabe:} 10/0\\
+  \textbf{Ausgabe:} Division durch Null\\
+  \textbf{deckt:} Req10
+
+ \item[TC6] \textbf{Eingabe:} 23 55\\
+  \textbf{Ausgabe:} ungültige Syntax\\
+  \textbf{deckt: Req11}
+
+ \item[TC7] \textbf{Eingabe:} 20/-2\\
+  \textbf{Ausgabe:} -10\\
+  \textbf{deckt:} Req2, Req12
+
+ \item[TC8] \textbf{Eingabe:} 20/*2\\
+  \textbf{Ausgabe:} ungültige Syntax\\
+  \textbf{deckt:} Req13
+
+ \item[TC9] \textbf{Eingabe:} -15+5\\
+  \textbf{Ausgabe:} -10\\
+  \textbf{deckt:} Req14
+
+ \item[TC10] \textbf{Eingabe:} *6/3\\
+  \textbf{Ausgabe:} ungültige Syntax\\
+  \textbf{deckt:} Req15
+
+ \item[TC11] \textbf{Eingabe:} 2000000000*3\\
+  \textbf{Ausgabe:} Overflow\\
+  \textbf{deckt:} Req16
+
+ \item[TC12] \textbf{Eingabe:} drücken des Buttons auf Entwicklerboard\\
+  \textbf{Ausgabe:} Pc empfängt die letzten 50 Rechnungen\\
+  \textbf{deckt:} Req18
+
+\end{description}

@@ -1,3 +1,31 @@
 \section{Requirements}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%TODO Schreiben
-kommt da her
+
+\begin{description}
+\item[Req 1:] Eingaben werden über die Tastatur gemacht und Zeilenweise am Bildschirm ausgegeben. Beim drücken der Enter Taste
+wird das Ergebnis in die nächste Zeile geschrieben. Sollte keine Zeile mehr frei sein werden die restlichen Zeilen nach 
+oben verschoben und der letzte Eintrag am Bildschirm gelöscht.
+\item[Req 2:] Die vier Grundrechnungsarten (+,-,*,/) müssen unterstützt werden.
+\item[Req 3:] Eine gültige Zahl liegt zwischen $2^31 -1$ und $2^31$.
+\item[Req 4:] Bei Divisionen wird, falls nötig, abgerundet um auf eine ganze Zahl zu kommen.
+\item[Req 5:] Leerzeichen müssen eingegeben und beim Berechnen ignoriert werden.
+\item[Req 6:] Die Backspace Taste löscht das letzte Zeichen und setzt den Curser zurück.
+\item[Req 7:] Sollte kein Zeichen in der Rechnung stehen wird die Backspace Taste ignoriert.
+\item[Req 8:] Multiplikation und Division wird vor Addition und Subtraktion berechnet. Sollten mehrere Punktrechnungen nacheinander 
+ausgerechnet werden, werden diese nach der Reihenfolge ihrer Eingabe berechnet.
+\item[Req 9:] Sollte die Rechnung bereits 70 Zeichen haben wird kein neues Zeichen akzeptiert.
+\item[Req 10:] Der Fehler Division durch Null wird erkannt und die Fehlernachricht ``Division durch Null'' statt dem Ergebnis ausgegeben.
+\item[Req 11:] Wenn zwei Zahlen, mit einem Leerzeichen getrennt, direkt nebeneinander stehen muss beim Berechnen ein Fehler erkannt und
+``ungültige Syntax'' ausgegeben werden.
+\item[Req 12:] Sollten zwischen zwei Zahlen zwei Operanden stehen, und der zweite Operand ist ein Minus, dann wird die zweite Zahl negativ behandelt 
+und das richtige Ergebnis berechnet.
+\item[Req 13:] Sollten zwischen zwei Zahlen zwei Operanden stehen, und der zweite Operand ist kein Minus, dann muss ein Fehler erkannt werden
+und ``ungültige Syntax'' ausgegeben werden.
+\item[Req 14:] Sollte das erste Zeichen ein Minus-Operand sein wird die erste Zahl negativ behandelt und das richtige Ergebnis ausgegeben.
+\item[Req 15:] Sollte das erste Zeichen kein Minus Operand sein muss der Fehler erkannt und ``ungültige Syntax'' ausgegeben werden.
+\item[Req 16:] Eine Zahl die außerhalb des Wertebereichs ist wird erkannt und beim Berechnen die Fehlernachricht ``Overflow'' ausgegeben.
+\item[Req 17:] Wenn das Ergebnis mehrerer Zahlen in irgendeinem Rechenschritt außerhalb des Wertebereichs ($2^31 -1 bis 2^31$) liegt wird die
+Fehlernachricht ``Overflow'' ausgegeben.
+\item[Req 18:] Bei Anforderung über die serielle Schnittstelle oder beim Drücken des Buttons auf dem Entwicklerboard werden die letzten 50 Berechnungen
+mit Ergebnissen über RS232 an den PC gesendet.
+
+\end{description}
