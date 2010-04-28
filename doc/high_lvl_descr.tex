@@ -115,9 +115,12 @@ Signale mit Richtung, Bitanzahl und einer kurzen Beschreibung der Signale.
    calc\_result & in & 32 & Ergebnis.\\
    calc\_status & in & 2 & Status der Berechnung. Bei 0 fehlerfrei, sonst fehlerhaft.\\
    pars\_new\_data & out & 1 & Vom Parser kann ein neuer ASCII Code gelesenw erden.\\
-   pars\_data & out & 32 & Der neue ASCII Code.\\
-   rb\_char & in &  & ??\\
-   rb\_read & in &  & ??\\
+   pars\_data & out & 8 & Der neue ASCII Code.\\
+   rb\_busy & in & 1 & Wenn der Buffer beschäftigt ist dürfen keine neuen Eingaben kommen.\\
+   rb\_read\_en & out & 1 & Eine neue Zeile wird angefordert.\\
+   rb\_read\_lineNr & out & 6 & Die neue Zeile die gelesen werden soll.\\
+   rb\_read\_data\_rdy & in & 1 & Die neue Zeile kann gelesen werden.\\
+   rb\_read\_data & in & 648 & Die neue Zeile.\\
    \hline
   \end{tabular}
  \end{center}
@@ -151,20 +154,20 @@ Signale mit Richtung, Bitanzahl und einer kurzen Beschreibung der Signale.
   \begin{tabular}{|p{4cm}|p{1,6cm}|p{1cm}|p{9cm}|}
    \hline Signal & Richtung & Bits & Beschreibung\\
    \hline
-   rb\_busy & out & 1 & ??.\\
+   rb\_busy & out & 1 & Wenn der Buffer beschäftigt ist dürfen keine neuen Eingaben kommen.\\
    pars\_new\_data & in & 1 & Neue Daten von Parser.\\
-   pars\_data & in & 32 & Der neue ASCII Code vom Parser.\\
-   inp\_new\_data & out & 1 & Neue Daten vom Input\\
-   inp\_data & out & 8 & Der neue gültige ASCII Code vom Input.\\
-   inp\_del & out & 1 & Ist kurz High wenn ein Zeichen gelöscht werdne soll.\\
+   pars\_data & in & 8 & Der neue ASCII Code vom Parser.\\
+   inp\_new\_data & in & 1 & Neue Daten vom Input\\
+   inp\_data & in & 8 & Der neue gültige ASCII Code vom Input.\\
+   inp\_del & in & 1 & Ist kurz High wenn ein Zeichen gelöscht werdne soll.\\
    %rb\_char\_add & out & 1 & ??.\\
    %rb\_char\_del & in & 1 & \\
-   %rb\_char\_newline & in & 1 & \\
+   rb\_char\_newline & in & 1 & Springt in die nächste Zeile.\\
    %rb\_char\_en & in & 1 & \\
    rb\_read\_en & in & 1 & Eine neue Zeile wird angefordert.\\
    rb\_read\_lineNr & in & 6 & Die neue Zeile die gelesen werden soll.\\
-   rb\_read\_data\_rdy & out & 1 & History wurde fertig geschrieben\\
-   rb\_read\_data &out & 648 & \\
+   rb\_read\_data\_rdy & out & 1 & Die neue Zeile kann gelesen werden.\\
+   rb\_read\_data &out & 648 & Die neue Zeile.\\
    \hline
   \end{tabular}
  \end{center}
@@ -178,10 +181,17 @@ Signale mit Richtung, Bitanzahl und einer kurzen Beschreibung der Signale.
   \begin{tabular}{|p{4cm}|p{1,6cm}|p{1cm}|p{9cm}|}
    \hline Signal & Richtung & Bits & Beschreibung\\
    \hline
-   sig\_sendAll & in & 1 & ??.\\
-   rb\_read\_* & & & \\
-   rs\_rx* &&&\\
-   rs\_tx* &&&\\
+   inp\_sendRS232 & in & 1 & Initialisiert das Senden des gesamten Speichers.\\
+   rb\_busy & in & 1 & Wenn der Buffer beschäftigt ist dürfen keine neuen Eingaben kommen.\\
+   rb\_read\_en & out & 1 & Eine neue Zeile wird angefordert.\\
+   rb\_read\_lineNr & out & 6 & Die neue Zeile die gelesen werden soll.\\
+   rb\_read\_data\_rdy & in & 1 & Die neue Zeile kann gelesen werden.\\
+   rb\_read\_data & in & 648 & Die neue Zeile.\\
+   tx\_rdy & in & 1 & Zum Senden muss rdy low sein.\\
+   tx\_go & out & 1 & Startet Sendevorgang.\\
+   tx\_data & out & 8 & Das zu sendende Byte.\\
+   rx\_recv & in & 1 & Neues Byte wurde empfangen.\\
+   rx\_data & in & 8 & Das neue Byte.\\
    \hline
   \end{tabular}
  \end{center} 
@@ -196,13 +206,13 @@ Signale mit Richtung, Bitanzahl und einer kurzen Beschreibung der Signale.
   \begin{tabular}{|p{4cm}|p{1,6cm}|p{1cm}|p{9cm}|}
    \hline Signal & Richtung & Bits & Beschreibung\\
    \hline
-   uart\_rx & in & 1 & \\
-   uart\_tx & out & 1 & \\
-   tx\_go & in & 1 & \\
-   tx\_rdy & out & 1 & \\
-   tx\_data & in & 8 & \\
-   rx\_recv & out & 1 & \\
-   rx\_data & out & 8 & \\
+   uart\_rx & in & 1 & Die Receive Leitung des UART.\\
+   uart\_tx & out & 1 & Die Transmit Leitung des UART.\\
+   tx\_rdy & out & 1 & Zum Senden muss rdy low sein.\\
+   tx\_go & in & 1 & Startet Sendevorgang.\\
+   tx\_data & in & 8 & Das zu sendende Byte.\\
+   rx\_recv & out & 1 & Neues Byte wurde empfangen.\\
+   rx\_data & out & 8 & Das neue Byte.\\
    \hline
   \end{tabular}
  \end{center}
