@@ -18,7 +18,7 @@
 \begin{figure}[!ht]
  \caption{State Machine des Input Moduls}
  \centering
- \includegraphics[scale=0.55]{pics/Input.png}
+ \includegraphics[scale=0.45]{pics/Input.png}
  \label{fig:Modules}
 \end{figure}
 
@@ -135,6 +135,7 @@ Parser überprüft werden muss. Der Fehlercode steht in folgender Tabelle:
 Sollte kein Fehler vorgekommen sein, kann der Parser das Ergebnis auf \textit{calc\_data} ablesen. 
 
 \subsection{Parser}
+
 Der Parser löst die Gleichung, indem er die Rechnung in für ihn lösbare simple Rechnungen zerlegt.
 Er wartet ihm durch den Input mit \textit{char\_EOL} gesagt wird die Rechnung zu lösen.\\
 Der Parser holt sich dann vom Ringbuffer die momentane Zeile. Dann durchsucht er die Rechnung nach 
@@ -150,7 +151,7 @@ Das selbe passiert wenn der Parser in einem Rechenschritt nicht die erwartete Sy
 \begin{figure}[!ht]
  \caption{State Machine des Ringbuffer Moduls}
  \centering
- \includegraphics[scale=0.55]{pics/Ringbuffer.png}
+ \includegraphics[scale=0.5]{pics/Ringbuffer.png}
  \label{fig:Modules}
 \end{figure}
 
@@ -169,13 +170,28 @@ Zeile verweist und den Inhalt der Zeile löscht.\\
 Wenn der Ringbuffer beschäftigt ist setzt er \textit{rb\_busy} auf High und signalisiert den anderen
 Komponenten das keine neuen Zeichen gesendet werden dürfen.
 
+\subsection{SerialHandler}
+
+\begin{figure}[!ht]
+ \caption{State Machine des SerialHandler Moduls}
+ \centering
+ \includegraphics[scale=0.5]{pics/SerialHandler.png}
+ \label{fig:Modules}
+\end{figure}
+
+Der SerialHandler dient als Schnittstelle zwischen dem Ringbuffer und dem RS232 Moduls. Wenn die ganze
+History an den Computer geschickt werden soll kommt vom Input ein Signal, dass der Button am Entwicklerboard
+gedrückt wurde. Außerdem kann dies durch das Senden eines Bytes auf dem RS232 Interface ebenfalls angefordert
+werden.\\
+Sobald dieser Request kommt wird vom Ringbuffer Zeile für Zeile eingelesen und danach jedes Zeichen
+über das RS232 Modul an den PC geschickt.
 
 \subsection{RS232}
 
 \begin{figure}[!ht]
  \caption{State Machine des RS232 Moduls}
  \centering
- \includegraphics[scale=0.55]{pics/RS232.png}
+ \includegraphics[scale=0.5]{pics/RS232.png}
  \label{fig:Modules}
 \end{figure}
 
