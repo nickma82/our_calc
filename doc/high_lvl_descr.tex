@@ -1,13 +1,16 @@
 \section{High level design description}
-Wir haben den Rechner so entworfen, dass wir die einzelnen Aufgaben möglichst einfach in eigene Module
-kapseln können. Dies erleichtert die Implementierung, Wartung und spätere Erweiterung der Module.
+
+Der Rechner wurde so entworfen, dass sich die einzelnen Teilaufgaben möglichst einfach in eigene Module
+kapseln lassen. Dies erleichtert die Implementierung, Wartung und spätere Erweiterung des Gesamtsystems.
 Wie diese miteinander kommunizieren wird in folgender Abbildung gezeigt.
 
+\begin{center}
 \begin{figure}[!ht]
  \includegraphics[scale=0.55]{pics/Modules.png}
  % Modules.png: 501x145 pixel, 72dpi, 17.67x5.12 cm, bb=0 0 501 145
  \label{fig:Modules}
 \end{figure}
+\end{center}
 
 %%%%%%%%TODO Beschreibung der Submodule
 \begin{description}
@@ -29,7 +32,7 @@ SerialHandler weiter. Alle Daten die vom SerialHandler kommen werden über das I
  \end{description}
 
 \subsection{Externe Schnittstellen}
-Zwei Schnittstellen bekommen wir fertig compiliert und müssen nicht von uns implementiert werden.
+Die folgenden zwei IP-Cores stehen uns zur Lösung der Aufgabe zur Verfügung und müssen nur noch von uns implementiert werden.
 \begin{description}
  \item[PS2:] Das PS2 Modul ist die Schnittstelle zwischen der Tastatur und dem Programm. Jeder Tastendruck sendet 1-3 
 Scancodes an unser Input Modul und muss daraus den richtige Befehl interpretieren.
@@ -57,8 +60,9 @@ des Developer Boards von 33.33 MHz.
 
 %\subsubsection{Input}
 
-In den folgenden Tabellen 1.1 bis 1.7 stehen zu jeder Komponente die dazu gehörigen
-Signale mit Richtung, Bitanzahl und einer kurzen Beschreibung der Signale. 
+In den folgenden Tabellen 1.1 bis 1.7 findet man die zu den jeweiligen
+Komponenten gehörenden Signale inkl. Orientierung und Kurzbeschreibung 
+sowie die benötigte Bitbreite.
 
 \begin{table}[h]
  \caption{\textbf{Input Modul}}
@@ -224,17 +228,17 @@ Der Bildschirm kann 80 Zeichen in einer Zeile darstellen und unsere Rechnungen k
 Zeichen würden uns 9 Zeichen für das Ergebnis bleiben. Unser Ergebnis ist jedoch 32 Bit lang und liegt zwischen [2147483648,-2147483647].\\
 Deswegen und auch wegen der Übersicht schreiben wir das Ergebnis in die nächste Zeile.\\
 Der Bildschirmhintergrund ist schwarz mit weißer Schrift. Die Rechnung beginnt in der ersten Zeile. Sollten keine Zeilen mehr 
-frei sein rutschen alle Rechnungen um eine Zeile nach oben und die Älteste wird gelöscht.
+frei sein rutschen alle Rechnungen um eine Zeile nach oben und die älteste Rechnung wird gelöscht.
 \subsubsection{Ausgabe über RS232}
-Wird der Button am Developer board, oder eine bestimmte Taste am PC, gedrückt, wird der gesamte Verlauf der letzten 50 Rechnungen mit den Ergebnissen an den PC geschickt.
+Wird der Button am Developer board, oder eine bestimmte Taste am PC, gedrückt, wird der gesamte Verlauf der letzten 50 Rechnungen inkl. der Ergebnissen an den PC geschickt.
 \subsubsection{Umgang mit Overflows}
 Overflows werden von unserem ALU Modul abgefangen. Tritt ein Overflow auf wird die Berechnung beendet und eine Fehlernachricht in die History gespeichert.
-\subsubsection{Erlaubte Eingabe über Tastatur}
+\subsubsection{Erlaubte Eingabe über die Tastatur}
 \input{allowed_input}
 \subsubsection{Fehlerhafte Eingaben}
-Alle Tasten die nicht spezifiziert sind werden verworfen. Bei fehlerhaften Eingaben wird der Fehler vom Parser und der ALU abgefangen, die Zwischenergebnisse verworfen, die entsprechende Fehlernachricht am Bildschirm ausgegeben und in der History gespeichert.
+Alle Tastenereignisse von Tasten die nicht spezifiziert sind werden verworfen. Bei fehlerhaften Eingaben wird der Fehler vom Parser und der ALU abgefangen, die Zwischenergebnisse verworfen, die entsprechende Fehlernachricht am Bildschirm ausgegeben und in der History gespeichert.
 \subsubsection{Fehlernachrichten}
-Wir unterscheiden zwischen drei Fehlernachrichten:
+Wir unterscheiden zwischen drei Fehlernachrichten (siehe auch \ref{sec_requirements}): 
 \begin{description}
  \item[Overflow] Wenn bei irgendeiner Berechnung ein Overflow Fehler auftritt. 
  \item[Division durch Null] Sollte bei Irgendeiner Division im Zähler null stehen wird diese Nachricht ausgegeben.
@@ -274,3 +278,4 @@ in nachfolgender Pintabelle ablesen.
  \end{center}
 \end{table}
 
+\newpage

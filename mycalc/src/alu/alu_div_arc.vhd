@@ -10,12 +10,10 @@ use IEEE.STD_LOGIC_ARITH.all;
 
 ARCHITECTURE alu_div OF alu_div_ent IS
 
-  type DIV_FSM_STATE_TYPE is
-    (IDLE0, TIMEOUT0, TIMEOUT1);
-  signal div_fsm_state, div_fsm_state_next : DIV_FSM_STATE_TYPE;
-	--SIGNAL sub_wire0	: STD_LOGIC ;
-	--SIGNAL sub_wire3	: STD_LOGIC_VECTOR (31 DOWNTO 0);
-
+    type DIV_FSM_STATE_TYPE is
+      (RESET, INIT0, CALC_NEXT, HANDLE_OUT);
+    signal div_fsm_state, div_fsm_state_next : DIV_FSM_STATE_TYPE;
+  
     signal buf: STD_LOGIC_VECTOR((2 * SIZE - 1) downto 0);
     signal dbuf: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
     signal sm: INTEGER range 0 to SIZE;
@@ -27,17 +25,6 @@ ARCHITECTURE alu_div OF alu_div_ent IS
     signal internal_calc_done: std_logic := '0';
 
 BEGIN
-
-
---port(reset: in STD_LOGIC;
---en: in STD_LOGIC;
---clk: in STD_LOGIC;
-
---num: in STD_LOGIC_VECTOR((SIZE - 1) downto 0);
---didend: in STD_LOGIC_VECTOR((SIZE - 1) downto 0);
---result: out STD_LOGIC_VECTOR((SIZE - 1) downto 0);
---rm: out STD_LOGIC_VECTOR((SIZE - 1) downto 0)
---);
 
 div: process(sys_res_n, sys_clk)
     begin
@@ -88,50 +75,80 @@ end process;
 	
 	
 
-  next_state : process(div_fsm_state)
-  begin
-    div_fsm_state_next <= div_fsm_state;
-    case div_fsm_state is
-      when IDLE0 =>
-        --if i = '1' then
-        --  div_fsm_state_next <= TIMEOUT0;
-        --elsif to_integer(unsigned(cnt)) = CNT_MAX then
-        --end if;
-        
-        div_fsm_state_next <= TIMEOUT0;
+--   next_state : process(div_fsm_state, div_en, sm, internal_calc_done, sys_clk)
+--   begin
+--     div_fsm_state_next <= div_fsm_state;
+--     case div_fsm_state is
+--       when RESET =>
+--       	if div_en = '1' then
+-- 		    div_fsm_state_next <=INIT0; 
+-- 		end if;
       
-      when TIMEOUT0 =>
-        div_fsm_state_next <= TIMEOUT1;
-        
-      when TIMEOUT1 =>
-      	div_fsm_state_next <= TIMEOUT0;
+--       when INIT0 =>
+--         --elsif to_integer(unsigned(cnt)) = CNT_MAX then
+-- 		if sys_clk'EVENT then
+-- 		    div_fsm_state_next <=CALC_NEXT;
+-- 		end if; 
       
-    end case;
-  end process next_state;
+--       when CALC_NEXT =>
+--         if internal_calc_done = '1' then
+--             div_fsm_state_next <=HANDLE_OUT;
+--         end if;
+        
+--       when HANDLE_OUT =>
+--       	--if div_en
+--       	if div_en = '0' then
+--       	    div_fsm_state_next <= INIT0;
+--       	end if;
+      
+--     end case;
+--   end process next_state;
   
+
   
-  
-  
- output : process(div_fsm_state)
-  begin
-    case div_fsm_state is
-      when IDLE0 =>
-        division_by_zero <= '0';
-      when TIMEOUT0 =>
-        division_by_zero <= '1';
-      when TIMEOUT1 =>
-        division_by_zero <= '1';
-    end case;
-  end process output;
+--  output : process(div_fsm_state, sys_clk)
+--   begin
+--     case div_fsm_state is
+--       when RESET =>
+--       	result <= (others => '0');
+--         rm <= (others => '0');
+--         sm <= 0;
+        
+--       	calc_finished <= '0';
+--         internal_calc_done <= '0';
+        
+--       when INIT0 =>
+--         buf1 <= (others => '0'); --buf1 = 0
+-- 		buf2 <= num;			 --buf2 = number
+-- 		dbuf <= didend;			 --dbuf = dividend
+		
+--       when CALC_NEXT =>
+--         if buf((2 * SIZE - 2) downto (SIZE - 1)) >= dbuf then
+--             buf1 <= '0' & (buf((2 * SIZE - 3) downto (SIZE - 1)) - dbuf((SIZE - 2) downto 0));
+--             buf2 <= buf2((SIZE - 2) downto 0) & '1';
+--             internal_calc_done <='1';
+--         else
+--         	buf <= buf((2 * SIZE - 2) downto 0) & '0'; --left shift
+--         end if;
+--         if sm /= SIZE then --set back sm
+--                 	sm <= sm + 1;
+--         end if;
+        
+--       when HANDLE_OUT =>
+--         rm <= buf1;
+--         result <= buf2;
+--         calc_finished <= internal_calc_done;
+--     end case;
+--   end process output;
   
 	
- sync : process(sys_clk, sys_res_n)
-  begin
-    if sys_res_n = '0' then
-      div_fsm_state <= IDLE0;
-    elsif rising_edge(sys_clk) then
-      div_fsm_state <= div_fsm_state_next;
-    end if;
- end process sync;
+--  sync : process(sys_clk, sys_res_n)
+--   begin
+--     if sys_res_n = '0' then
+--       div_fsm_state <= RESET;
+--     elsif rising_edge(sys_clk) then
+--       div_fsm_state <= div_fsm_state_next;
+--     end if;
+--  end process sync;
 
 END alu_div;

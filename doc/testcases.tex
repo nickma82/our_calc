@@ -10,11 +10,11 @@
   \textbf{deckt:} Req2,
 
 \item[TC3] \textbf{Eingabe:} 45, dann 3*Backspace\\
-  \textbf{Ausgabe:} muss leer sein, kein Fehler durch löschen obwohl kein Zeichen da ist.\\
+  \textbf{Ausgabe:} Leer; kein Fehler durch löschen obwohl kein Zeichen da ist.\\
   \textbf{deckt:} Req6, Req7
 
-\item[TC4] \textbf{Eingabe:} Eingabe von 71 Zeichen, Dann Backspace\\
-  \textbf{Ausgabe:} 71 Zeichen wird ignoriert und danach wird das 70Zeichen gelöscht und Zeiger nach hinten gesetzt\\
+\item[TC4] \textbf{Eingabe:} Eingabe von 71 Zeichen, dann Backspace\\
+  \textbf{Ausgabe:} 71. Zeichen wird ignoriert und danach wird das 70Zeichen gelöscht und Zeiger nach hinten gesetzt\\
   \textbf{deckt:} Req9
 
  \item[TC5] \textbf{Eingabe:} 10/0\\
@@ -22,7 +22,7 @@
   \textbf{deckt:} Req10
 
  \item[TC6] \textbf{Eingabe:} 23 55\\
-  \textbf{Ausgabe:} ungültige Syntax\\
+  \textbf{Ausgabe:} Syntax Error\\
   \textbf{deckt: Req11}
 
  \item[TC7] \textbf{Eingabe:} 20/-2\\
@@ -30,7 +30,7 @@
   \textbf{deckt:} Req2, Req12
 
  \item[TC8] \textbf{Eingabe:} 20/*2\\
-  \textbf{Ausgabe:} ungültige Syntax\\
+  \textbf{Ausgabe:} Syntax Error\\
   \textbf{deckt:} Req13
 
  \item[TC9] \textbf{Eingabe:} -15+5\\
@@ -38,14 +38,14 @@
   \textbf{deckt:} Req14
 
  \item[TC10] \textbf{Eingabe:} *6/3\\
-  \textbf{Ausgabe:} ungültige Syntax\\
+  \textbf{Ausgabe:} Syntax Error\\
   \textbf{deckt:} Req15
 
  \item[TC11] \textbf{Eingabe:} 2000000000*3\\
   \textbf{Ausgabe:} Overflow\\
   \textbf{deckt:} Req16
 
- \item[TC12] \textbf{Eingabe:} drücken des Buttons auf Entwicklerboard\\
+ \item[TC12] \textbf{Eingabe:} Drücken des Buttons auf dem developer Board\\
   \textbf{Ausgabe:} Pc empfängt die letzten 50 Rechnungen\\
   \textbf{deckt:} Req18
 

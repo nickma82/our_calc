@@ -15,7 +15,6 @@
 % \end{itemize}
 
 \subsection{Input}
-
 \begin{figure}[!ht]
  \caption{State Machine des Input Moduls}
  \centering
@@ -24,10 +23,21 @@
 \end{figure}
 
 Die Input Komponente empfängt die Scancodes vom PS2 Modul. Jedes Drücken der Tastatur löst ein bis drei Scancodes hintereinander aus.
-Hier wird zwischen zwei Tasten unterschieden. Normale Tasten senden einen Scancode beim Drücken und zwei Scancodes, wobei der erste immer 0xF0 ist, 
-beim Loslassen einer Taste und Sondertasten, wie etwa die Enter Taste auf dem Nummernblock, die beim Drücken zwei und beim Loslassen drei Scancodes 
-an die Input Komponente schickt. 
-Die empfangenen Codes werden mit einem Lookup Table verglichen.
+Hier wird zwischen zwei Tasten unterschieden. 
+\begin{itemize}
+ \item Normale Tasten senden:\\
+	\begin{itemize}
+		\item einen Scancode beim Drücken
+		\item zwei Scancodes, wobei der erste immer 0xF0 ist, beim Loslassen einer Taste und
+		\item drei Scancodes 
+
+	\end{itemize}
+  \item Sondertasten, wie etwa die Enter Taste auf dem Nummernblock, senden:\\
+  	Beim Drücken zwei und beim Loslassen drei Scancodes 
+ \end{itemize}
+Diese werden jeweils an die Input Komponente geschickt.
+Die empfangenen Codes werden mit einem Lookup Table verglichen 
+und weiter wie folgend verarbeitet.
 
 Unterscheidung der Empfangenen Daten:
 \begin{description}
@@ -52,7 +62,7 @@ daraufhin eine Anfrage an den SerialHandler
  \caption{State Machine des Output Moduls}
  \centering
  \includegraphics[scale=0.55]{pics/Output.png}
- \label{fig:Modules}
+ \label{fig:output_module}
 \end{figure}
 
 Das Output Modul bekommt vom Input und vom Parser Nachrichten\\
@@ -76,10 +86,17 @@ gesendet und signame2 hilft beim Übernehmen des Signals.
 \subsection{ALU}
 
 \begin{figure}[!ht]
- \caption{State Machine des ALU Divisions Moduls}
  \centering
  \includegraphics[scale=0.55]{pics/alu_div.png}
- \label{fig:Modules}
+ \caption{State Machine des ALU Divisions Moduls}
+ \label{fig:alu_div_module}
+\end{figure}
+
+\begin{figure}[!ht]
+ \centering
+ \includegraphics[scale=0.55]{pics/alu.png}
+ \caption{State Machine der Alu}
+ \label{fig:alu_module}
 \end{figure}
 
 Die ALU wird vom Parser zum Lösen simpler Berechnungen genützt. An die beiden Daten Eingänge \textit{calc\_data} werden die Operanden

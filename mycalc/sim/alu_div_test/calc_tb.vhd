@@ -121,6 +121,19 @@ begin --behave
     -- coverage on 
 	
 	
+	wait for 500 ns;
+    num <=    "11111111111111111111111111111110";
+    didend <= "11111111111111111111111111111111";
+    wait for 10 ns;
+    div_en <= '1';
+    wait for 10 us;
+    div_en <= '0';
+    -- coverage off
+    assert result = "00000000000000000000000000000000"
+    	 report "case fail"
+    	 severity failure;
+    -- coverage on 
+	
     wait for 20 ms;
     stop <= true;
     wait;
