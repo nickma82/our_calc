@@ -130,6 +130,13 @@ Das selbe passiert wenn der Parser in einem Rechenschritt nicht die erwartete Sy
 
 \subsection{Ringbuffer}
 
+\begin{figure}[!ht]
+ \caption{State Machine des Ringbuffer Moduls}
+ \centering
+ \includegraphics[scale=0.55]{pics/Ringbuffer.png}
+ \label{fig:Modules}
+\end{figure}
+
 Der Ringbuffer ist grundsätzlich, wie der Name vermuten lässt, als Ringbuffer Struktur mit 50 Zeilen
 zu je 81 Characters realisert. Es gibt einen Zeiger der auf die momentage Zeile zeigt. In dieser Zeile
 steht die Rechnung die über die Tastatur eingegeben wurde und wird später vom Parser zur Berechnung
