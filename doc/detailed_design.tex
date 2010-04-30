@@ -15,6 +15,14 @@
 % \end{itemize}
 
 \subsection{Input}
+
+\begin{figure}[!ht]
+ \caption{State Machine des Input Moduls}
+ \centering
+ \includegraphics[scale=0.55]{pics/Input.png}
+ \label{fig:Modules}
+\end{figure}
+
 Die Input Komponente empfängt die Scancodes vom PS2 Modul. Jedes Drücken der Tastatur löst ein bis drei Scancodes hintereinander aus.
 Hier wird zwischen zwei Tasten unterschieden. Normale Tasten senden einen Scancode beim Drücken und zwei Scancodes, wobei der erste immer 0xF0 ist, 
 beim Loslassen einer Taste und Sondertasten, wie etwa die Enter Taste auf dem Nummernblock, die beim Drücken zwei und beim Loslassen drei Scancodes 
@@ -37,7 +45,16 @@ Unterscheidung der Empfangenen Daten:
 
 Des Weiteren überwacht das Input Modul einen Button am development Board und sendet
 daraufhin eine Anfrage an den SerialHandler
+
 \subsection{Output}
+
+\begin{figure}[!ht]
+ \caption{State Machine des Output Moduls}
+ \centering
+ \includegraphics[scale=0.55]{pics/Output.png}
+ \label{fig:Modules}
+\end{figure}
+
 Das Output Modul bekommt vom Input und vom Parser Nachrichten\\
 \begin{description}
  \item[Vom Input] wird jeder ASCII Code oder die Backspace Taste an den Output geschickt. Diese werden
@@ -57,6 +74,14 @@ gesendet und signame2 hilft beim Übernehmen des Signals.
 
 
 \subsection{ALU}
+
+\begin{figure}[!ht]
+ \caption{State Machine des ALU Divisions Moduls}
+ \centering
+ \includegraphics[scale=0.55]{pics/alu_div.png}
+ \label{fig:Modules}
+\end{figure}
+
 Die ALU wird vom Parser zum Lösen simpler Berechnungen genützt. An die beiden Daten Eingänge \textit{calc\_data} werden die Operanden
 und an \textit{calc\_operator} der Operator angelegt. Die Kodierung steht in folgender Tabelle:
 
@@ -122,6 +147,14 @@ Komponenten das keine neuen Zeichen gesendet werden dürfen.
 
 
 \subsection{RS232}
+
+\begin{figure}[!ht]
+ \caption{State Machine des RS232 Moduls}
+ \centering
+ \includegraphics[scale=0.55]{pics/RS232.png}
+ \label{fig:Modules}
+\end{figure}
+
 Das RS232 Modul wurde möglichst einfach gehalten. Es wartet bis es über das Signal 
 \textit{tx\_go} vom SerialHandler der Befehl kommt neue Daten zu senden. Die Daten
 werden über \textit{tx\_data} gelesen und über den Bus gesendet. Außerdem
