@@ -71,12 +71,12 @@ begin --behave
     wait for 10 ns;
     div_en <= '1';
     wait for 10 us;
-    div_en <= '0';
     -- coverage off
     assert result(3 downto 0) = "0101"
     	 report "case fail"
     	 severity failure;
     -- coverage on
+    div_en <= '0';
     
 
     wait for 500 ns;
@@ -85,13 +85,12 @@ begin --behave
     wait for 10 ns;
     div_en <= '1';
     wait for 10 us;
-    div_en <= '0';
     -- coverage off
     assert result(3 downto 0) = "0101"
     	 report "case fail"
     	 severity failure;
     -- coverage on
-    
+    div_en <= '0';
  
     wait for 500 ns;
     num(5 downto 0) <=    "111111";
