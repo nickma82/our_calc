@@ -10,12 +10,11 @@ architecture behav of alu_tb is
 	PORT (
 			 sys_clk, sys_res_n       : in    std_logic;
 			 div_en	:	IN  STD_LOGIC := '0';
-    		 num	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
-    		 didend	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
+    		 number	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
+    		 dividend	:	IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
     		 result	:	OUT  STD_LOGIC_VECTOR (31 DOWNTO 0);
     		 
     		 division_by_zero	:	OUT  STD_LOGIC;
-    		 overflow	:	OUT  STD_LOGIC;
     		 calc_finished: OUT STD_LOGIC 
 	);
   end component alu_div_ent;
@@ -34,10 +33,9 @@ begin --behave
       sys_clk=>sys_clk,
       sys_res_n=>sys_res_n,
       div_en=>div_en,
-      num=> num,
-      didend=> didend,
+      number=> num,
+      dividend=> didend,
       division_by_zero=>division_by_zero,
-      overflow=>overflow, 
       result=>result, 
       calc_finished=>calc_finished
     );
@@ -131,7 +129,21 @@ begin --behave
     assert result = "00000000000000000000000000000000"
     	 report "case fail"
     	 severity failure;
-    -- coverage on 
+    -- coverage on
+    
+    
+    wait for 500 ns;
+    num(5 downto 0) <=    "111111";
+    didend <= "00000000000000000000000000000000";
+    wait for 10 ns;
+    div_en <= '1';
+    wait for 10 us;
+    div_en <= '0';
+    -- coverage off
+    assert division_by_zero = '1'
+    	 report "exception failure"
+    	 severity failure;
+    -- coverage on   
 	
     wait for 20 ms;
     stop <= true;
