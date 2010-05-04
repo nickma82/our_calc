@@ -35,16 +35,37 @@ signal input_fsm_state, input_fsm_state_next : INPUT_FSM_STATE_TYPE;
 
 begin
 
-process(ps2_new_data)
+sync : process(ps2_new_data, sys_clk, sys_res_n)
 begin
-
-if ps2_new_data='1' then
-	if ps2_data(7 downto 0) = '00001001' then
-
+	if sys_res_n = '0' then
+		div_fsm_state <= IDLE0;
+	elsif rising_edge(sys_clk) then
+		if ps2_new_data='1' then
+			div_fsm_state <= div_fsm_state_next;
+		end if;
 	end if;
 end if;
 
 end process
+
+next_state : process(div_fsm_state)
+begin
+	div_fsm_state_next <= div_fsm_state;
+	case div_fsm_state is
+		when READY =>
+			
+      		when VALID =>
+			input_fsm_state_next <= READY
+		when SPECIAL =>
+			
+		when RELEASE =>
+			
+		when ENTER =>
+			input_fsm_state_next <= READY
+		when BACKSPACE =>
+			input_fsm_state_next <= READY
+	end case;
+end process next_state;
 
 output : process(div_fsm_state)
 begin
