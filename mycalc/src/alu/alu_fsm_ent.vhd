@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --use work.math_pkg.all;
 
-entity alu_fsm is
+entity alu_fsm_ent is
   generic
   (
     RESET_VALUE : std_logic := '0';
@@ -26,4 +26,4 @@ entity alu_fsm is
 	div_en, division_by_zero, div_calc_finished: STD_LOGIC;
 	div_number, div_dividend, div_result: STD_LOGIC_VECTOR((SIZE - 1) downto 0)
    );
-end entity alu_fsm;
+end entity alu_fsm_ent;
