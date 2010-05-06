@@ -7,7 +7,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 ENTITY alu_div_ent IS 
-	 generic(SIZE: INTEGER := 32
+	 generic(
+	 	SIZE: INTEGER := 32
 	 );
 	 PORT 
 	 ( 
@@ -19,7 +20,7 @@ ENTITY alu_div_ent IS
 		 division_by_zero	:	OUT  STD_LOGIC;
 		 calc_finished: OUT STD_LOGIC 
 	 ); 
-END alu_div_ent;
+END entity alu_div_ent;
 
 
 

@@ -22,10 +22,15 @@ vcom -work work $DIR/debounce/debounce_struct.vhd
 #vcom -work work $DIR/debounce/debounce_top.vhd
 vcom -work work $DIR/libs/counter.vhd
 vcom -work work $DIR/libs/counter_beh.vhd
+
 vcom -work work $DIR/alu/alu_pkg.vhd
 vcom -work work $DIR/alu/alu_div_ent.vhd
 vcom -work work $DIR/alu/alu_div_arc.vhd
-
+vcom -work work $DIR/alu/alu_fsm.vhd
+#vcom -work work $DIR/alu/alu_fsm_beh.vhd
+##ALU_top
+vcom -work work $DIR/alu/alu_top.vhd
+vcom -work work $DIR/alu/alu_top_struct.vhd
 
 
 ## compile testbench
@@ -48,15 +53,9 @@ add wave *
 
 # add internal signals of unit under test
 add wave -divider DIV_MODULE
-add wave uut/sm
-add wave uut/buf
-add wave uut/dbuf
-add wave uut/rm
-add wave uut/buf1
-add wave uut/buf2
 #add wave uut/btn_a_debounce_inst/cnt
 
 
 # auto-run simulation
-run 1 ms
+run 2 ms
 wave zoomfull
