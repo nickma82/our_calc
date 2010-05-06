@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all; --Enthält auch +,-, ..
 
-entity alu is
+entity alu_top is
   generic
   (
   	RESET_VALUE : std_logic := '0'
@@ -20,4 +20,4 @@ entity alu is
 	calc_result:	OUT SIGNED;
 	calc_status: 	OUT STD_LOGIC_VECTOR(1 downto 0)
   );
-end entity alu;
+end entity alu_top;

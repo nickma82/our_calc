@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.alu_pkg.all;
 
-architecture struct of alu is 
+architecture struct of alu_top is 
 	constant SIZE: INTEGER := 32;
 	--signal sys_clk, sys_res_n:    std_logic;
 	--Division Module Signals
