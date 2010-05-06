@@ -12,7 +12,7 @@ architecture struct of alu_top is
 	--ALU fsm = controlling logic
 	--signal calc_data, calc_data2, calc_result: SIGNED((SIZE-1) downto 0);
 	--signal calc_operator, calc_status: STD_LOGIC_VECTOR(1 downto 0);
-	--signal calc_start, calc_ﬁnished:	STD_LOGIC := '0';
+	--signal calc_start, calc_finished: STD_LOGIC :='0';
 begin
     
     alu_div_inst: alu_div_ent
@@ -32,7 +32,7 @@ begin
 	 ); 
 
 
-     alu_logic_inst : alu_fsm
+     alu_logic_inst : alu_fsm_ent
 	  generic map
 	  (
 	    RESET_VALUE => RESET_VALUE,
@@ -60,5 +60,6 @@ begin
 		div_result		=> div_result
     	);
 
+	
 
 end architecture struct;

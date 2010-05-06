@@ -58,5 +58,5 @@ add wave uut/buf2
 
 
 # auto-run simulation
-run 1 ms
+run -all
 wave zoomfull

@@ -7,25 +7,7 @@ entity alu_tb is
 end entity alu_tb;
 
 architecture behav of alu_tb is
-  component alu_ent is
-	  generic
-	  (
-	  	RESET_VALUE : std_logic := '0'
-	  );
-	  port
-	  (
-	    sys_clk : in std_logic;
-	    sys_res_n : in std_logic;
 
-		calc_data:	IN SIGNED;
-		calc_data2:	IN SIGNED;
-		calc_operator: IN  STD_LOGIC_VECTOR(1 downto 0);
-		calc_start:	IN  STD_LOGIC := '0';
-		calc_finished:	OUT STD_LOGIC := '0';
-		calc_result:	OUT SIGNED;
-		calc_status: 	OUT STD_LOGIC_VECTOR(1 downto 0)
-	  );
- end component alu_ent;
 
 
 
@@ -33,7 +15,8 @@ architecture behav of alu_tb is
   
   signal sys_clk, sys_res_n: std_logic;
   signal stop : boolean := false;
-  
+  	
+  	constant RESET_VALUE: std_logic := '0';
 	constant SIZE: INTEGER := 32;
 	--signal sys_clk, sys_res_n:    std_logic;
 	--Division Module Signals
@@ -45,7 +28,10 @@ architecture behav of alu_tb is
 	signal calc_start, calc_finished: STD_LOGIC :='0';
 	
 begin --behave
-  uut : alu_ent
+  uut : entity work.alu_top
+    generic map (
+    	RESET_VALUE => RESET_VALUE
+    )
     port map
     (
 	    sys_clk	=> sys_clk,

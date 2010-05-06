@@ -9,7 +9,10 @@ vlib behav_work
 vmap work behav_work
 
 variable DIR ../../src
+
 #compile vhdl files
+vcom -work work $DIR/big_bug.vhd
+vcom -work work $DIR/libs/sync.vhd
 vcom -work work $DIR/libs/sync.vhd
 vcom -work work $DIR/libs/sync_beh.vhd
 vcom -work work $DIR/libs/sync_pkg.vhd
@@ -24,10 +27,11 @@ vcom -work work $DIR/libs/counter.vhd
 vcom -work work $DIR/libs/counter_beh.vhd
 
 vcom -work work $DIR/alu/alu_pkg.vhd
+
 vcom -work work $DIR/alu/alu_div_ent.vhd
 vcom -work work $DIR/alu/alu_div_arc.vhd
-vcom -work work $DIR/alu/alu_fsm.vhd
-#vcom -work work $DIR/alu/alu_fsm_beh.vhd
+vcom -work work $DIR/alu/alu_fsm_ent.vhd
+vcom -work work $DIR/alu/alu_fsm_arc.vhd
 ##ALU_top
 vcom -work work $DIR/alu/alu_top.vhd
 vcom -work work $DIR/alu/alu_top_struct.vhd
@@ -37,7 +41,7 @@ vcom -work work $DIR/alu/alu_top_struct.vhd
 vcom -work work calc_tb.vhd
 
 ## compile configuration file
-vcom -work work config_behav.vhd
+#vcom -work work config_behav.vhd
 
 ## start simulation
 #coverage zeigt %des Codes der Simuliert ist
@@ -57,5 +61,9 @@ add wave -divider DIV_MODULE
 
 
 # auto-run simulation
-run 2 ms
+#run 2 ms
+run -all
 wave zoomfull
+
+#restart -f
+#run -all
