@@ -4,8 +4,8 @@
 
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-
+use ieee.numeric_std.all; --Enthält auch +,-, ..
+use work.big_pkg.all;
 
 ARCHITECTURE alu_fsm OF alu_fsm_ent IS
 

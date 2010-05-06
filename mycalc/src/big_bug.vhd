@@ -7,7 +7,7 @@ use ieee.numeric_std.all;
 
 package big_pkg is
  constant SIZEI: INTEGER := 32;
- subtype CALCINTEGER is SIGNED((SIZEI-1) downto 0);
+ subtype CALCSIGNED is SIGNED((SIZEI-1) downto 0);
  
 
 end package big_pkg;

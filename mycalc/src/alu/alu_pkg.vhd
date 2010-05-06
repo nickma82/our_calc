@@ -39,12 +39,12 @@ package alu_pkg is
 	    sys_clk : in std_logic;
 	    sys_res_n : in std_logic;
 
-		calc_data:	IN CALCINTEGER;
-		calc_data2:	IN CALCINTEGER;
+		calc_data:	IN CALCSIGNED;
+		calc_data2:	IN CALCSIGNED;
 		calc_operator: IN  STD_LOGIC_VECTOR(1 downto 0);
 		calc_start:	IN  STD_LOGIC := '0';
 		calc_finished: OUT STD_LOGIC;
-		calc_result:	OUT CALCINTEGER;
+		calc_result:	OUT CALCSIGNED;
 		calc_status: 	OUT STD_LOGIC_VECTOR(1 downto 0);
 		
 		--Communication to DIV_Module

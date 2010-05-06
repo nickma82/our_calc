@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --use work.math_pkg.all;
+use work.big_pkg.all;
 
 entity alu_fsm_ent is
   generic
@@ -14,12 +15,12 @@ entity alu_fsm_ent is
     sys_clk : in std_logic;
     sys_res_n : in std_logic;
 
-	calc_data:	IN SIGNED(SIZE-1 downto 0);
-	calc_data2:	IN SIGNED(SIZE-1 downto 0);
+	calc_data:	IN CALCSIGNED;
+	calc_data2:	IN CALCSIGNED;
 	calc_operator: IN  STD_LOGIC_VECTOR(1 downto 0);
 	calc_start:	IN  STD_LOGIC := '0';
 	calc_finished: OUT STD_LOGIC;
-	calc_result:	OUT SIGNED(SIZE-1 downto 0);
+	calc_result:	OUT CALCSIGNED;
 	calc_status: 	OUT STD_LOGIC_VECTOR(1 downto 0);
 	
 	--Communication to DIV_Module
