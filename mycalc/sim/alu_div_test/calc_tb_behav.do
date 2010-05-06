@@ -19,7 +19,7 @@ vcom -work work $DIR/debounce/debounce_fsm.vhd
 vcom -work work $DIR/debounce/debounce_fsm_beh.vhd
 vcom -work work $DIR/debounce/debounce_pkg.vhd
 vcom -work work $DIR/debounce/debounce_struct.vhd
-vcom -work work $DIR/debounce/debounce_top.vhd
+#vcom -work work $DIR/debounce/debounce_top.vhd
 vcom -work work $DIR/libs/counter.vhd
 vcom -work work $DIR/libs/counter_beh.vhd
 vcom -work work $DIR/alu/alu_pkg.vhd

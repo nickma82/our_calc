@@ -68,7 +68,7 @@ begin --behave
     didend(1 downto 0) <= "10";
     wait for 10 ns;
     div_en <= '1';
-    wait for 10 us;
+    wait for 2 us;
     -- coverage off
     assert result(3 downto 0) = "0101"
     	 report "case fail"
@@ -82,7 +82,7 @@ begin --behave
     didend(5 downto 0) <= "000010";
     wait for 10 ns;
     div_en <= '1';
-    wait for 10 us;
+    wait for 2 us;
     -- coverage off
     assert result(3 downto 0) = "0101"
     	 report "case fail"
@@ -95,57 +95,54 @@ begin --behave
     didend(5 downto 0) <= "000001";
     wait for 10 ns;
     div_en <= '1';
-    wait for 10 us;
-    div_en <= '0';
+    wait for 2 us;
     -- coverage off
     assert result(5 downto 0) = "111111"
     	 report "case fail"
     	 severity failure;
     -- coverage on   
-	
+    div_en <= '0';
 	
 	wait for 500 ns;
     num <=    "11111111111111111111111111111111";
     didend <= "00000000000000000000000000000010";
     wait for 10 ns;
     div_en <= '1';
-    wait for 10 us;
-    div_en <= '0';
+    wait for 2 us;
     -- coverage off
     assert result = "01111111111111111111111111111111"
     	 report "case fail"
     	 severity failure;
     -- coverage on 
-	
+    div_en <= '0';
 	
 	wait for 500 ns;
     num <=    "11111111111111111111111111111110";
     didend <= "11111111111111111111111111111111";
     wait for 10 ns;
     div_en <= '1';
-    wait for 10 us;
-    div_en <= '0';
+    wait for 2 us;
     -- coverage off
     assert result = "00000000000000000000000000000000"
     	 report "case fail"
     	 severity failure;
     -- coverage on
-    
+    div_en <= '0';    
     
     wait for 500 ns;
     num(5 downto 0) <=    "111111";
     didend <= "00000000000000000000000000000000";
     wait for 10 ns;
     div_en <= '1';
-    wait for 10 us;
-    div_en <= '0';
+    wait for 2 us;
     -- coverage off
     assert division_by_zero = '1'
     	 report "exception failure"
     	 severity failure;
     -- coverage on   
+    div_en <= '0';
 	
-    wait for 20 ms;
+    wait for 200 us;
     stop <= true;
     wait;
   end process;
