@@ -1,6 +1,9 @@
 library ieee ;
-use ieee.std_logic_1164.all ;
-use ieee.numeric_std.all ;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+use IEEE.std_logic_arith.all;
+
+use ieee.numeric_std.all;
 
 -- ENTITY
 entity input_ent is
@@ -8,17 +11,17 @@ entity input_ent is
 		
 	--);
 	port(
-		clk		: in std_logic;	
-		rst		: in std_logic;
+		sys_clk		: in std_logic;	
+		sys_res_n	: in std_logic;
 		ps2_new_data	: in std_logic;
-		ps2_data	: in std_logic_vektor(7 downto 0);
+		ps2_data	: in std_logic_vector(7 downto 0);
 		inp_new_data	: out std_logic;
-		inp_data	: out std_logic_vektor(7 downto 0);
+		inp_data	: out std_logic_vector(7 downto 0);
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
-		pars_start	: out std_logic;
+		pars_start	: out std_logic
 	);
-end entity;
+end entity input_ent;
 
 -- ARCHITECTURE
 architecture input_arc of input_ent is
@@ -31,27 +34,26 @@ type INPUT_FSM_STATE_TYPE is
 
 --signals
 signal input_fsm_state, input_fsm_state_next : INPUT_FSM_STATE_TYPE;
-signal ascii : std_logic_vektor(7 downto 0);
+signal ascii : std_logic_vector(7 downto 0);
 
 
 begin
 
 sync : process(sys_clk, sys_res_n)
 begin
-	if rst = '0' then
+	if sys_res_n = '0' then
 		input_fsm_state <= READY;
 	elsif rising_edge(sys_clk) then
 		input_fsm_state <= input_fsm_state_next;
 	end if;
-end if;
 
-end process
+end process sync;
 
 next_state : process(input_fsm_state, ps2_data, ps2_new_data)
 begin
-	div_fsm_state_next <= div_fsm_state;
+	input_fsm_state_next <= input_fsm_state;
 	
-	case div_fsm_state is
+	case input_fsm_state is
 		when READY =>
 			if ps2_new_data = '1' then
 			case ps2_data is
@@ -103,10 +105,11 @@ begin
 					input_fsm_state_next <= VALID;
 				when x"F0" => input_fsm_state_next <= RELEASE;
 				when x"E0" => input_fsm_state_next <= SPECIAL;
+				when others => null;
 			end case;
 			end if;
       		when VALID =>
-			input_fsm_state_next <= READY
+			input_fsm_state_next <= READY;
 		when SPECIAL =>
 			case ps2_data is
 				when x"4A" => -- '/'
@@ -119,9 +122,9 @@ begin
 		when RELEASE =>
 			if ps2_new_data = '1' then input_fsm_state_next <= READY; end if;
 		when ENTER =>
-			input_fsm_state_next <= READY
+			input_fsm_state_next <= READY;
 		when BACKSPACE =>
-			input_fsm_state_next <= READY
+			input_fsm_state_next <= READY;
 	end case;
 end process next_state;
 
@@ -138,6 +141,7 @@ begin
 			pars_start <= '1';
 		when BACKSPACE =>
 			inp_del <= '1';
+		when others => null;
 	end case;
 end process output;
 
