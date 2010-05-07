@@ -1,6 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.alu_pkg.all;
+use work.big_pkg.all;
 
 entity alu_tb is
 	
@@ -23,9 +25,10 @@ architecture behav of alu_tb is
 	--signal div_en, division_by_zero, div_calc_finished: std_logic;
 	--signal div_number, div_dividend, div_result: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 	----ALU fsm = controlling logic
-	signal calc_data, calc_data2, calc_result: SIGNED((SIZE-1) downto 0);
-	signal calc_operator, calc_status: STD_LOGIC_VECTOR(1 downto 0);
-	signal calc_start, calc_finished: STD_LOGIC :='0';
+	signal calc_data, calc_data2, calc_result: CALCSIGNED;
+	signal calc_operator: alu_operator_TYPE;
+	signal calc_status: alu_calc_error_TYPE;
+	signal calc_start, calc_finished: STD_LOGIC;
 	
 begin --behave
   uut : entity work.alu_top
@@ -60,25 +63,42 @@ begin --behave
   process
   begin
     sys_res_n <= '0';
-    --RESET Pins
+    --######## RESET Pins #######
+    calc_start <= '0';
+    calc_data <= (others => '0');
+    calc_data2 <= (others => '0');
+    calc_operator <= NOP;
     wait for 100 ns;
     sys_res_n <= '1';
     -- BEGIN TESTS
     
-    
-    --wait for 500 ns;
-    --num(3 downto 0) <= "1010";
-    --didend(1 downto 0) <= "10";
+    wait for 500 ns;
+    calc_data <= to_signed(10, SIZEI);
+    calc_data2(1 downto 0) <= "01";
+    calc_operator <= ADDITION;
     --wait for 10 ns;
-    --div_en <= '1';
-    --wait for 2 us;
+    calc_start <= '1';
+    wait for 2 us;
     ---- coverage off
-    -- assert result(3 downto 0) = "0101"
+    -- assert calc_result(3 downto 0) = "0101"
     --	 report "case fail"
     --	 severity failure;
     ---- coverage on
-    --div_en <= '0';
+    calc_start <= '0';
     
+    wait for 500 ns;
+    calc_data <=  "01111111111111111111111111111111";
+    calc_data2 <= "00000000000000000000000000000001";
+    calc_operator <= ADDITION;
+    --wait for 10 ns;
+    calc_start <= '1';
+    wait for 2 us;
+    ---- coverage off
+    -- assert calc_result(3 downto 0) = "0101"
+    --	 report "case fail"
+    --	 severity failure;
+    ---- coverage on
+    calc_start <= '0';
 
 
 	

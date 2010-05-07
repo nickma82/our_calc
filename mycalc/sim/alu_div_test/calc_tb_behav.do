@@ -10,6 +10,8 @@ vmap work behav_work
 
 variable DIR ../../src
 #compile vhdl files
+vcom -work work $DIR/big_bug.vhd
+
 vcom -work work $DIR/libs/sync.vhd
 vcom -work work $DIR/libs/sync_beh.vhd
 vcom -work work $DIR/libs/sync_pkg.vhd

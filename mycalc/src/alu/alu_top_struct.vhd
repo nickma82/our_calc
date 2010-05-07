@@ -46,7 +46,7 @@ begin
 		calc_data	=> calc_data,
 		calc_data2	=> calc_data2,
 		calc_operator	=> calc_operator,
-		calc_start	=> calc_start,
+		calc_start	=> calc_start, 
 		calc_finished	=> calc_finished,
 		calc_result	=> calc_result,
 		calc_status	=> calc_status,

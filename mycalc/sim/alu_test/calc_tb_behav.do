@@ -56,8 +56,9 @@ view -undock wave
 add wave *
 
 # add internal signals of unit under test
-add wave -divider DIV_MODULE
-#add wave uut/btn_a_debounce_inst/cnt
+add wave -divider ALU_FSM
+add wave uut/alu_logic_inst/alu_fsm*
+add wave uut/alu_logic_inst/tmp*
 
 
 # auto-run simulation

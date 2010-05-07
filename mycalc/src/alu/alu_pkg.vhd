@@ -9,7 +9,10 @@ use work.big_pkg.all;
 
 package alu_pkg is
     constant RESETVALUE : std_logic := '0';
-    
+    type alu_operator_TYPE is
+    	(ADDITION, SUBTRAKTION, MULTIPLIKATION, DIVISION, NOP);
+    type alu_calc_error_TYPE is
+    	(GOOD, RESET, DIV_ZERO, OVERFLOW) ;
     
     component alu_div_ent IS 
 	 generic(
@@ -41,11 +44,11 @@ package alu_pkg is
 
 		calc_data:	IN CALCSIGNED;
 		calc_data2:	IN CALCSIGNED;
-		calc_operator: IN  STD_LOGIC_VECTOR(1 downto 0);
-		calc_start:	IN  STD_LOGIC := '0';
+		calc_operator: IN  alu_operator_TYPE;
+		calc_start:	IN  STD_LOGIC;
 		calc_finished: OUT STD_LOGIC;
 		calc_result:	OUT CALCSIGNED;
-		calc_status: 	OUT STD_LOGIC_VECTOR(1 downto 0);
+		calc_status: 	OUT alu_calc_error_TYPE;
 		
 		--Communication to DIV_Module
 		div_en, division_by_zero, div_calc_finished: STD_LOGIC;
