@@ -67,7 +67,7 @@ begin
 	wait for 20 ns;
 	ps2_new_data <= '0';
 	wait for 10 ns;
-	assert ps2_data(7 downto 0) = "00110000"
+	assert ps2_data(7 downto 0) = "00110000";
 	wait for 100 ns;
 
 	-- Eingabe '7'
