@@ -43,6 +43,13 @@ sync : process(sys_clk, sys_res_n)
 begin
 	if sys_res_n = '0' then
 		input_fsm_state <= READY;
+		inp_sendRS232 <= '0';
+		inp_new_data <= '0';
+		inp_data <= x"00";
+		ps2_new_data <= '0';
+		ps2_data <= x"00";
+		inp_del <= '0';
+		pars_start <= '0';
 	elsif rising_edge(sys_clk) then
 		input_fsm_state <= input_fsm_state_next;
 	end if;
