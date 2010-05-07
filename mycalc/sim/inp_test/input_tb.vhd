@@ -15,7 +15,7 @@ end input_tb;
 architecture behav of input_tb is
 
 --Variablen und Konstanten
-constant clock_period:time := 100 ns;
+constant clock_period:time := 20 ns;
 
 signal sys_clk, sys_res_n: std_logic;
 signal ps2_new_data : std_logic := '0';
@@ -63,7 +63,7 @@ begin
 	ps2_data <= x"70";
 	wait for 100 ns;
 	ps2_new_data <= '1';
-	wait for 50 ns;
+	wait for 500 ns;
 	ps2_new_data <= '0';
 	
 
