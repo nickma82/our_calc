@@ -43,7 +43,7 @@ constant BLUE : std_logic_vector(23 downto 0) := x"FF0000";
 
 --signals
 signal output_fsm_state, output_fsm_state_next : INPUT_FSM_STATE_TYPE;
-
+signal position : std_logic_vector(7 downto 0);
 
 begin
 
@@ -74,9 +74,13 @@ begin
 				output_fsm_state_next <= READY;
 			end if;
 		when WRITE_RESULT =>
-			output_fsm_state_next <= READY;
+			if vga_free = '1' then
+				output_fsm_state_next <= READY;
+			end if;
 		when DELETE =>
-			output_fsm_state_next <= READY;
+			if vga_free = '1' then
+				output_fsm_state_next <= READY;
+			end if;
 		when others => null;
 	end case;
 end process next_state;
@@ -85,13 +89,22 @@ output : process(output_fsm_state)
 begin
 	case output_fsm_state is
 		when INIT =>
+			vga_command <= COMMAND_SET_BACKGROUND;
+			vga_command_data <= x"00FFFFFF";
+			position => position + 1;
 		when READY =>
 		when WRITE_CHAR =>
 			vga_command <= COMMAND_SET_CHAR;
-			vga_command_data <= WHITE & zeichen;
+			vga_command_data <= WHITE & inp_data;
+			position => position + 1;
 		when WRITE_RESULT =>
-			
+			vga_command <= COMMAND_SET_CHAR;
+			vga_command_data <= WHITE & pars_data;
+			position => 0;
 		when DELETE =>
+			vga_command <= COMMAND_SET_CURSOR_COLUMN;
+			vga_command_data <= position - 1;
+			position => position - 1;
 		when others => null;
 	end case;
 end process output;
