@@ -63,16 +63,55 @@ begin
 	wait for 100 ns;
 
 	-- BEGIN TESTS
-	-- Eingabe '0'
-	ps2_data <= x"70";
+	-- vom Input '5'
+	inp_data <= x"35";
 	wait for 20 ns;
-	ps2_new_data <= '1';
+	inp_new_data <= '1';
 	wait for 20 ns;
-	ps2_new_data <= '0';
+	inp_new_data <= '0';
 	wait for 20 ns;
-	assert ps2_data(7 downto 0) = "00110000";
+	--assert vga_command_data(31 downto 0) = "xxxxx";
 	wait for 100 ns;
 
+	-- vom Input '9'
+	inp_data <= x"39";
+	wait for 20 ns;
+	inp_new_data <= '1';
+	wait for 20 ns;
+	inp_new_data <= '0';
+	wait for 20 ns;
+	--assert vga_command_data(31 downto 0) = "xxxxx";
+	wait for 100 ns;
+
+	-- vom Input Backspace
+	inp_data <= x"08";
+	wait for 20 ns;
+	inp_new_data <= '1';
+	wait for 20 ns;
+	inp_new_data <= '0';
+	wait for 20 ns;
+	--assert vga_command_data(31 downto 0) = "xxxxx";
+	wait for 100 ns;
+
+	-- vom Parser '='
+	pars_data <= x"3D";
+	wait for 20 ns;
+	pars_new_data <= '1';
+	wait for 20 ns;
+	pars_new_data <= '0';
+	wait for 20 ns;
+	--assert vga_command_data(31 downto 0) = "xxxxx";
+	wait for 100 ns;
+
+	-- vom Parser '5'
+	pars_data <= x"35";
+	wait for 20 ns;
+	pars_new_data <= '1';
+	wait for 20 ns;
+	pars_new_data <= '0';
+	wait for 20 ns;
+	--assert vga_command_data(31 downto 0) = "xxxxx";
+	wait for 100 ns;
 end process;
 
 end architecture behav;
