@@ -121,6 +121,7 @@ begin
 			case ps2_data is
 				when x"4A" => -- '/'
 					if ps2_new_data = '1' then 
+						ascii <= x"2F";
 						input_fsm_state_next <= Valid; 
 					end if;
 				when others => null;

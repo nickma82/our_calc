@@ -66,7 +66,7 @@ begin
 	ps2_new_data <= '1';
 	wait for 20 ns;
 	ps2_new_data <= '0';
-	wait for 10 ns;
+	wait for 20 ns;
 	assert ps2_data(7 downto 0) = "00110000";
 	wait for 100 ns;
 
@@ -76,7 +76,7 @@ begin
 	ps2_new_data <= '1';
 	wait for 20 ns;
 	ps2_new_data <= '0';
-	wait for 10 ns;
+	wait for 20 ns;
 	assert ps2_data(7 downto 0) = x"37";
 	wait for 100 ns;
 
@@ -86,34 +86,35 @@ begin
 	ps2_new_data <= '1';
 	wait for 20 ns;
 	ps2_new_data <= '0';
-	wait for 10 ns;
-	--assert inp_del = '1';
+	wait for 20 ns;
+	assert inp_del = '1';
 	wait for 100 ns;
 
 	-- Eingabe ENTER
-	ps2_data <= x"66";
+	ps2_data <= x"5A";
 	wait for 20 ns;
 	ps2_new_data <= '1';
 	wait for 20 ns;
 	ps2_new_data <= '0';
-	wait for 10 ns;
-	--assert pars_start = '1';
+	wait for 20 ns;
+	assert pars_start = '1';
 	wait for 100 ns;
 	
-	-- Eingabe /
+	-- Eingabe '/'
 	ps2_data <= x"E0";
 	wait for 20 ns;
 	ps2_new_data <= '1';
 	wait for 20 ns;
 	ps2_new_data <= '0';
 	wait for 20 ns;
+
 	ps2_data <= x"4A";
 	wait for 20 ns;
 	ps2_new_data <= '1';
 	wait for 20 ns;
 	ps2_new_data <= '0';
-	wait for 10 ns;
-	--assert pars_start = '1';
+	wait for 20 ns;
+	assert ps2_data(7 downto 0) = x"2F";
 	wait for 100 ns;
 
 end process;
