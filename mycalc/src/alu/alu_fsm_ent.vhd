@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 --use work.math_pkg.all;
-use work.alu_pkg.all;
+--use work.alu_pkg.all;
 use work.big_pkg.all;
 
 entity alu_fsm_ent is
@@ -25,7 +25,10 @@ entity alu_fsm_ent is
 	calc_status: 	OUT alu_calc_error_TYPE;
 	
 	--Communication to DIV_Module
-	div_en, division_by_zero, div_calc_finished: STD_LOGIC;
-	div_number, div_dividend, div_result: STD_LOGIC_VECTOR((SIZE - 1) downto 0)
+	div_en: out STD_LOGIC;
+	division_by_zero, div_calc_finished: in STD_LOGIC;
+	div_number: out  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+	div_dividend: out  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+	div_result: in STD_LOGIC_VECTOR((SIZE - 1) downto 0)
    );
 end entity alu_fsm_ent;

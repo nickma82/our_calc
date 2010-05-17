@@ -67,7 +67,6 @@ begin
 		calc_finished <='0';
 		tmp_out_data := (others => '0');
 		intern_calc_finished <= '0';
-		div_en <= '0';
 		intern_wait_div <= '0';
       when INIT0 =>
 	      null;

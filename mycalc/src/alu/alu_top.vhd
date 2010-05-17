@@ -2,7 +2,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all; --Enthält auch +,-, ..
 use work.big_pkg.all;
-use work.alu_pkg.all;
 
 entity alu_top is
   generic

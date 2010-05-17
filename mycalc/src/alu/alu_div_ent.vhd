@@ -13,9 +13,9 @@ ENTITY alu_div_ent IS
 	 PORT 
 	 ( 
 		 sys_clk, sys_res_n       : in    std_logic;
-		 div_en	:	IN  STD_LOGIC := '0';
+		 div_en	:	IN  STD_LOGIC;
 		 number	:	IN  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
-		 dividend	:	IN  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+		 dividend:	IN  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 		 result	:	OUT  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 		 division_by_zero	:	OUT  STD_LOGIC;
 		 calc_finished: OUT STD_LOGIC 

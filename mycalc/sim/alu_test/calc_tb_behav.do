@@ -26,7 +26,7 @@ vcom -work work $DIR/debounce/debounce_struct.vhd
 vcom -work work $DIR/libs/counter.vhd
 vcom -work work $DIR/libs/counter_beh.vhd
 
-vcom -work work $DIR/alu/alu_pkg.vhd
+#vcom -work work $DIR/alu/alu_pkg.vhd
 
 vcom -work work $DIR/alu/alu_div_ent.vhd
 vcom -work work $DIR/alu/alu_div_arc.vhd
@@ -57,8 +57,8 @@ add wave *
 
 # add internal signals of unit under test
 add wave -divider ALU_FSM
-add wave uut/alu_logic_inst/alu_fsm*
-add wave uut/alu_logic_inst/tmp*
+#add wave uut/alu_logic_inst/alu_fsm*
+#add wave uut/alu_logic_inst/tmp*
 
 
 # auto-run simulation
