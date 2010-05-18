@@ -10,6 +10,7 @@ architecture struct of alu_top is
 	--Division Module Signals
 	signal div_en, division_by_zero, div_calc_finished: std_logic;
 	signal div_number, div_dividend, div_result: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+	signal div_calc_status:		alu_calc_error_TYPE;
 	--ALU fsm = controlling logic
 	--signal calc_data, calc_data2, calc_result: SIGNED((SIZE-1) downto 0);
 	--signal calc_operator, calc_status: STD_LOGIC_VECTOR(1 downto 0);
@@ -27,8 +28,8 @@ architecture struct of alu_top is
 			number	:	IN  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 			dividend:	IN  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 			result	:	OUT  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
-			division_by_zero	:	OUT  STD_LOGIC;
-			calc_finished: OUT STD_LOGIC 
+			calc_finished: OUT STD_LOGIC;
+			calc_status: 	OUT alu_calc_error_TYPE
 		); 
 	END component alu_div_ent;
 	
@@ -55,10 +56,11 @@ architecture struct of alu_top is
 		
 		--Communication to DIV_Module
 		div_en: out STD_LOGIC;
-		division_by_zero, div_calc_finished: in STD_LOGIC;
+		div_calc_finished: in STD_LOGIC;
 		div_number: out  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 		div_dividend: out  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
-		div_result: in STD_LOGIC_VECTOR((SIZE - 1) downto 0)
+		div_result: in STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+		div_calc_status: IN alu_calc_error_TYPE
 	);
 	end component alu_fsm_ent;
 
@@ -75,8 +77,8 @@ begin
 		 number  => div_number,
 		 dividend => div_dividend,
 		 result	=> div_result,
-		 division_by_zero 	=> division_by_zero,
-		 calc_finished 		=> div_calc_finished
+		 calc_finished 		=> div_calc_finished,
+		 calc_status		=> div_calc_status
 	 ); 
 
 
@@ -101,11 +103,11 @@ begin
 		
 		--Communication to DIV_Module
 		div_en=> div_en,
-		division_by_zero	=> division_by_zero,
 		div_calc_finished	=> div_calc_finished,
 		div_number		=> div_number,
 		div_dividend		=> div_dividend,
-		div_result		=> div_result
+		div_result		=> div_result,
+		div_calc_status		=> div_calc_status
     	);
 
 	

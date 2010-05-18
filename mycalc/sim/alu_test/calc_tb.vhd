@@ -81,9 +81,24 @@ begin --behave
     wait for 2 us;
     -- coverage off
     assert calc_result(3 downto 0) = "1100"
-		report "case fail" 	severity failure;
+		report "result failed" 	severity failure;
     -- coverage on
     calc_start <= '0';
+    
+    
+    wait for 500 ns;
+    calc_data <=  to_signed(10, SIZEI); --Integer to Signed
+    calc_data2 <= to_signed(2, SIZEI);
+    calc_operator <= ADDITION;
+    wait for 10 ns;
+    calc_start <= '1';
+    wait for 2 us;
+    -- coverage off
+    assert calc_result(3 downto 0) = "1100"
+		report "result failed" 	severity failure;
+    -- coverage on
+    calc_start <= '0';
+    
     
     wait for 500 ns;
     calc_data <=  "01111111111111111111111111111111";
@@ -94,20 +109,78 @@ begin --behave
     wait for 2 us;
     ---- coverage off
     -- assert calc_result(3 downto 0) = "0101"
-    --	 report "case fail"	 severity failure;
+    --	 report "result failed"	 severity failure;
     ---- coverage on
     calc_start <= '0';
 
-	
-	wait for 500 ns;
-    calc_data <=  to_signed(-2147483648, SIZEI); --Integer to Signed
-    calc_data2 <= to_signed(1, SIZEI);
-    calc_operator <= SUBTRAKTION;
+    
+    wait for 500 ns;
+    calc_data <=  to_signed(-13, SIZEI); --Integer to Signed
+    calc_data2 <= to_signed(11, SIZEI);
+    calc_operator <= MULTIPLIKATION;
     wait for 10 ns;
     calc_start <= '1';
     wait for 2 us;
+    -- coverage off
+    assert calc_result= to_signed(-143, SIZEI)
+		report "result failed" 	severity failure;
+    -- coverage on
     calc_start <= '0';
 
+    wait for 500 ns;
+    calc_data <=  to_signed(-13, SIZEI); --Integer to Signed
+    calc_data2 <= to_signed(0, SIZEI);
+    calc_operator <= MULTIPLIKATION;
+    wait for 10 ns;
+    calc_start <= '1';
+    wait for 2 us;
+    -- coverage off
+    assert calc_result= to_signed(0, SIZEI)
+		report "result failed" 	severity failure;
+    -- coverage on
+    calc_start <= '0';
+
+	---- DIVISIONEN
+	wait for 5 us;
+	calc_data <=  to_signed(-20, SIZEI); --Integer to Signed
+	calc_data2 <= to_signed(2, SIZEI);
+	calc_operator <= DIVISION;
+	wait for 10 ns;
+	calc_start <= '1';
+	wait for 2 us;
+	-- coverage off
+	assert calc_result= to_signed(-10, SIZEI)
+		report "result failed" 	severity failure;
+	-- coverage on
+	calc_start <= '0';
+	
+	wait for 500 ns;
+	calc_data <=  to_signed(-133, SIZEI); --Integer to Signed
+	calc_data2 <= to_signed(-12, SIZEI);
+	calc_operator <= DIVISION;
+	wait for 10 ns;
+	calc_start <= '1';
+	wait for 2 us;
+	-- coverage off
+	assert calc_result= to_signed(11, SIZEI)
+		report "result failed" 	severity failure;
+	-- coverage on
+	calc_start <= '0';
+	
+	wait for 500 ns;
+	calc_data <=  to_signed(-20, SIZEI); --Integer to Signed
+	calc_data2 <= to_signed(0, SIZEI);
+	calc_operator <= DIVISION;
+	wait for 10 ns;
+	calc_start <= '1';
+	wait for 2 us;
+	-- coverage off
+	assert calc_status= DIV_ZERO
+		report "calc status failed" 	severity failure;
+	-- coverage on
+	calc_start <= '0';
+
+	
 	
     wait for 200 us;
     stop <= true;
