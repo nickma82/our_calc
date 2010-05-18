@@ -26,7 +26,7 @@ entity output_ent is
 		pars_new_data		: in std_logic;
 		pars_data		: in std_logic_vector(31 downto 0);
 	);
-end entity input_ent;
+end entity output_ent;
 
 
 -- ARCHITECTURE
@@ -42,7 +42,7 @@ constant GREEN : std_logic_vector(23 downto 0) := x"00FF00";
 constant BLUE : std_logic_vector(23 downto 0) := x"FF0000";
 
 --signals
-signal output_fsm_state, output_fsm_state_next : INPUT_FSM_STATE_TYPE;
+signal output_fsm_state, output_fsm_state_next : OUTPUT_FSM_STATE_TYPE;
 signal position : std_logic_vector(7 downto 0);
 
 begin
@@ -57,7 +57,7 @@ begin
 
 end process sync;
 
-next_state : process(input_fsm_state, ps2_data, ps2_new_data)
+next_state : process(output_fsm_state, inp_new_data, pars_new_data, inp_del)
 begin
 	output_fsm_state_next <= output_fsm_state;
 	
@@ -109,7 +109,7 @@ begin
 	end case;
 end process output;
 
-end input_arc;
+end output_arc;
 
 
 
