@@ -34,7 +34,7 @@ architecture Serial_Handler_arc of Serial_Handler_ent is
 
 --type
 type Serial_Handler_FSM_STATE_TYPE is
-    (READY, CHECK_BYTE, SEND_HISTORY, LINE_READ, WRITE_CHAR, DONE);
+    (READY, CHECK_BYTE, SEND_HISTORY, READ_CHAR, WRITE_CHAR, DONE);
 
 --constants
 
@@ -72,7 +72,7 @@ begin
 		when SEND_HISTORY =>
 			if rb_read_data_rdy then Serial_Handler_fsm_state_next <= LINE_READ;
 			end if;
-		when LINE_READ =>
+		when READ_CHAR =>
 			if rb_read_data_rdy then Serial_Handler_fsm_state_next <= LINE_READ;
 			end if;
 		when WRITE_CHAR =>
@@ -89,7 +89,7 @@ begin
 		when SEND_HISTORY =>
 			rb_read_lineNr <= counter;
 			rb_read_en <= '1';
-		when LINE_READ =>
+		when READ_CHAR =>
 			rb_read_lineNr <= counter;
 			rb_read_en <= '1';
 		when WRITE_CHAR =>
