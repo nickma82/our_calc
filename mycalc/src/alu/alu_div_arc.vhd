@@ -59,7 +59,8 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
   
 
   
- output : process(div_fsm_state, sys_clk)
+output : process(div_fsm_state, sys_clk)
+ 	variable internal_calc_status: alu_calc_error_TYPE;
   begin
     case div_fsm_state is
       when RESET =>
@@ -69,20 +70,21 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
         
       	calc_finished <= '0';
         internal_calc_done <= '0';
-        division_by_zero <='0';
-        
+        calc_status <= RESET;
+        internal_calc_status :=RESET;
       when INIT0 =>
       		buf1 <= (others => '0'); --buf1 = 0
-		buf2 <= number;			 --buf2 = number
-		dbuf <= dividend;			 --dbuf = dividend
+		buf2 <= number;		 --buf2 = number
+		dbuf <= dividend;	 --dbuf = dividend
 	if dividend > number then
       	    --Dividend > Nummer handling 
       	    buf2 <= (others => '0');
       	    internal_calc_done <='1';
       	elsif unsigned(dividend) = 0 then
       	    --Division / 0 exception
-      	    division_by_zero <= '1';
+      	    internal_calc_status := DIV_ZERO;
       	    buf2 <= (others => '0');
+      	    internal_calc_done <= '1';
       	end if;
       	
       		
@@ -104,6 +106,11 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
       when HANDLE_OUT =>
         rm <= buf1;
         result <= buf2;
+        if internal_calc_status = RESET then
+        	internal_calc_status := GOOD;
+        end if;
+        
+        calc_status  <=  internal_calc_status;
         calc_finished <= internal_calc_done;
     end case;
   end process output;

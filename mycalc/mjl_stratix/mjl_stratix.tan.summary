@@ -1,0 +1,66 @@
+--------------------------------------------------------------------------------------
+Timing Analyzer Summary
+--------------------------------------------------------------------------------------
+
+Type           : Worst-case tsu
+Slack          : N/A
+Required Time  : None
+Actual Time    : 5.347 ns
+From           : btn_a
+To             : debounce:btn_a_debounce_inst|sync:sync_inst|sync[1]
+From Clock     : --
+To Clock       : sys_clk
+Failed Paths   : 0
+
+Type           : Worst-case tco
+Slack          : N/A
+Required Time  : None
+Actual Time    : 11.106 ns
+From           : debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst|debounce_fsm_state.IDLE0
+To             : led_a
+From Clock     : sys_clk
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case th
+Slack          : N/A
+Required Time  : None
+Actual Time    : -3.008 ns
+From           : sys_res_n
+To             : debounce:sys_res_n_debounce_inst|sync:sync_inst|sync[1]
+From Clock     : --
+To Clock       : sys_clk
+Failed Paths   : 0
+
+Type           : Clock Setup: 'sys_clk'
+Slack          : 22.176 ns
+Required Time  : 33.33 MHz ( period = 30.003 ns )
+Actual Time    : 127.76 MHz ( period = 7.827 ns )
+From           : debounce:btn_a_debounce_inst|counter:counter_inst|cnt_int[11]
+To             : debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst|debounce_fsm_state.IDLE0
+From Clock     : sys_clk
+To Clock       : sys_clk
+Failed Paths   : 0
+
+Type           : Clock Hold: 'sys_clk'
+Slack          : 0.741 ns
+Required Time  : 33.33 MHz ( period = 30.003 ns )
+Actual Time    : N/A
+From           : debounce:btn_a_debounce_inst|sync:sync_inst|sync[2]
+To             : debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst|debounce_fsm_state.IDLE0
+From Clock     : sys_clk
+To Clock       : sys_clk
+Failed Paths   : 0
+
+Type           : Total number of failed paths
+Slack          : 
+Required Time  : 
+Actual Time    : 
+From           : 
+To             : 
+From Clock     : 
+To Clock       : 
+Failed Paths   : 0
+
+--------------------------------------------------------------------------------------
+

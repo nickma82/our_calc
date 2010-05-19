@@ -59,6 +59,7 @@ begin
  output : process(alu_fsm_state, div_calc_finished)
  	variable tmp_data1, tmp_data2, double_calcsigned: SIGNED((SIZEI*2-1) downto 0);
  	variable tmp_out_data: CALCSIGNED;
+ 	variable intern_div_sign: SIGNED(1 downto 0);
   begin
     case alu_fsm_state is
       when RESET =>
@@ -68,6 +69,10 @@ begin
 		tmp_out_data := (others => '0');
 		intern_calc_finished <= '0';
 		intern_wait_div <= '0';
+		intern_div_sign := to_signed(1, 2);
+		
+		--port resets
+		div_en <= '0';
       when INIT0 =>
 	      null;
       when CALC =>
@@ -86,8 +91,8 @@ begin
         			tmp_simulation <= double_calcsigned;
 					
 					--Checks
-					if (double_calcsigned > calc_data'high) or
-						(double_calcsigned < calc_data'low) then  --######################UNTERGRENZE stimmt nicht
+					if (double_calcsigned > CALCMAX) or
+						(double_calcsigned < CALCMIN) then  --######################UNTERGRENZE stimmt nicht
 						calc_status <= OVERFLOW;
 						--assert false report "overflow" severity error;
 					else
@@ -96,10 +101,22 @@ begin
 					end if;
 					intern_calc_finished <= '1';
         			
-				when DIVISION =>
-					div_number <= std_logic_vector(calc_data);
+			when DIVISION =>
+				--------------------------------------------------------------------------------------------
+				-- Speichert Vorzeichen, wandelt in positive Zahlen und wandelt danach in std_logic_vector's
+				--------------------------------------------------------------------------------------------
+				if calc_data<0 then
+					intern_div_sign := resize( intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
+				end if;
+				div_number <= std_logic_vector( resize(calc_data*resize(intern_div_sign, calc_data'LENGTH ), calc_data'LENGTH ));
+				
+				if calc_data2<0 then
+					intern_div_sign := resize(intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
+					div_dividend<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
+				else 
 					div_dividend<= std_logic_vector(calc_data2);
-					intern_wait_div <= '1';
+				end if;
+				intern_wait_div <= '1';
 			-- coverage off
 			when others =>
 				assert false report
@@ -110,9 +127,11 @@ begin
       when DIV_WAIT =>
 		div_en <= '1';
 		if div_calc_finished = '1' then
-			---@todo CHECKS ob erg. valid ist gehören hier rein, 
-			---			negativität wieder ändern
-			calc_result <= signed(div_result);
+			----------------------------------------
+			-- Restore Vorzeichen, wandeln in signed
+			----------------------------------------
+			calc_status <= div_calc_status;
+			calc_result <= resize( signed(div_result)* resize(intern_div_sign, div_result'LENGTH ), calc_result'LENGTH);
 			intern_calc_finished <= '1';
 		end if;
 		

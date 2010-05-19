@@ -26,9 +26,10 @@ entity alu_fsm_ent is
 	
 	--Communication to DIV_Module
 	div_en: out STD_LOGIC;
-	division_by_zero, div_calc_finished: in STD_LOGIC;
+	div_calc_finished: in STD_LOGIC;
 	div_number: out  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 	div_dividend: out  STD_LOGIC_VECTOR((SIZE - 1) downto 0);
-	div_result: in STD_LOGIC_VECTOR((SIZE - 1) downto 0)
+	div_result: in STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+	div_calc_status: IN alu_calc_error_TYPE
    );
 end entity alu_fsm_ent;

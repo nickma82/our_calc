@@ -1,0 +1,328 @@
+|calc_top
+sys_clk => debounce:sys_res_n_debounce_inst.sys_clk
+sys_clk => debounce:btn_a_debounce_inst.sys_clk
+sys_clk => pll:pll_vga_clk.inclk0
+sys_res_n => debounce:sys_res_n_debounce_inst.data_in
+btn_a => debounce:btn_a_debounce_inst.data_in
+led_a <= debounce:btn_a_debounce_inst.data_out
+led_b <= comb.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|debounce:sys_res_n_debounce_inst
+sys_clk => sync:sync_inst.sys_clk
+sys_clk => debounce_fsm:fsm_inst.sys_clk
+sys_clk => counter:counter_inst.sys_clk
+sys_res_n => sync:sync_inst.sys_res_n
+sys_res_n => debounce_fsm:fsm_inst.sys_res_n
+sys_res_n => counter:counter_inst.sys_res_n
+data_in => sync:sync_inst.data_in
+data_out <= debounce_fsm:fsm_inst.o
+
+
+|calc_top|debounce:sys_res_n_debounce_inst|sync:sync_inst
+sys_clk => sync[2].CLK
+sys_clk => sync[1].CLK
+sys_res_n => sync[2].PRESET
+sys_res_n => sync[1].PRESET
+data_in => sync[1].DATAIN
+data_out <= sync[2].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|debounce:sys_res_n_debounce_inst|debounce_fsm:fsm_inst
+sys_clk => debounce_fsm_state~1.DATAIN
+sys_res_n => debounce_fsm_state~3.DATAIN
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+cnt[0] => Equal0.IN15
+cnt[1] => Equal0.IN9
+cnt[2] => Equal0.IN14
+cnt[3] => Equal0.IN8
+cnt[4] => Equal0.IN13
+cnt[5] => Equal0.IN12
+cnt[6] => Equal0.IN7
+cnt[7] => Equal0.IN6
+cnt[8] => Equal0.IN5
+cnt[9] => Equal0.IN11
+cnt[10] => Equal0.IN4
+cnt[11] => Equal0.IN3
+cnt[12] => Equal0.IN2
+cnt[13] => Equal0.IN1
+cnt[14] => Equal0.IN0
+cnt[15] => Equal0.IN10
+clear_cnt <= clear_cnt.DB_MAX_OUTPUT_PORT_TYPE
+o <= o.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|debounce:sys_res_n_debounce_inst|counter:counter_inst
+sys_clk => cnt_int[0].CLK
+sys_clk => cnt_int[1].CLK
+sys_clk => cnt_int[2].CLK
+sys_clk => cnt_int[3].CLK
+sys_clk => cnt_int[4].CLK
+sys_clk => cnt_int[5].CLK
+sys_clk => cnt_int[6].CLK
+sys_clk => cnt_int[7].CLK
+sys_clk => cnt_int[8].CLK
+sys_clk => cnt_int[9].CLK
+sys_clk => cnt_int[10].CLK
+sys_clk => cnt_int[11].CLK
+sys_clk => cnt_int[12].CLK
+sys_clk => cnt_int[13].CLK
+sys_clk => cnt_int[14].CLK
+sys_clk => cnt_int[15].CLK
+sys_res_n => cnt_int[0].ACLR
+sys_res_n => cnt_int[1].ACLR
+sys_res_n => cnt_int[2].ACLR
+sys_res_n => cnt_int[3].ACLR
+sys_res_n => cnt_int[4].ACLR
+sys_res_n => cnt_int[5].ACLR
+sys_res_n => cnt_int[6].ACLR
+sys_res_n => cnt_int[7].ACLR
+sys_res_n => cnt_int[8].ACLR
+sys_res_n => cnt_int[9].ACLR
+sys_res_n => cnt_int[10].ACLR
+sys_res_n => cnt_int[11].ACLR
+sys_res_n => cnt_int[12].ACLR
+sys_res_n => cnt_int[13].ACLR
+sys_res_n => cnt_int[14].ACLR
+sys_res_n => cnt_int[15].ACLR
+clear_cnt => cnt_next[15].OUTPUTSELECT
+clear_cnt => cnt_next[14].OUTPUTSELECT
+clear_cnt => cnt_next[13].OUTPUTSELECT
+clear_cnt => cnt_next[12].OUTPUTSELECT
+clear_cnt => cnt_next[11].OUTPUTSELECT
+clear_cnt => cnt_next[10].OUTPUTSELECT
+clear_cnt => cnt_next[9].OUTPUTSELECT
+clear_cnt => cnt_next[8].OUTPUTSELECT
+clear_cnt => cnt_next[7].OUTPUTSELECT
+clear_cnt => cnt_next[6].OUTPUTSELECT
+clear_cnt => cnt_next[5].OUTPUTSELECT
+clear_cnt => cnt_next[4].OUTPUTSELECT
+clear_cnt => cnt_next[3].OUTPUTSELECT
+clear_cnt => cnt_next[2].OUTPUTSELECT
+clear_cnt => cnt_next[1].OUTPUTSELECT
+clear_cnt => cnt_next[0].OUTPUTSELECT
+cnt[0] <= cnt_int[0].DB_MAX_OUTPUT_PORT_TYPE
+cnt[1] <= cnt_int[1].DB_MAX_OUTPUT_PORT_TYPE
+cnt[2] <= cnt_int[2].DB_MAX_OUTPUT_PORT_TYPE
+cnt[3] <= cnt_int[3].DB_MAX_OUTPUT_PORT_TYPE
+cnt[4] <= cnt_int[4].DB_MAX_OUTPUT_PORT_TYPE
+cnt[5] <= cnt_int[5].DB_MAX_OUTPUT_PORT_TYPE
+cnt[6] <= cnt_int[6].DB_MAX_OUTPUT_PORT_TYPE
+cnt[7] <= cnt_int[7].DB_MAX_OUTPUT_PORT_TYPE
+cnt[8] <= cnt_int[8].DB_MAX_OUTPUT_PORT_TYPE
+cnt[9] <= cnt_int[9].DB_MAX_OUTPUT_PORT_TYPE
+cnt[10] <= cnt_int[10].DB_MAX_OUTPUT_PORT_TYPE
+cnt[11] <= cnt_int[11].DB_MAX_OUTPUT_PORT_TYPE
+cnt[12] <= cnt_int[12].DB_MAX_OUTPUT_PORT_TYPE
+cnt[13] <= cnt_int[13].DB_MAX_OUTPUT_PORT_TYPE
+cnt[14] <= cnt_int[14].DB_MAX_OUTPUT_PORT_TYPE
+cnt[15] <= cnt_int[15].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|debounce:btn_a_debounce_inst
+sys_clk => sync:sync_inst.sys_clk
+sys_clk => debounce_fsm:fsm_inst.sys_clk
+sys_clk => counter:counter_inst.sys_clk
+sys_res_n => sync:sync_inst.sys_res_n
+sys_res_n => debounce_fsm:fsm_inst.sys_res_n
+sys_res_n => counter:counter_inst.sys_res_n
+data_in => sync:sync_inst.data_in
+data_out <= debounce_fsm:fsm_inst.o
+
+
+|calc_top|debounce:btn_a_debounce_inst|sync:sync_inst
+sys_clk => sync[2].CLK
+sys_clk => sync[1].CLK
+sys_res_n => sync[2].PRESET
+sys_res_n => sync[1].PRESET
+data_in => sync[1].DATAIN
+data_out <= sync[2].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst
+sys_clk => debounce_fsm_state~1.DATAIN
+sys_res_n => debounce_fsm_state~3.DATAIN
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+i => debounce_fsm_state_next.OUTPUTSELECT
+cnt[0] => Equal0.IN15
+cnt[1] => Equal0.IN9
+cnt[2] => Equal0.IN14
+cnt[3] => Equal0.IN8
+cnt[4] => Equal0.IN13
+cnt[5] => Equal0.IN12
+cnt[6] => Equal0.IN7
+cnt[7] => Equal0.IN6
+cnt[8] => Equal0.IN5
+cnt[9] => Equal0.IN11
+cnt[10] => Equal0.IN4
+cnt[11] => Equal0.IN3
+cnt[12] => Equal0.IN2
+cnt[13] => Equal0.IN1
+cnt[14] => Equal0.IN0
+cnt[15] => Equal0.IN10
+clear_cnt <= clear_cnt.DB_MAX_OUTPUT_PORT_TYPE
+o <= o.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|debounce:btn_a_debounce_inst|counter:counter_inst
+sys_clk => cnt_int[0].CLK
+sys_clk => cnt_int[1].CLK
+sys_clk => cnt_int[2].CLK
+sys_clk => cnt_int[3].CLK
+sys_clk => cnt_int[4].CLK
+sys_clk => cnt_int[5].CLK
+sys_clk => cnt_int[6].CLK
+sys_clk => cnt_int[7].CLK
+sys_clk => cnt_int[8].CLK
+sys_clk => cnt_int[9].CLK
+sys_clk => cnt_int[10].CLK
+sys_clk => cnt_int[11].CLK
+sys_clk => cnt_int[12].CLK
+sys_clk => cnt_int[13].CLK
+sys_clk => cnt_int[14].CLK
+sys_clk => cnt_int[15].CLK
+sys_res_n => cnt_int[0].ACLR
+sys_res_n => cnt_int[1].ACLR
+sys_res_n => cnt_int[2].ACLR
+sys_res_n => cnt_int[3].ACLR
+sys_res_n => cnt_int[4].ACLR
+sys_res_n => cnt_int[5].ACLR
+sys_res_n => cnt_int[6].ACLR
+sys_res_n => cnt_int[7].ACLR
+sys_res_n => cnt_int[8].ACLR
+sys_res_n => cnt_int[9].ACLR
+sys_res_n => cnt_int[10].ACLR
+sys_res_n => cnt_int[11].ACLR
+sys_res_n => cnt_int[12].ACLR
+sys_res_n => cnt_int[13].ACLR
+sys_res_n => cnt_int[14].ACLR
+sys_res_n => cnt_int[15].ACLR
+clear_cnt => cnt_next[15].OUTPUTSELECT
+clear_cnt => cnt_next[14].OUTPUTSELECT
+clear_cnt => cnt_next[13].OUTPUTSELECT
+clear_cnt => cnt_next[12].OUTPUTSELECT
+clear_cnt => cnt_next[11].OUTPUTSELECT
+clear_cnt => cnt_next[10].OUTPUTSELECT
+clear_cnt => cnt_next[9].OUTPUTSELECT
+clear_cnt => cnt_next[8].OUTPUTSELECT
+clear_cnt => cnt_next[7].OUTPUTSELECT
+clear_cnt => cnt_next[6].OUTPUTSELECT
+clear_cnt => cnt_next[5].OUTPUTSELECT
+clear_cnt => cnt_next[4].OUTPUTSELECT
+clear_cnt => cnt_next[3].OUTPUTSELECT
+clear_cnt => cnt_next[2].OUTPUTSELECT
+clear_cnt => cnt_next[1].OUTPUTSELECT
+clear_cnt => cnt_next[0].OUTPUTSELECT
+cnt[0] <= cnt_int[0].DB_MAX_OUTPUT_PORT_TYPE
+cnt[1] <= cnt_int[1].DB_MAX_OUTPUT_PORT_TYPE
+cnt[2] <= cnt_int[2].DB_MAX_OUTPUT_PORT_TYPE
+cnt[3] <= cnt_int[3].DB_MAX_OUTPUT_PORT_TYPE
+cnt[4] <= cnt_int[4].DB_MAX_OUTPUT_PORT_TYPE
+cnt[5] <= cnt_int[5].DB_MAX_OUTPUT_PORT_TYPE
+cnt[6] <= cnt_int[6].DB_MAX_OUTPUT_PORT_TYPE
+cnt[7] <= cnt_int[7].DB_MAX_OUTPUT_PORT_TYPE
+cnt[8] <= cnt_int[8].DB_MAX_OUTPUT_PORT_TYPE
+cnt[9] <= cnt_int[9].DB_MAX_OUTPUT_PORT_TYPE
+cnt[10] <= cnt_int[10].DB_MAX_OUTPUT_PORT_TYPE
+cnt[11] <= cnt_int[11].DB_MAX_OUTPUT_PORT_TYPE
+cnt[12] <= cnt_int[12].DB_MAX_OUTPUT_PORT_TYPE
+cnt[13] <= cnt_int[13].DB_MAX_OUTPUT_PORT_TYPE
+cnt[14] <= cnt_int[14].DB_MAX_OUTPUT_PORT_TYPE
+cnt[15] <= cnt_int[15].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|calc_top|pll:pll_vga_clk
+inclk0 => altpll:altpll_component.inclk[0]
+c0 <= altpll:altpll_component.clk[0]
+
+
+|calc_top|pll:pll_vga_clk|altpll:altpll_component
+inclk[0] => pll.CLK
+inclk[1] => ~NO_FANOUT~
+fbin => ~NO_FANOUT~
+pllena => ~NO_FANOUT~
+clkswitch => ~NO_FANOUT~
+areset => ~NO_FANOUT~
+pfdena => ~NO_FANOUT~
+clkena[0] => ~NO_FANOUT~
+clkena[1] => ~NO_FANOUT~
+clkena[2] => ~NO_FANOUT~
+clkena[3] => ~NO_FANOUT~
+clkena[4] => ~NO_FANOUT~
+clkena[5] => ~NO_FANOUT~
+extclkena[0] => ~NO_FANOUT~
+extclkena[1] => ~NO_FANOUT~
+extclkena[2] => ~NO_FANOUT~
+extclkena[3] => ~NO_FANOUT~
+scanclk => ~NO_FANOUT~
+scanclkena => ~NO_FANOUT~
+scanaclr => ~NO_FANOUT~
+scanread => ~NO_FANOUT~
+scanwrite => ~NO_FANOUT~
+scandata => ~NO_FANOUT~
+phasecounterselect[0] => ~NO_FANOUT~
+phasecounterselect[1] => ~NO_FANOUT~
+phasecounterselect[2] => ~NO_FANOUT~
+phasecounterselect[3] => ~NO_FANOUT~
+phaseupdown => ~NO_FANOUT~
+phasestep => ~NO_FANOUT~
+configupdate => ~NO_FANOUT~
+fbmimicbidir <> <GND>
+clk[0] <= clk[0].DB_MAX_OUTPUT_PORT_TYPE
+clk[1] <= <GND>
+clk[2] <= <GND>
+clk[3] <= <GND>
+clk[4] <= <GND>
+clk[5] <= <GND>
+extclk[0] <= <GND>
+extclk[1] <= <GND>
+extclk[2] <= <GND>
+extclk[3] <= <GND>
+clkbad[0] <= <GND>
+clkbad[1] <= <GND>
+enable1 <= <GND>
+enable0 <= <GND>
+activeclock <= <GND>
+clkloss <= <GND>
+locked <= <GND>
+scandataout <= <GND>
+scandone <= <GND>
+sclkout0 <= <GND>
+sclkout1 <= sclkout1.DB_MAX_OUTPUT_PORT_TYPE
+phasedone <= <GND>
+vcooverrange <= <GND>
+vcounderrange <= <GND>
+fbout <= <GND>
+fref <= <GND>
+icdrclk <= <GND>
+
+

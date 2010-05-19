@@ -1,15 +1,37 @@
-if {[file exists behav_work]} {
-  vdel -all -lib behav_work
+# compile technology libraries
+# if you're using Quartus Web Edition combined with ModelSim-Altera you have
+# to omit this step. ModelSim-Altera uses its own precompiled Altera technology
+# libraries.
+
+set SIM_LIBRARY_PATH /opt/quartus/quartus/eda/sim_lib
+#--/opt/altera8.1/quartus/eda/sim_lib
+
+if {[file exists cyclonelib]} {
+  vdel -all -lib cyclonelib
 }
 
+vlib cyclonelib
+vmap cycloneii cyclonelib
+
+vcom -work cycloneii $SIM_LIBRARY_PATH/stratix_atoms.vhd
+vcom -work cycloneii $SIM_LIBRARY_PATH/stratix_components.vhd
+
+# end compile technology libraries
+
+
 # create work library directory
-vlib behav_work
+vlib post_work
 
 # map directory to library name "work"
-vmap work behav_work
+vmap work post_work
+
+# compile gate-level netlist
+set NETLIST_PATH ../../mjl_stratix/simulation/modelsim
+
+vcom -work work "$NETLIST_PATH/mjl_stratix.vho"
+
 
 variable DIR ../../src
-
 #compile vhdl files
 vcom -work work $DIR/big_bug.vhd
 vcom -work work $DIR/libs/sync.vhd
@@ -53,7 +75,7 @@ view -undock wave
 
 # add signals to waveform
 # add all testbench signals
-add wave -radix Decimal *
+add wave *
 
 # add internal signals of unit under test
 add wave -divider ALU_FSM
