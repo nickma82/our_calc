@@ -49,7 +49,6 @@ sync : process(sys_clk, sys_res_n)
 begin
 	if sys_res_n = '0' then
 		ringbuffer_fsm_state <= INIT;
-		byte_buffer <= x"00";
 	elsif rising_edge(sys_clk) then
 		ringbuffer_fsm_state <= ringbuffer_fsm_state_next;
 	end if;
@@ -94,12 +93,13 @@ begin
 		when INIT =>
 			linePointer <= 0;
 			charPointer <= 0;
+			byte_buffer <= x"00";
 		when READY =>
 			rb_busy <= '1';
 			rb_read_data_rdy <= '0';
 		when WRITE_CHAR =>
 			rb_busy <= '0';
-			if charPointer < LINE_NUMB then
+			if charPointer < LINE_NUMB - 1 then
 				ram(linePointer, charPointer) <= byte_buffer;
 				charPointer <= charPointer + 1;
 			end if;
