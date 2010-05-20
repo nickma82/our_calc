@@ -19,12 +19,14 @@ package big_pkg is
 	
 	--- PARSER
 	constant MAXLINE_NUM: INTEGER := 51;
-	subtype LINE_NUM is INTEGER 0 to MAXLINE_NUM;
+	subtype LINE_NUM is INTEGER range 0 to MAXLINE_NUM;
 
 	--- RINGBUFFER
+	constant CHAR_LENGTH : INTEGER := 8;
 	constant LINE_LENGTH : INTEGER := 81;
 	constant LINE_NUMB : INTEGER := 51;
-	subtype RAM_CELL is integer range 0 to 255;
+	--subtype RAM_CELL is integer range 0 to CHAR_LENGTH -1;
+	subtype RAM_CELL is std_logic_vector(CHAR_LENGTH -1 downto 0);
 	type RAM_LINE is array (LINE_LENGTH - 1 downto 0) of RAM_CELL;
 	type RAM_ARRAY is array (LINE_NUMB - 1 downto 0, LINE_LENGTH - 1 downto 0) of RAM_CELL;
 	
