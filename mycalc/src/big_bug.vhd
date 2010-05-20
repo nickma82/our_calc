@@ -24,6 +24,15 @@ package big_pkg is
 	
 	constant MAXLINE_NUM: INTEGER := 51;
 	subtype LINE_NUM is INTEGER range 0 to MAXLINE_NUM;
+
+
+	--- RINGBUFFER
+	constant LINE_LENGTH : INTEGER := 81;
+	constant LINE_NUMB : INTEGER := 51;
+	subtype RAM_CELL is integer range 0 to 255;
+	type RAM_LINE is array (LINE_LENGTH - 1 downto 0) of RAM_CELL;
+	type RAM_ARRAY is array (LINE_NUMB - 1 downto 0, LINE_LENGTH - 1 downto 0) of RAM_CELL;
+
 	
 	
 	--- ALLGEMEIN
