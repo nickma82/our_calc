@@ -18,16 +18,18 @@ begin
 	);
 	port
 	(
-	  sys_clk	=> 
-	  sys_res_n	=> 
+		sys_clk	=> 
+		sys_res_n	=> 
+		
+		calc_data	=> 
+		calc_data2	=> 
+		calc_operator	=> 
+		calc_start	=> 
+		calc_finished	=> 
+		calc_result	=> 
+		calc_status	=> 
+		
 
-	  calc_data	=> 
-	  calc_data2	=> 
-	  calc_operator	=> 
-	  calc_start	=> 
-	  calc_finished	=> 
-	  calc_result	=> 
-	  calc_status	=> 
 	)
 	
 end architecture struct;

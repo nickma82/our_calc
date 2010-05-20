@@ -1,5 +1,5 @@
 Assembler report for mjl_stratix
-Tue May 18 15:26:52 2010
+Thu May 20 12:59:01 2010
 Quartus II Version 9.1 Build 222 10/21/2009 SJ Full Version
 
 
@@ -38,7 +38,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Tue May 18 15:26:52 2010 ;
+; Assembler Status      ; Successful - Thu May 20 12:59:01 2010 ;
 ; Revision Name         ; mjl_stratix                           ;
 ; Top-level Entity Name ; calc_top                              ;
 ; Family                ; Stratix                               ;
@@ -118,12 +118,12 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II Assembler
     Info: Version 9.1 Build 222 10/21/2009 SJ Full Version
-    Info: Processing started: Tue May 18 15:26:45 2010
+    Info: Processing started: Thu May 20 12:58:54 2010
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off mjl_stratix -c mjl_stratix
 Info: Assembler is generating device programming files
 Info: Quartus II Assembler was successful. 0 errors, 0 warnings
     Info: Peak virtual memory: 272 megabytes
-    Info: Processing ended: Tue May 18 15:26:52 2010
+    Info: Processing ended: Thu May 20 12:59:01 2010
     Info: Elapsed time: 00:00:07
     Info: Total CPU time (on all processors): 00:00:07
 

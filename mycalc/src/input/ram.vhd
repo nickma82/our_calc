@@ -8,10 +8,10 @@ use ieee.numeric_std.all;
 entity sp_ram is
 	generic
 	(
-		LINE_COUNT : 50;
-		CHAR_COUNT : 81;
+		LINE_COUNT : integer := 50;
+		CHAR_COUNT : integer := 81;
 		ADDR_WIDTH : std_logic_vector( log2c(CHAR_COUNT * (LINE_COUNT +1) ) -1 downto 0); --13 Bit breit
-		DATA_WIDTH : 8;
+		DATA_WIDTH : integer := 8;
 	);
 	port
 	(

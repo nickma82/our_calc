@@ -3,6 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package parser_pkg is
+    type PARSER_CHAR_TYPE is
+      (RESET, ISDIGIT, ISOP, ISEOL);
+    
+
     component alu_top IS 
 	generic
 	(

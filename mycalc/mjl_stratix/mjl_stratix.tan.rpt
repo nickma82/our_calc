@@ -1,5 +1,5 @@
 Classic Timing Analyzer report for mjl_stratix
-Tue May 18 15:26:55 2010
+Thu May 20 12:59:03 2010
 Quartus II Version 9.1 Build 222 10/21/2009 SJ Full Version
 
 
@@ -566,7 +566,7 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II Classic Timing Analyzer
     Info: Version 9.1 Build 222 10/21/2009 SJ Full Version
-    Info: Processing started: Tue May 18 15:26:54 2010
+    Info: Processing started: Thu May 20 12:59:03 2010
 Info: Command: quartus_tan --read_settings_files=off --write_settings_files=off mjl_stratix -c mjl_stratix --timing_analysis_only
 Info: Parallel compilation is enabled and will use 2 of the 2 processors detected
 Info: Slack time is 22.176 ns for clock "sys_clk" between source register "debounce:btn_a_debounce_inst|counter:counter_inst|cnt_int[11]" and destination register "debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst|debounce_fsm_state.IDLE0"
@@ -672,7 +672,7 @@ Info: th for register "debounce:sys_res_n_debounce_inst|sync:sync_inst|sync[1]" 
 Info: All timing requirements were met for slow timing model timing analysis. See Report window for more details.
 Info: Quartus II Classic Timing Analyzer was successful. 0 errors, 0 warnings
     Info: Peak virtual memory: 141 megabytes
-    Info: Processing ended: Tue May 18 15:26:55 2010
+    Info: Processing ended: Thu May 20 12:59:04 2010
     Info: Elapsed time: 00:00:01
     Info: Total CPU time (on all processors): 00:00:01
 

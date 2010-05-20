@@ -12,12 +12,16 @@ package big_pkg is
 	constant CALCMAX: INTEGER:=  (2**(SIZEI-1))-1; --2147483647;
 	constant CALCMIN: INTEGER:= -(2**(SIZEI-1));
 	
-	type alu_operator_TYPE is
+	
+	--- PARSER
+	
+	--alu_operator_TYPE  ---- WARNING
+	--	will be moved to PARSER_PKG
+	type alu_operator_TYPE is 
 		(ADDITION, SUBTRAKTION, MULTIPLIKATION, DIVISION, NOP);
 	type alu_calc_error_TYPE is
 		(GOOD, RESET, DIV_ZERO, OVERFLOW) ;
 	
-	--- PARSER
 	constant MAXLINE_NUM: INTEGER := 51;
 	subtype LINE_NUM is INTEGER range 0 to MAXLINE_NUM;
 
@@ -29,6 +33,7 @@ package big_pkg is
 	subtype RAM_CELL is std_logic_vector(CHAR_LENGTH -1 downto 0);
 	type RAM_LINE is array (LINE_LENGTH - 1 downto 0) of RAM_CELL;
 	type RAM_ARRAY is array (LINE_NUMB - 1 downto 0, LINE_LENGTH - 1 downto 0) of RAM_CELL;
+
 	
 	
 	--- ALLGEMEIN
