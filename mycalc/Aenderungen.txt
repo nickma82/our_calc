@@ -1,4 +1,0 @@
-
-1. Beim Ringbuffer wird nicht eine 648 Bit lange Zeile geschickt, sondern entweder ein Array von Chars oder jedes Char extra => vl 2 Funktionen
-
-2. Beim Serial Handler muss die State Machine geändert werden. Aus Line Read muss Char Read werden und nach dem Char Read wird in den Char Write State gewechselt und von dort wieder zurück in den Char Read State.
