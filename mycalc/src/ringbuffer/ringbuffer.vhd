@@ -8,7 +8,7 @@ use ieee.numeric_std.all;
 -- ENTITY
 entity ringbuffer_ent is
 	--generic(
-		
+	
 	--);
 	port(
 		sys_clk		: in std_logic;	
@@ -23,7 +23,7 @@ entity ringbuffer_ent is
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic;
 		rb_read_data_rdy: out std_logic;
-		rb_read_data	: out std_logic_vector(647 downto 0);
+		rb_read_data	: out RAM_LINE;			--out std_logic_vector(647 downto 0);
 		
 	);
 end entity ringbuffer_ent;
@@ -32,19 +32,14 @@ end entity ringbuffer_ent;
 architecture ringbuffer_arc of ringbuffer_ent is
 
 --type
+signal ram : RAM_ARRAY;
+
 type RINGBUFFER_FSM_STATE_TYPE is
     (READY, WRITE_CHAR, DELETE_CHAR, LINE_REQ, LINE_RDY);
 
-subtype RAM_ENTRY_TYPE is std_logic_vector(DATA_WIDTH -1 downto 0);
-type RAM_TYPE is array(0 to(2 ** ADDR_WIDTH) –1) of RAM_ENTRY_TYPE;
-signal ram : RAM_TYPE := (others=> x”00”);
-
---constants
-
 --signals
 signal ringbuffer_fsm_state, ringbuffer_fsm_state_next : RINGBUFFER_FSM_STATE_TYPE;
-signal lineCnt : std_logic_vector(6 downto 0) := (others => 0);
-
+signal linePointer : std_logic_vector(6 downto 0) := (others => 0);				--zeigt auf die derzeitige Zeile
 
 
 begin
@@ -53,7 +48,7 @@ sync : process(sys_clk, sys_res_n)
 begin
 	if sys_res_n = '0' then
 		ringbuffer_fsm_state <= READY;
-		lineCnt <= 0;
+		linePointer <= 0;
 		
 	elsif rising_edge(sys_clk) then
 		ringbuffer_fsm_state <= ringbuffer_fsm_state_next;
@@ -86,8 +81,9 @@ output : process(ringbuffer_fsm_state)
 begin
 	case ringbuffer_fsm_state is
 		when READY =>
-			rb_busy => 1;
-		when WRITE_CHAR =>			
+			rb_busy <= 1;
+		when WRITE_CHAR =>			rb_busy <= 0;
+			
 		when others => null;
 	end case;
 end process output;
