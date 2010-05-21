@@ -29,4 +29,10 @@ Existing Git Repo?
   cd existing_git_repo
   git remote add origin git@github.com:nickma82/our_calc.git
   git push origin master
-      
+  
+Handling conflicts
+* Betreffendes File bearbeiten und gekennzeichnete Konflikte ausbessern
+* File git adden
+* git commiten
+* git pullen
+* git pushen
