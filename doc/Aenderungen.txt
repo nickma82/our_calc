@@ -14,3 +14,5 @@ Parser und ALU dienen.
 	calc_finished:	IN STD_LOGIC := '0';
 	calc_result:	IN CALCSIGNED;
 	calc_status: 	IN alu_calc_error_TYPE;
+	
+	ps_start UMBENANNT auf parse_start

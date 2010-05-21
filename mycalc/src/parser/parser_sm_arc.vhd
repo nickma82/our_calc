@@ -9,75 +9,96 @@ use work.parser_pkg.all;
 
 ARCHITECTURE parser_sm OF parser_sm_ent IS
 
-  type PARSER_FSM_STATE_TYPE is
-    (IDLE0, REQ_DATA, PARSE_INIT, DIGIT, DIGIT_GETNEXT, PARSE_ERROR, OP, CALC, WAIT_CALC_RESULT, WRITE_RESULT);
-  
-  --Parser states
-  signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
   --Parser Buffer
   signal inBuff, calc1Buff, calc0Buff: CALCSIGNED;
   signal op0, op1: alu_operator_TYPE;
   
-  --Parser logic
-  signal char_analyze_next, char_process_next: std_logic;
-  --Character information Signals
-  signal charNfo_noDigitYet: std_logic; 
-  signal charNfo_firstOp: std_logic;
-  signal digit_isNegative, digit_noneYet: std_logic
+  signal char_firstOne, digit_firstOne: std_logic;
+  signal intern_digit_neg:	std_logic := '0';
   
+  signal intern_alu_op: 	alu_operator_TYPE;
   
-
+  type PARSER_FSM_STATE_TYPE is
+    (IDLE0, PARSE_INIT, DIGIT, DIGIT_GETNEXT, PARSE_ERROR, OP, CALC, WAIT_CALC_RESULT, WRITE_RESULT);
+  signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
+  
+  type PARSER_CHAR_STATE_TYPE is
+     (IDLE, ANALYZE_NEXT, PROCESS_NEXT);
+  signal char_state: PARSER_CHAR_STATE_TYPE;
+  
+  type PARSER_INTERNAL_STATE_TYPE is 
+	  (RESET, GOOD, TOO_MUCH_OPS);
+  signal parser_internal_status: PARSER_INTERNAL_STATE_TYPE;
+  
 BEGIN
 
-next_state : process(parse_fsm_state, ps_start, rb_read_data_rdy, char_process_next, digit_next_valid)
-  -- lastChar_type, char_type: (RESET, ISDIGIT, ISOP, ISEOL)
+next_state : process(parse_fsm_state, parse_start, \
+						charUni_next_valid, char_state)
+  -- charUnit_lastChar_type, charUnit_char_type: (RESET, DIGIT, OP, EOL)
   begin
     parse_fsm_state_next <= parse_fsm_state;
     case parse_fsm_state is
       when IDLE0 =>
-      	if ps_start = '1' then
-		parse_fsm_state_next <= REQ_DATA;
+      	if parse_start = '1' then
+			parse_fsm_state_next <= PARSE_INIT;
       	end if;
-      
-      when REQ_DATA =>
-      	if rb_read_data_rdy = '1' then
-      	 	parse_fsm_state_next <= PARSE_INIT; 
-      	end if;
-      	
-      
+            
       when PARSE_INIT =>
-      	parse_fsm_state_next <= DIGIT;
-      
+      	parse_fsm_state_next <= DIGIT_GETNEXT;
+        
+		
       when DIGIT =>
-      	if char_process_next = '1' then
-      		-- Error in case of first digit == Operator
-		if char_firstChar='1' and charNfo_isOp ='0' then
-			parse_fsm_state_next <= PARSE_ERROR;
+      	if char_state = ANALYZE_NEXT then
+			parse_fsm_state_next <= DIGIT_GETNEXT;
+		elsif char_state = PROCESS_NEXT then
+			
+			
 		end if;
-	end if;
       
       when DIGIT_GETNEXT =>
-      	if digit_next_valid = '1' then 
-      		parse_fsm_state_next <= DIGIT
+      	if charUni_next_valid = '1' then 
+			--Error handling beginnt
+      		if charUnit_lastChar_type=OP and charUnit_char_type= EOL then
+				parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
+			else 
+				case charUnit_char_type is
+					when DIGIT=>  parse_fsm_state_next<= DIGIT;
+					when OP =>    parse_fsm_state_next<= OP;
+					when EOL =>   parse_fsm_state_next<= CALC;
+					when others => assert false report "NEXTDIGIT State not supported" severity error;
+				end case;
+			end if; --Error if end
       	end if;
       
-      when PARSE_ERROR =>
-	null;
-      
-      when OP =>
-	null;
+      when OP =>		
+		--Error Handling
+		-- Error in case of first char == (Operator!= minus)
+		if char_firstOne='1' and charUnit_op != SUBTRAKTION then
+			parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
+		elsif charUnit_lastChar_type=OP and charUnit_op!= SUBTRAKTION then
+		    parse_fsm_state_next <= PARSE_ERROR; --E: Second op in series isn't a minus
+		end if;
+		
       
       when CALC =>
-	null;
+		-- Error Handling
+		if calc_finished = '1' then
+			if calc_status != GOOD then
+				parse_fsm_state_next <= PARSE_ERROR;
+			end if;
+		end if;
+	
+	  when PARSE_ERROR =>
+		null;
       
       when WAIT_CALC_RESUL =>
-	null;
+		null;
       
       when WRITE_RESULT =>
-	null;
+		null;
       
-      
+      when others => assert false report "NEXT State logic- State not supported" severity error;
     end case;
   end process next_state;
   
@@ -85,43 +106,66 @@ next_state : process(parse_fsm_state, ps_start, rb_read_data_rdy, char_process_n
   
   
  output : process(parse_fsm_state)
+	variable operator_cnt, calc_stage:		INTEGER := 0;
   begin
+	case parse_fsm_state is
       when IDLE0 =>
       	-- RESET STATE
-      	digit_en <= '0'; --Disable next digit unit
-      	digit_get_next <='0';
-      	
-      when REQ_DATA =>
-      	-- REQUESTING DATA FROM RB
-      	null;
+      	charUnit_en <='0'; --Disable next digit unit
+      	charUnit_get_next <='0';
+		--@TODO init op
+		
+		operator_cnt	:= 0;
+		calc_stage		:= 0;
+		char_firstOne	<= '1'
+		digit_firstOne	<= '1'
+		intern_digit_neg <= '0';
+		
+		char_state		<= IDLE;
+		intern_alu_op 	<= NOP; 
+		parser_internal_status <= RESET;
       
       when PARSE_INIT =>
       	-- PARSER INIT
-      	char_firstChar <= '1';
-      
+      	char_firstOne <= '1';
+		charUnit_en <= '1';
+        parser_internal_status <= GOOD;
+	  
+	  
       when DIGIT =>
-      	digit_get_next <= '0';
+      	charUnit_get_next <= '0';
       	-- catch information about next char and save them to char_info* std_logic!!!!!!!!!!!!!
       	null;
       
       when DIGIT_GETNEXT =>
-      	digit_get_next <= '1';
-	null;
-	
-      when PARSE_ERROR =>
-	null;
-      
+      	if parse_fsm_state'LAST_ACTIVE != PARSE_INIT then
+			char_firstOne	<= '0';
+		end if;
+		charUnit_get_next <= '1';
+		char_state = PROCESS_NEXT;
+		
       when OP =>
-	null;
-      
+		charUnit_get_next <= '0';
+		operator_cnt := operator_cnt+1;
+		if operator_cnt>2 then
+			parser_internal_status <= TOO_MUCH_OPS;
+		end if;
       when CALC =>
-	null;
+		operator_cnt := operator_cnt-1;
+		assert operator_cnt>=0 and operator_cnt<2
+			report "invalid operator_cnt" severity error;
+		assert calc_stage<2
+			report "calc stage size exceeded" severity error;
+		
+	
+	  when PARSE_ERROR =>
+		null;
       
       when WAIT_CALC_RESUL =>
-	null;
+		null;
       
       when WRITE_RESULT =>
-	null;
+		null;
 	
     end case;
   end process output;

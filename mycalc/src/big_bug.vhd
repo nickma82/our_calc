@@ -9,13 +9,13 @@ package big_pkg is
 	--- ALU
 	constant SIZEI: INTEGER := 32;
 	subtype CALCSIGNED is SIGNED((SIZEI-1) downto 0);
-	constant CALCMAX: INTEGER:=  (2**(SIZEI-1))-1; --2147483647;
-	constant CALCMIN: INTEGER:= -(2**(SIZEI-1));
+	constant CALCMAX: INTEGER:=  2147483647; --  (2**(SIZEI-1))-1
+	constant CALCMIN: INTEGER:= -2147483648; -- -(2**(SIZEI-1));
 	
 	
 	--- PARSER
 	
-	--alu_operator_TYPE  ---- WARNING
+	--@TODO alu_operator_TYPE  ---- WARNING
 	--	will be moved to PARSER_PKG
 	type alu_operator_TYPE is 
 		(ADDITION, SUBTRAKTION, MULTIPLIKATION, DIVISION, NOP);

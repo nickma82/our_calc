@@ -26,7 +26,7 @@ entity parser_top is
 	rb_read_en:	out STD_LOGIC; 	--Eine neue Zeile wird angefordert.
 	rb_read_lineNr:	out LINE_NUM;	--Die neue Zeile die gelesen werden soll.
 	rb_read_data_rdy:in STD_LOGIC;	--Die neue Zeile kann gelesen werden.
-	rb_read_data:	in  std_logic_vector(647 downto 0)
-	
+	rb_read_data:	in  RAM_LINE
+	);
 	
 end entity parser_top;

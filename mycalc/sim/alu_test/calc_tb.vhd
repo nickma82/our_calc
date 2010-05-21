@@ -112,6 +112,19 @@ begin --behave
     --	 report "result failed"	 severity failure;
     ---- coverage on
     calc_start <= '0';
+	
+	wait for 500 ns;
+    calc_data <=  "10000000000000000000000000000000";
+    calc_data2 <= "00000000000000000000000000000001";
+    calc_operator <= ADDITION;
+    --wait for 10 ns;
+    calc_start <= '1';
+    wait for 2 us;
+    ---- coverage off
+    -- assert calc_result(3 downto 0) = "0101"
+    --	 report "result failed"	 severity failure;
+    ---- coverage on
+    calc_start <= '0';
 
     
     wait for 500 ns;

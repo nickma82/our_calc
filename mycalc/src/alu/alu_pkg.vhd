@@ -1,15 +1,8 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.big_pkg.all;
 
-package parser_pkg is
-    type PARSER_CHAR_TYPE is
-      (RESET, DIGIT, OP, EOL);
-    
-	subtype ONEDIGIT is SIGNED(7 downto 0);
-	
-
+package alu_pkg is
     component alu_top IS 
 	generic
 	(
@@ -29,6 +22,4 @@ package parser_pkg is
 	      calc_status: 	OUT alu_calc_error_TYPE
 	);
     END component alu_top;
-	
-    
 end package parser_pkg;
