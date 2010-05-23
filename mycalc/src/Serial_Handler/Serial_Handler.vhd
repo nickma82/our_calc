@@ -5,6 +5,8 @@ use IEEE.std_logic_arith.all;
 
 use ieee.numeric_std.all;
 
+use work.big_pkg.all;
+
 -- ENTITY
 entity Serial_Handler_ent is
 	--generic(
@@ -13,19 +15,17 @@ entity Serial_Handler_ent is
 	port(
 		sys_clk		: in std_logic;	
 		sys_res_n	: in std_logic;
-		inp_sendRS232	
-		rb busy		: in std_logic;
-		rb_read_en	: in std_logic;
-		rb_read_lineNr	: out std_logic;
-		rb_read_data_rdy: out std_logic;
-		rb_read_data	: in std_logic_vector(647 downto 0);	
-
+		inp_sendRS232	: in std_logic;
+		rb_busy		: in std_logic;
+		rb_read_en	: out std_logic;
+		rb_read_lineNr	: out std_logic_vector(7 downto 0);
+		rb_read_data_rdy: in std_logic;
+		rb_read_data	: in RAM_LINE;	
 		tx_rdy		: in std_logic;
 		tx_go		: out std_logic;
 		tx_data		: out std_logic_vector(7 downto 0);
 		rx_recv		: in std_logic;
-		rx_data		: in std_logic_vector(7 downto 0);
-		
+		rx_data		: in std_logic_vector(7 downto 0)
 	);
 end entity Serial_Handler_ent;
 
@@ -34,13 +34,16 @@ architecture Serial_Handler_arc of Serial_Handler_ent is
 
 --type
 type Serial_Handler_FSM_STATE_TYPE is
-    (READY, CHECK_BYTE, SEND_HISTORY, READ_CHAR, WRITE_CHAR, DONE);
+    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, DONE);
 
 --constants
 
 --signals
 signal Serial_Handler_fsm_state, Serial_Handler_fsm_state_next : Serial_Handler_FSM_STATE_TYPE;
-signal counter : std_logic_vector(5 downto 0);
+signal counter : std_logic_vector(7 downto 0);
+signal linePointer : integer range 0 to LINE_NUMB - 1;				
+signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH - 1;
+signal currentLine : RAM_LINE;
 
 begin
 
@@ -48,9 +51,9 @@ sync : process(sys_clk, sys_res_n)
 begin
 	if sys_res_n = '0' then
 		Serial_Handler_fsm_state <= READY;
-		counter => (others => 0);
 	elsif rising_edge(sys_clk) then
 		Serial_Handler_fsm_state <= Serial_Handler_fsm_state_next;
+		charPointer <= charPointer_next;
 	end if;
 
 end process sync;
@@ -70,32 +73,52 @@ begin
 			else Serial_Handler_fsm_state_next <= READY;
 			end if;
 		when SEND_HISTORY =>
-			if rb_read_data_rdy then Serial_Handler_fsm_state_next <= LINE_READ;
+			Serial_Handler_fsm_state_next <= REQ_LINE;
+		when REQ_LINE =>
+			if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
 			end if;
-		when READ_CHAR =>
-			if rb_read_data_rdy then Serial_Handler_fsm_state_next <= LINE_READ;
-			end if;
+		when READ_LINE =>
+			Serial_Handler_fsm_state_next <= WRITE_CHAR;
 		when WRITE_CHAR =>
-
+			Serial_Handler_fsm_state_next <= WAIT_CHAR;
+		when WAIT_CHAR =>
+			if linePointer >= 49 and charPointer >= 79 then
+				Serial_Handler_fsm_state_next <= DONE;
+			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
+			end if;
 		when DONE =>
-
+			Serial_Handler_fsm_state_next <= READY;
 			
 	end case;
 end process next_state;
 
-output : process(Serial_Handler_fsm_state)
+output : process(Serial_Handler_fsm_state, charPointer, tx_rdy)
 begin
 	case Serial_Handler_fsm_state is
 		when SEND_HISTORY =>
-			rb_read_lineNr <= counter;
+			--Werte zurück setzen
+			rb_read_lineNr <= x"00";
+			linePointer <= 0;
+			charPointer_next <= 0;
+		when REQ_LINE =>
+			rb_read_lineNr <= conv_integer(linePointer);
 			rb_read_en <= '1';
-		when READ_CHAR =>
-			rb_read_lineNr <= counter;
-			rb_read_en <= '1';
+			linePointer <= linePointer + 1;
+		when READ_LINE =>
+			currentLine <= rb_read_data;
 		when WRITE_CHAR =>
-
+			if currentLine(charPointer) = x"00" then
+				charPointer_next <= 79;
+			else
+				tx_data <= currentLine(charPointer);
+				tx_go <= '1';
+				charPointer_next <= charPointer + 1;
+			end if;
+		when WAIT_CHAR =>
+			tx_go <= '0';
 		when DONE =>
-			
+			
+			
 		when others => null;
 	end case;
 end process output;

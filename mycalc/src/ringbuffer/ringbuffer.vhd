@@ -25,7 +25,7 @@ entity ringbuffer_ent is
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;
-		rb_read_data	: out RAM_LINE					--std_logic_vector((LINE_LENGTH*CHAR_LENGTH) -1 downto 0)
+		rb_read_data	: out RAM_LINE
 	);
 end entity ringbuffer_ent;
 

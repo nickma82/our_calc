@@ -15,9 +15,9 @@ entity output_ent is
 		
 	--);
 	port(
-		sys_clk		: in std_logic;	
-		sys_res_n	: in std_logic;
-		vga_command	: out std_logic_vector(7 downto 0);
+		sys_clk			: in std_logic;	
+		sys_res_n		: in std_logic;
+		vga_command		: out std_logic_vector(7 downto 0);
 		vga_command_data	: out std_logic_vector(31 downto 0);
 		vga_free		: in std_logic;
 		inp_new_data		: in std_logic;
