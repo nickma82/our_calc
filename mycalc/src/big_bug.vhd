@@ -25,6 +25,13 @@ package big_pkg is
 	constant MAXLINE_NUM: INTEGER := 51;
 	subtype LINE_NUM is INTEGER range 0 to MAXLINE_NUM;
 
+	--- OUTPUT
+	constant RED   : std_logic_vector(8*3-1 downto 0) := x"FF0000";
+	constant GREEN : std_logic_vector(8*3-1 downto 0) := x"00FF00";
+	constant BLUE  : std_logic_vector(8*3-1 downto 0) := x"0000FF";
+	constant BLACK : std_logic_vector(8*3-1 downto 0) := x"000000";
+	constant WHITE : std_logic_vector(8*3-1 downto 0) := x"FFFFFF";
+
 	--- RINGBUFFER
 	constant CHAR_LENGTH : INTEGER := 8;
 	constant LINE_LENGTH : INTEGER := 81;

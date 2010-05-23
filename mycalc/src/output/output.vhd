@@ -5,6 +5,8 @@ use IEEE.std_logic_arith.all;
 
 use ieee.numeric_std.all;
 
+use work.big_pkg.all;
+
 use work.textmode_vga_pkg.all;
 use work.textmode_vga_component_pkg.all;
 use work.textmode_vga_platform_dependent_pkg.all;
@@ -24,7 +26,7 @@ entity output_ent is
 		inp_data		: in std_logic_vector(7 downto 0);
 		inp_del			: in std_logic;
 		pars_new_data		: in std_logic;
-		pars_data		: in std_logic_vector(31 downto 0);
+		pars_data		: in std_logic_vector(7 downto 0)
 	);
 end entity output_ent;
 
@@ -57,7 +59,7 @@ begin
 
 end process sync;
 
-next_state : process(output_fsm_state, inp_new_data, pars_new_data, inp_del)
+next_state : process(output_fsm_state, inp_new_data, pars_new_data, inp_del, vga_free)
 begin
 	output_fsm_state_next <= output_fsm_state;
 	
@@ -91,20 +93,20 @@ begin
 		when INIT =>
 			vga_command <= COMMAND_SET_BACKGROUND;
 			vga_command_data <= x"00FFFFFF";
-			position => position + 1;
+			position <= x"00";
 		when READY =>
 		when WRITE_CHAR =>
 			vga_command <= COMMAND_SET_CHAR;
 			vga_command_data <= WHITE & inp_data;
-			position => position + 1;
+			position <= position + 1;
 		when WRITE_RESULT =>
 			vga_command <= COMMAND_SET_CHAR;
 			vga_command_data <= WHITE & pars_data;
-			position => 0;
+			position <= x"00";
 		when DELETE =>
 			vga_command <= COMMAND_SET_CURSOR_COLUMN;
-			vga_command_data <= position - 1;
-			position => position - 1;
+			vga_command_data <= x"000000"&(position - 1);
+			position <= position - 1;
 		when others => null;
 	end case;
 end process output;
