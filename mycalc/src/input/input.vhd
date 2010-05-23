@@ -136,14 +136,16 @@ begin
 	end case;
 end process next_state;
 
-output : process(input_fsm_state)
+output : process(input_fsm_state, ascii)
 begin
 	case input_fsm_state is
 		when READY =>
 			inp_new_data <= '0';
 			pars_start <= '0';
 			inp_del <= '0';
-		when VALID =>			inp_data <= ascii;
+			inp_sendRS232 <= '0';
+		when VALID =>
+			inp_data <= ascii;
 			inp_new_data <= '1';
 		when ENTER =>
 			pars_start <= '1';
