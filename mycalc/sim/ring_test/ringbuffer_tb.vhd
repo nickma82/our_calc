@@ -17,7 +17,7 @@ end ringbuffer_tb;
 architecture behav of ringbuffer_tb is
 
 --Variablen und Konstanten
-constant clock_period:time := 20 ns;
+constant clock_period:time := 30 ns;
 
 signal sys_clk, sys_res_n: std_logic;
 signal rb_busy		: std_logic := '0';
@@ -65,79 +65,79 @@ end process clkgenerator;
 process
 begin
 	sys_res_n <= '0';
-	wait for 40 ns;
+	wait for 30 ns;
 	sys_res_n <= '1';
-	wait for 40 ns;
+	wait for 30 ns;
 
 	-- BEGIN TESTS
 	-- erste Zeile voll schreiben
 	for i in 0 to 72 loop
 		inp_data <= x"AF";
-		wait for 20 ns;
+		wait for 30 ns;
 		inp_new_data <= '1';
-		wait for 20 ns;
+		wait for 30 ns;
 		inp_new_data <= '0';
-		wait for 20 ns;
+		wait for 30 ns;
 		--assert ps2_data(7 downto 0) = "00110000";
-		wait for 40 ns;
+		wait for 30 ns;
 	end loop;
 	
 	inp_data <= x"20";
-	wait for 20 ns;
+	wait for 30 ns;
 	inp_new_data <= '1';
-	wait for 20 ns;
+	wait for 30 ns;
 	inp_new_data <= '0';
-	wait for 20 ns;
+	wait for 30 ns;
 	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 40 ns;
+	wait for 30 ns;
 	
 	inp_data <= x"01";
-	wait for 20 ns;
+	wait for 30 ns;
 	inp_new_data <= '1';
-	wait for 20 ns;
+	wait for 30 ns;
 	inp_new_data <= '0';
-	wait for 20 ns;
+	wait for 30 ns;
 	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 40 ns;
+	wait for 30 ns;
 	
 	--Zeichen löschen
 	inp_del <= '1';
-	wait for 20 ns;
+	wait for 30 ns;
 	inp_del <= '0';
-	wait for 40 ns;
+	wait for 30 ns;
 
 	--Zeile abfragen
 	rb_read_lineNr <= x"00";
-	wait for 20 ns;
+	wait for 30 ns;
 	rb_read_en <= '1';
-	wait for 20 ns;
+	wait for 30 ns;
 	rb_read_en <= '0';
-	wait for 20 ns;
+	wait for 30 ns;
 	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 40 ns;
+	wait for 30 ns;
 	
 	--neue Zeile
 	rb_char_newline <= '1';
-	wait for 20 ns;
+	wait for 30 ns;
 	rb_char_newline <= '0';
-	wait for 40 ns;
+	wait for 30 ns;
 
 	--Zeile erneut abfragen
 	rb_read_lineNr <= x"00";
-	wait for 20 ns;
+	wait for 30 ns;
 	rb_read_en <= '1';
-	wait for 20 ns;
+	wait for 30 ns;
 	rb_read_en <= '0';
-	wait for 20 ns;
+	wait for 30 ns;
 	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 40 ns;
+	wait for 30 ns;
 
 	--testen ob überlauf der Zeilen funktioniert
 	for i in 0 to 52 loop
 		rb_char_newline <= '1';
-		wait for 20 ns;
+		wait for 30 ns;
 		rb_char_newline <= '0';
-		wait for 40 ns;
+		wait for 30 ns;
 	end loop;
 
 end process;

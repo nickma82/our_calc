@@ -130,13 +130,13 @@ begin
 				linePointer <= 0;
 				--Die neue Zeile wird gelöscht
 				for i in 0 to LINE_LENGTH -1 loop
-					ram(0,i) <= x"01";		--TODO nur zum testen, später wieder x"00"
+					ram(0,i) <= x"00";		--TODO nur zum testen, später wieder x"00"
 				end loop;		
 			else
 				linePointer <= linePointer + 1;
 				--Die neue Zeile wird gelöscht
 				for i in 0 to LINE_LENGTH -1 loop
-					ram(linePointer+1,i) <= x"01"; 	--TODO nur zum testen, später wieder x"00"
+					ram(linePointer+1,i) <= x"00"; 	--TODO nur zum testen, später wieder x"00"
 				end loop;
 			end if;
 			--Der Char Zeiger wird auf 0 zurückgesetzt

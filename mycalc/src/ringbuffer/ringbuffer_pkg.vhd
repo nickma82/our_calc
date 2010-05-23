@@ -2,6 +2,8 @@ LIBRARY ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.big_pkg.all;
+
 package ringbuffer_pkg is
     component ringbuffer_ent IS
 	port(
