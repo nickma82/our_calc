@@ -24,17 +24,17 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
   type PARSER_CHAR_STATE_TYPE is
-     (IDLE, ANALYZE_NEXT, PROCESS_NEXT);
+     (IDLE0, ANALYZE_NEXT, PROCESS_NEXT, CALC_THIS);
   signal char_state: PARSER_CHAR_STATE_TYPE;
   
   type PARSER_INTERNAL_STATE_TYPE is 
-	  (RESET, GOOD, TOO_MUCH_OPS);
+	  (RESET, RUNNING, GOOD, TOO_MUCH_OPS);
   signal parser_internal_status: PARSER_INTERNAL_STATE_TYPE;
   
 BEGIN
 
 next_state : process(parse_fsm_state, parse_start, \
-						charUni_next_valid, char_state)
+			charUni_next_valid, char_state, calc_finished)
   -- charUnit_lastChar_type, charUnit_char_type: (RESET, DIGIT, OP, EOL)
   begin
     parse_fsm_state_next <= parse_fsm_state;
@@ -49,56 +49,66 @@ next_state : process(parse_fsm_state, parse_start, \
         
 		
       when DIGIT =>
-      	if char_state = ANALYZE_NEXT then
-			parse_fsm_state_next <= DIGIT_GETNEXT;
-		elsif char_state = PROCESS_NEXT then
-			
-			
-		end if;
+	  if char_state = ANALYZE_NEXT then
+		parse_fsm_state_next <= DIGIT_GETNEXT;
+	  elsif char_state = PROCESS_NEXT then
+		null;		
+	  end if;
       
       when DIGIT_GETNEXT =>
-      	if charUni_next_valid = '1' then 
+	if charUni_next_valid = '1' then 
 			--Error handling beginnt
-      		if charUnit_lastChar_type=OP and charUnit_char_type= EOL then
+		if charUnit_lastChar_type=OP and charUnit_char_type= EOL then
 				parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
-			else 
-				case charUnit_char_type is
-					when DIGIT=>  parse_fsm_state_next<= DIGIT;
-					when OP =>    parse_fsm_state_next<= OP;
-					when EOL =>   parse_fsm_state_next<= CALC;
-					when others => assert false report "NEXTDIGIT State not supported" severity error;
-				end case;
-			end if; --Error if end
-      	end if;
+		else 
+			case charUnit_char_type is
+				when DIGIT=>  parse_fsm_state_next<= DIGIT;
+				when OP =>    parse_fsm_state_next<= OP;
+				when EOL =>   parse_fsm_state_next<= CALC;
+				when others => assert false report "NEXTDIGIT State not supported" severity error;
+			end case;
+		end if; --Error if end
+	end if;
       
       when OP =>		
-		--Error Handling
-		-- Error in case of first char == (Operator!= minus)
-		if char_firstOne='1' and charUnit_op != SUBTRAKTION then
-			parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
-		elsif charUnit_lastChar_type=OP and charUnit_op!= SUBTRAKTION then
-		    parse_fsm_state_next <= PARSE_ERROR; --E: Second op in series isn't a minus
-		end if;
-		
-      
+	      --Error Handling
+	      if char_firstOne='1' and charUnit_op != SUBTRAKTION then
+		      parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
+	      elsif charUnit_lastChar_type=OP and charUnit_op!= SUBTRAKTION then
+		      parse_fsm_state_next <= PARSE_ERROR; --E: Second op in series isn't a minus
+	      end if;
+	      
+	      --Process Handling
+	      if char_state = ANALYZE_NEXT then
+		    parse_fsm_state_next <= DIGIT_GETNEXT;
+	      elsif char_state = PROCESS_THIS then
+		    parse_fsm_state_next <= CALC_THIS;
+	      end if;
+    
       when CALC =>
-		-- Error Handling
-		if calc_finished = '1' then
-			if calc_status != GOOD then
-				parse_fsm_state_next <= PARSE_ERROR;
-			end if;
-		end if;
+	  parse_fsm_state_next <= WAIT_CALC_RESULT;
 	
-	  when PARSE_ERROR =>
-		null;
+      when PARSE_ERROR =>
+	  parse_fsm_state_next <= WRITE_RESULT;
       
-      when WAIT_CALC_RESUL =>
-		null;
-      
+      when WAIT_CALC_RESULT =>
+	  if calc_finished = '1' then
+		  -- Error Handling
+		  if calc_status != GOOD then
+			  parse_fsm_state_next <= PARSE_ERROR;
+		  else
+			  parse_fsm_state_next <= OP;
+		  end if;
+		  
+	  end if;
+	
       when WRITE_RESULT =>
-		null;
+	  if parse_start= '0' then
+	      parse_fsm_state_next <= IDLE0;
+	  end if;
       
-      when others => assert false report "NEXT State logic- State not supported" severity error;
+      when others => 
+	  assert false report "NEXT State logic- State not supported" severity error;
     end case;
   end process next_state;
   
@@ -108,37 +118,37 @@ next_state : process(parse_fsm_state, parse_start, \
  output : process(parse_fsm_state)
 	variable operator_cnt, calc_stage:		INTEGER := 0;
   begin
-	case parse_fsm_state is
+    case parse_fsm_state is
       when IDLE0 =>
-      	-- RESET STATE
-      	charUnit_en <='0'; --Disable next digit unit
-      	charUnit_get_next <='0';
-		--@TODO init op
+	  -- RESET STATE
+	  charUnit_en <='0'; --Disable next digit unit
+	  charUnit_get_next <='0';
 		
-		operator_cnt	:= 0;
-		calc_stage		:= 0;
-		char_firstOne	<= '1'
-		digit_firstOne	<= '1'
-		intern_digit_neg <= '0';
-		
-		char_state		<= IDLE;
-		intern_alu_op 	<= NOP; 
-		parser_internal_status <= RESET;
+	  operator_cnt	:= 0;
+	  calc_stage	:= 0;
+	  char_firstOne	<= '1';
+	  digit_firstOne<= '1';
+	  intern_digit_neg<= '0';
+	  
+	  char_state		<= IDLE0;
+	  intern_alu_op 	<= NOP; 
+	  parser_internal_status<= RESET;
+	  
       
       when PARSE_INIT =>
-      	-- PARSER INIT
-      	char_firstOne <= '1';
-		charUnit_en <= '1';
-        parser_internal_status <= GOOD;
+	  -- PARSER INIT
+	  charUnit_en	<= '1';
+	  char_firstOne 	<= '1';
+	  parser_internal_status<= RUNNING;
+	  char_state		<= ANALYZE_NEXT;
 	  
 	  
       when DIGIT =>
-      	charUnit_get_next <= '0';
-      	-- catch information about next char and save them to char_info* std_logic!!!!!!!!!!!!!
-      	null;
+	  charUnit_get_next <= '0';
+	  -- catch information about next char and save them to char_info* std_logic!!!!!!!!!!!!!
       
       when DIGIT_GETNEXT =>
-      	if parse_fsm_state'LAST_ACTIVE != PARSE_INIT then
+		if parse_fsm_state'LAST_ACTIVE != PARSE_INIT then
 			char_firstOne	<= '0';
 		end if;
 		charUnit_get_next <= '1';
@@ -158,10 +168,10 @@ next_state : process(parse_fsm_state, parse_start, \
 			report "calc stage size exceeded" severity error;
 		
 	
-	  when PARSE_ERROR =>
+      when PARSE_ERROR =>
 		null;
       
-      when WAIT_CALC_RESUL =>
+      when WAIT_CALC_RESULT =>
 		null;
       
       when WRITE_RESULT =>

@@ -26,9 +26,9 @@ entity parser_sm_top is
 	charUnit_en:		OUT STD_LOGIC :='0';
 	charUnit_get_next: 	OUT STD_LOGIC :='0';
 	charUnit_next_valid:	IN  STD_LOGIC;
-	charUnit_digit: 		IN ONEDIGIT;
-	charUnit_op:			IN alu_operator_TYPE;
-	charUnit_lastChar_type : 	IN PARSER_CHAR_TYPE;
+	charUnit_digit: 	IN ONEDIGIT;
+	charUnit_op:		IN alu_operator_TYPE;
+	charUnit_lastChar_type :IN PARSER_CHAR_TYPE;
 	charUnit_char_type: 	IN PARSER_CHAR_TYPE
 	
   );
