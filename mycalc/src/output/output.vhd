@@ -112,6 +112,3 @@ begin
 end process output;
 
 end output_arc;
-
-
-

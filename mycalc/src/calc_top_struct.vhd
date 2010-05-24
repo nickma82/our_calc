@@ -14,8 +14,8 @@ use work.ps2_keyboard_controller_pkg.all;
 use work.big_pkg.all;
 
 --Module Inkludiert
---use work.eingabe_pkg.all;
---use work.ausgabe_pkg.all;
+use work.input_pkg.all;
+use work.output_pkg.all;
 --use work.serialhandler_pkg.all;
 --use work.rs232_pkg.all;
 --use work.parser_pkg.all;
@@ -43,6 +43,21 @@ architecture struct of calc_top is
 	--VGA
 	signal vga_free:std_logic;
 	signal vga_clk:std_logic;
+
+	--Input
+	signal ps2_new_data : std_logic := '0';
+	signal inp_new_data : std_logic := '0';
+	signal inp_del : std_logic := '0';
+	signal inp_sendRS232 : std_logic := '0';
+	signal pars_start : std_logic := '0';
+	signal inp_data : std_logic_vector(7 downto 0) := x"00";
+	signal ps2_data_intern : std_logic_vector(7 downto 0) := x"00";
+
+	--Output
+	signal vga_command	: std_logic_vector(7 downto 0);
+	signal vga_command_data	: std_logic_vector(31 downto 0);
+	signal pars_new_data	: std_logic;
+	signal pars_data	: std_logic_vector(7 downto 0);
 
 begin
 	sys_res_n_debounce_inst : debounce
@@ -79,11 +94,11 @@ begin
 	
 	led_a <= not(btn_a_sync);
 	
-	pll_vga_clk: pll
-	PORT MAP (
-		inclk0	 => sys_clk,
-		c0	 => c0_pll_sig
-	);
+	--pll_vga_clk: pll
+	--PORT MAP (
+	--	inclk0	 => sys_clk,
+	--	c0	 => c0_pll_sig
+	--);
 	
 	
 	----- CALC CONNECTIVITY
@@ -130,17 +145,34 @@ begin
 	);
 	
 	--Input
-	input_inst : input
+	input_inst : input_ent
 	port map 
 	(
-		sys_clk => sys_clk,
-		sys_res_n => sys_res_n_sync,
-		new_data => new_data,
-		data => data,
-		start_comp => start_comp,
-		ascii_code => ascii_code,
-		new_ascii_code => new_ascii_code,
-		new_ascii_ready => new_ascii_ready
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		ps2_new_data => ps2_new_data,
+		ps2_data => ps2_data_intern,
+		inp_new_data => inp_new_data,
+		inp_data => inp_data,
+		inp_del => inp_del,
+		inp_sendRS232 => inp_sendRS232,
+		pars_start => pars_start
+	);
+
+	--Output
+	output_inst : output_ent
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		vga_command => vga_command,
+		vga_command_data => vga_command_data,
+		vga_free => vga_free,
+		inp_new_data => inp_new_data,
+		inp_data => inp_data,
+		inp_del => inp_del,
+		pars_new_data => pars_new_data,
+		pars_data => pars_data
 	);
 	
 end architecture struct;
