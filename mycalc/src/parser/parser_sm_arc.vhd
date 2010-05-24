@@ -45,7 +45,9 @@ next_state : process(parse_fsm_state, parse_start, \
       	end if;
             
       when PARSE_INIT =>
-      	parse_fsm_state_next <= DIGIT_GETNEXT;
+	  char_firstOne	<= '1';
+	  digit_firstOne<= '1';
+	  parse_fsm_state_next <= DIGIT_GETNEXT;
         
 		
       when DIGIT =>
@@ -59,10 +61,13 @@ next_state : process(parse_fsm_state, parse_start, \
 	if charUni_next_valid = '1' then 
 			--Error handling beginnt
 		if charUnit_lastChar_type=OP and charUnit_char_type= EOL then
-				parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
-		else 
+			parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
+		else 	
+			char_firstOne <= '0';
 			case charUnit_char_type is
-				when DIGIT=>  parse_fsm_state_next<= DIGIT;
+				when DIGIT=>  
+					digit_firstOne	<= '0';
+					parse_fsm_state_next<= DIGIT;
 				when OP =>    parse_fsm_state_next<= OP;
 				when EOL =>   parse_fsm_state_next<= CALC;
 				when others => assert false report "NEXTDIGIT State not supported" severity error;
@@ -126,8 +131,6 @@ next_state : process(parse_fsm_state, parse_start, \
 		
 	  operator_cnt	:= 0;
 	  calc_stage	:= 0;
-	  char_firstOne	<= '1';
-	  digit_firstOne<= '1';
 	  intern_digit_neg<= '0';
 	  
 	  char_state		<= IDLE0;
@@ -138,7 +141,6 @@ next_state : process(parse_fsm_state, parse_start, \
       when PARSE_INIT =>
 	  -- PARSER INIT
 	  charUnit_en	<= '1';
-	  char_firstOne 	<= '1';
 	  parser_internal_status<= RUNNING;
 	  char_state		<= ANALYZE_NEXT;
 	  
@@ -146,36 +148,40 @@ next_state : process(parse_fsm_state, parse_start, \
       when DIGIT =>
 	  charUnit_get_next <= '0';
 	  -- catch information about next char and save them to char_info* std_logic!!!!!!!!!!!!!
+	  
+	  
       
       when DIGIT_GETNEXT =>
-		if parse_fsm_state'LAST_ACTIVE != PARSE_INIT then
-			char_firstOne	<= '0';
-		end if;
-		charUnit_get_next <= '1';
-		char_state = PROCESS_NEXT;
-		
+	  -- --Moved to next_state logic
+	  --if parse_fsm_state'LAST_ACTIVE != PARSE_INIT then
+	  --	  char_firstOne	<= '0';
+	  --end if;
+	  charUnit_get_next <= '1';
+	  char_state = PROCESS_NEXT;
+	  
       when OP =>
-		charUnit_get_next <= '0';
-		operator_cnt := operator_cnt+1;
-		if operator_cnt>2 then
-			parser_internal_status <= TOO_MUCH_OPS;
-		end if;
+	  charUnit_get_next <= '0';
+	  operator_cnt := operator_cnt+1;
+	  if operator_cnt>2 then
+		parser_internal_status <= TOO_MUCH_OPS;
+	  end if;
+	  
+	  
       when CALC =>
-		operator_cnt := operator_cnt-1;
-		assert operator_cnt>=0 and operator_cnt<2
-			report "invalid operator_cnt" severity error;
-		assert calc_stage<2
-			report "calc stage size exceeded" severity error;
-		
-	
+	  operator_cnt := operator_cnt-1;
+	  assert operator_cnt>=0 and operator_cnt<2
+		report "invalid operator_cnt" severity error;
+	  assert calc_stage<2
+		report "calc stage size exceeded" severity error;
+	  
       when PARSE_ERROR =>
-		null;
+	  null;
       
       when WAIT_CALC_RESULT =>
-		null;
+	  null;
       
       when WRITE_RESULT =>
-		null;
+	  null;
 	
     end case;
   end process output;
