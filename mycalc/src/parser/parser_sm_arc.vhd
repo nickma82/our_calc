@@ -28,7 +28,7 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal char_state: PARSER_CHAR_STATE_TYPE;
   
   type PARSER_INTERNAL_STATE_TYPE is 
-	  (RESET, RUNNING, GOOD, TOO_MUCH_OPS);
+	  (RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
   signal parser_internal_status: PARSER_INTERNAL_STATE_TYPE;
   
 BEGIN
@@ -80,7 +80,8 @@ next_state : process(parse_fsm_state, parse_start, \
 	      if char_firstOne='1' and charUnit_op != SUBTRAKTION then
 		      parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
 	      elsif charUnit_lastChar_type=OP and charUnit_op!= SUBTRAKTION then
-		      parse_fsm_state_next <= PARSE_ERROR; --E: Second op in series isn't a minus
+		      parser_internal_status <= INVALID_OP_SEQUENCE;
+		      parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
 	      end if;
 	      
 	      --Process Handling
@@ -121,7 +122,7 @@ next_state : process(parse_fsm_state, parse_start, \
   
   
  output : process(parse_fsm_state)
-	variable operator_cnt, calc_stage:		INTEGER := 0;
+	variable operator_cnt, calc_stage, operators_serial:	INTEGER := 0;
   begin
     case parse_fsm_state is
       when IDLE0 =>
@@ -129,8 +130,9 @@ next_state : process(parse_fsm_state, parse_start, \
 	  charUnit_en <='0'; --Disable next digit unit
 	  charUnit_get_next <='0';
 		
-	  operator_cnt	:= 0;
-	  calc_stage	:= 0;
+	  operator_cnt	   := 0;
+	  calc_stage	   := 0;
+	  operators_serial := 0;
 	  intern_digit_neg<= '0';
 	  
 	  char_state		<= IDLE0;
