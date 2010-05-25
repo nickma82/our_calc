@@ -36,7 +36,7 @@ architecture output_arc of output_ent is
 
 --type
 type OUTPUT_FSM_STATE_TYPE is
-    (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE);
+    (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE, WAIT_STATE);
 
 --constants
 constant RED : std_logic_vector(23 downto 0) := x"0000FF";
@@ -44,17 +44,22 @@ constant GREEN : std_logic_vector(23 downto 0) := x"00FF00";
 constant BLUE : std_logic_vector(23 downto 0) := x"FF0000";
 
 --signals
-signal output_fsm_state, output_fsm_state_next : OUTPUT_FSM_STATE_TYPE;
-signal position : std_logic_vector(7 downto 0);
+signal output_fsm_state, output_fsm_state_next, state_after_wait : OUTPUT_FSM_STATE_TYPE;
+signal position 			: std_logic_vector(7 downto 0);
+signal vga_command_next			: std_logic_vector(7 downto 0);
+signal vga_command_data_next		: std_logic_vector(31 downto 0);
 
 begin
 
 sync : process(sys_clk, sys_res_n)
 begin
 	if sys_res_n = '0' then
-		output_fsm_state <= INIT;
+		output_fsm_state <= WAIT_STATE;
+		state_after_wait <= INIT;
 	elsif rising_edge(sys_clk) then
 		output_fsm_state <= output_fsm_state_next;
+		vga_command <= vga_command_next;
+		vga_command_data <= vga_command_data_next;
 	end if;
 
 end process sync;
@@ -65,50 +70,67 @@ begin
 	
 	case output_fsm_state is
 		when INIT => 
-			output_fsm_state_next <= READY;
+			if vga_free = '0' then
+				output_fsm_state_next <= READY;
+			end if;
 		when READY =>
-			if inp_new_data = '1' then output_fsm_state_next <= WRITE_CHAR;
-			elsif pars_new_data = '1' then output_fsm_state_next <= WRITE_RESULT;
-			elsif inp_del = '1' then output_fsm_state_next <= DELETE;
+			if inp_new_data = '1' then 
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait <= WRITE_CHAR;
+			elsif pars_new_data = '1' then 
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait <= WRITE_RESULT;
+			elsif inp_del = '1' then 
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait <= DELETE;
 			end if;
 		when WRITE_CHAR =>
-			if vga_free = '1' then
+			if vga_free = '0' then
 				output_fsm_state_next <= READY;
 			end if;
 		when WRITE_RESULT =>
-			if vga_free = '1' then
+			if vga_free = '0' then
 				output_fsm_state_next <= READY;
 			end if;
 		when DELETE =>
-			if vga_free = '1' then
+			if vga_free = '0' then
 				output_fsm_state_next <= READY;
 			end if;
+		when WAIT_STATE =>
+			if vga_free = '1' then
+				output_fsm_state_next <= state_after_wait;
+			end if;
+			
 		when others => null;
 	end case;
 end process next_state;
 
 output : process(output_fsm_state)
 begin
-	case output_fsm_state is
-		when INIT =>
-			--vga_command <= COMMAND_SET_BACKGROUND;
-			--vga_command_data <= x"00FFFFFF";
-			--position <= x"00";
-		when READY =>
-		when WRITE_CHAR =>
-			vga_command <= COMMAND_SET_CHAR;
-			vga_command_data <= WHITE & inp_data;
-			position <= position + 1;
-		when WRITE_RESULT =>
-			vga_command <= COMMAND_SET_CHAR;
-			vga_command_data <= WHITE & pars_data;
-			position <= x"00";
-		when DELETE =>
-			vga_command <= COMMAND_SET_CURSOR_COLUMN;
-			vga_command_data <= x"000000"&(position - 1);
-			position <= position - 1;
-		when others => null;
-	end case;
+	vga_command_next <= COMMAND_NOP;
+	vga_command_data_next <= (others => '0');
+
+	if vga_free = '1' then
+		case output_fsm_state is
+			when INIT =>
+				vga_command_next <= COMMAND_SET_BACKGROUND;
+				vga_command_data_next <= x"00FFFFFF";
+				position <= x"00";
+			when WRITE_CHAR =>
+				vga_command_next <= COMMAND_SET_CHAR;
+				vga_command_data_next <= WHITE & inp_data;
+				position <= position + 1;
+			when WRITE_RESULT =>
+				vga_command_next <= COMMAND_SET_CHAR;
+				vga_command_data_next <= WHITE & pars_data;
+				position <= x"00";
+			when DELETE =>
+				vga_command_next <= COMMAND_SET_CURSOR_COLUMN;
+				vga_command_data_next <= x"000000"&(position - 1);
+				position <= position - 1;
+			when others => null;
+		end case;
+	end if;
 end process output;
 
 end output_arc;
