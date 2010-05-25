@@ -5,6 +5,8 @@ use IEEE.std_logic_arith.all;
 
 use ieee.numeric_std.all;
 
+use work.textmode_vga_platform_dependent_pkg.all;
+
 --ENTITY
 entity struct_tb is
 
@@ -18,18 +20,18 @@ architecture behav of struct_tb is
 constant clock_period: time := 30 ns;
 
 signal sys_clk, sys_res_n: std_logic;
-signal btn_a : in std_logic;
-signal led_a: out std_logic;
-signal led_b: out std_logic;
-signal ps2_data: inout std_logic;
-signal ps2_clk: inout std_logic;
-signal hsync_n: out std_logic;
-signal vsync_n: out std_logic;
-signal r: out std_logic_vector(RED_BITS-1 downto 0);
-signal g: out std_logic_vector(GREEN_BITS-1 downto 0);
-signal b: out std_logic_vector(BLUE_BITS-1 downto 0);
-signal uart_tx: out std_logic;
-signal uart_rx: in std_logic
+signal btn_a : std_logic;
+signal led_a: std_logic;
+signal led_b: std_logic;
+signal ps2_data: std_logic;
+signal ps2_clk: std_logic;
+signal hsync_n: std_logic;
+signal vsync_n: std_logic;
+signal r: std_logic_vector(RED_BITS-1 downto 0);
+signal g: std_logic_vector(GREEN_BITS-1 downto 0);
+signal b: std_logic_vector(BLUE_BITS-1 downto 0);
+signal uart_tx: std_logic;
+signal uart_rx: std_logic;
 
 begin --behave
 
