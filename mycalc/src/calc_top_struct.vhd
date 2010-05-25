@@ -16,7 +16,7 @@ use work.big_pkg.all;
 --Module Inkludiert
 use work.input_pkg.all;
 use work.output_pkg.all;
-use work.ringbuffer_pkg.all;
+--use work.ringbuffer_pkg.all;
 --use work.serialhandler_pkg.all;
 --use work.rs232_pkg.all;
 --use work.parser_pkg.all;
@@ -38,8 +38,8 @@ architecture struct of calc_top is
 	
 
 	--PS2
-	signal new_data : std_logic ;
-	signal data : std_logic_vector (7 downto 0);
+	--signal new_data : std_logic ;
+	--signal data : std_logic_vector (7 downto 0);
 
 	--VGA
 	signal vga_free:std_logic;
@@ -55,18 +55,18 @@ architecture struct of calc_top is
 	signal ps2_data_intern : std_logic_vector(7 downto 0) := x"00";
 
 	--Output
-	signal vga_command	: std_logic_vector(7 downto 0);
-	signal vga_command_data	: std_logic_vector(31 downto 0);
-	signal pars_new_data	: std_logic;
-	signal pars_data	: std_logic_vector(7 downto 0);
+	signal vga_command	: std_logic_vector(7 downto 0) := x"00";
+	signal vga_command_data	: std_logic_vector(31 downto 0) := x"00000000";
+	signal pars_new_data	: std_logic := '0';
+	signal pars_data	: std_logic_vector(7 downto 0) := x"00";
 
 	--Ringbuffer
-	signal rb_busy		: std_logic := '0';
-	signal rb_char_newline	: std_logic := '0';
-	signal rb_read_en	: std_logic := '0';
-	signal rb_read_lineNr	: std_logic_vector(7 downto 0) := x"00";
-	signal rb_read_data_rdy	: std_logic := '0';
-	signal rb_read_data	: RAM_LINE;	
+	--signal rb_busy		: std_logic := '0';
+	--signal rb_char_newline	: std_logic := '0';
+	--signal rb_read_en	: std_logic := '0';
+	--signal rb_read_lineNr	: std_logic_vector(7 downto 0) := x"00";
+	--signal rb_read_data_rdy	: std_logic := '0';
+	--signal rb_read_data	: RAM_LINE;	
 
 begin
 	sys_res_n_debounce_inst : debounce
@@ -123,8 +123,8 @@ begin
 	(
 		sys_clk => sys_clk,
 		sys_res_n => sys_res_n_sync,
-		new_data => new_data,
-		data => data,
+		new_data => ps2_new_data,
+		data => ps2_data_intern,
 		ps2_clk => ps2_clk,
 		ps2_data => ps2_data
 	);
@@ -185,22 +185,22 @@ begin
 	);
 	
 	--Ringbuffer
-	ringbuffer_inst : ringbuffer_ent
-	port map
-	(
-		sys_clk	=> sys_clk,
-		sys_res_n => sys_res_n,
-		rb_busy => rb_busy,
-		pars_new_data => pars_new_data,
-		pars_data => pars_data,
-		inp_new_data => inp_new_data,
-		inp_data => inp_data,
-		inp_del => inp_del,
-		rb_char_newline => rb_char_newline,
-		rb_read_en => rb_read_en,
-		rb_read_lineNr => rb_read_lineNr,
-		rb_read_data_rdy => rb_read_data_rdy,
-		rb_read_data => rb_read_data
-	);
+	--ringbuffer_inst : ringbuffer_ent
+	--port map
+	--(
+	--	sys_clk	=> sys_clk,
+	--	sys_res_n => sys_res_n,
+	--	rb_busy => rb_busy,
+	--	pars_new_data => pars_new_data,
+	--	pars_data => pars_data,
+	--	inp_new_data => inp_new_data,
+	--	inp_data => inp_data,
+	--	inp_del => inp_del,
+	--	rb_char_newline => rb_char_newline,
+	--	rb_read_en => rb_read_en,
+	--	rb_read_lineNr => rb_read_lineNr,
+	--	rb_read_data_rdy => rb_read_data_rdy,
+	--	rb_read_data => rb_read_data
+	--);
 
 end architecture struct;

@@ -34,7 +34,7 @@ type INPUT_FSM_STATE_TYPE is
 
 --signals
 signal input_fsm_state, input_fsm_state_next : INPUT_FSM_STATE_TYPE;
-signal ascii : std_logic_vector(7 downto 0);
+signal ascii, ascii_next		: std_logic_vector(7 downto 0);
 
 
 begin
@@ -52,63 +52,65 @@ begin
 		--pars_start <= '0';
 	elsif rising_edge(sys_clk) then
 		input_fsm_state <= input_fsm_state_next;
+		ascii <= ascii_next;
 	end if;
 
 end process sync;
 
-next_state : process(input_fsm_state, ps2_data, ps2_new_data)
+next_state : process(input_fsm_state, ps2_data, ps2_new_data, ascii)
 begin
 	input_fsm_state_next <= input_fsm_state;
+	ascii_next <= ascii;
 	
 	case input_fsm_state is
 		when READY =>
 			if ps2_new_data = '1' then
 			case ps2_data is
 				when x"70" =>   -- '0'
-					ascii <= x"30";
+					ascii_next <= x"30";
 					input_fsm_state_next <= VALID;
 				when x"69" =>   -- '1'
-					ascii <= x"31";
+					ascii_next <= x"31";
 					input_fsm_state_next <= VALID;
 				when x"72" =>   -- '2'
-					ascii <= x"32";
+					ascii_next <= x"32";
 					input_fsm_state_next <= VALID;
 				when x"7A" =>   -- '3'
-					ascii <= x"33";
+					ascii_next <= x"33";
 					input_fsm_state_next <= VALID;
 				when x"6B" =>   -- '4'
-					ascii <= x"34";
+					ascii_next <= x"34";
 					input_fsm_state_next <= VALID;
 				when x"73" =>   -- '5'
-					ascii <= x"35";
+					ascii_next <= x"35";
 					input_fsm_state_next <= VALID;
 				when x"74" =>   -- '6'
-					ascii <= x"36";
+					ascii_next <= x"36";
 					input_fsm_state_next <= VALID;
 				when x"6C" =>   -- '7'
-					ascii <= x"37";
+					ascii_next <= x"37";
 					input_fsm_state_next <= VALID;
 				when x"75" =>   -- '8'
-					ascii <= x"38";
+					ascii_next <= x"38";
 					input_fsm_state_next <= VALID;
 				when x"7D" =>   -- '9'
-					ascii <= x"39";
+					ascii_next <= x"39";
 					input_fsm_state_next <= VALID;	
 				when x"79" =>   -- '+'
-					ascii <= x"2B";
+					ascii_next <= x"2B";
 					input_fsm_state_next <= VALID;		
 				when x"7B" =>   -- '-'
-					ascii <= x"2D";
+					ascii_next <= x"2D";
 					input_fsm_state_next <= VALID;
 				when x"7C" =>   -- '*'
-					ascii <= x"2A";
+					ascii_next <= x"2A";
 					input_fsm_state_next <= VALID;
 				when x"66" =>   -- Backspace
 					input_fsm_state_next <= BACKSPACE;
 				when x"5A" =>   -- Enter
 					input_fsm_state_next <= ENTER;
 				when x"29" =>   -- Space
-					ascii <= x"20";
+					ascii_next <= x"20";
 					input_fsm_state_next <= VALID;
 				when x"F0" => input_fsm_state_next <= RELEASE;
 				when x"E0" => input_fsm_state_next <= SPECIAL;
@@ -121,7 +123,7 @@ begin
 			case ps2_data is
 				when x"4A" => -- '/'
 					if ps2_new_data = '1' then 
-						ascii <= x"2F";
+						ascii_next <= x"2F";
 						input_fsm_state_next <= Valid; 
 					end if;
 				when others => null;
@@ -138,6 +140,12 @@ end process next_state;
 
 output : process(input_fsm_state, ascii)
 begin
+	inp_new_data <= '0';
+	pars_start <= '0';
+	inp_del <= '0';
+	inp_sendRS232 <= '0';
+	inp_data <= ascii; --oder  x"00"
+	
 	case input_fsm_state is
 		when READY =>
 			inp_new_data <= '0';
