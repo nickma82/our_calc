@@ -9,26 +9,29 @@ package parser_pkg is
     
 	subtype ONEDIGIT is SIGNED(7 downto 0);
 	
-
-    component alu_top IS 
-	generic
-	(
-	      RESET_VALUE : std_logic := '0'
-	);
-	port
-	(
-	  sys_clk : in std_logic;
-	  sys_res_n : in std_logic;
-
-	      calc_data:	IN CALCSIGNED;
-	      calc_data2:	IN CALCSIGNED;
-	      calc_operator: IN  alu_operator_TYPE;
-	      calc_start:	IN  STD_LOGIC := '0';
-	      calc_finished:	OUT STD_LOGIC := '0';
-	      calc_result:	OUT CALCSIGNED;
-	      calc_status: 	OUT alu_calc_error_TYPE
-	);
-    END component alu_top;
+	constant STAGES_TOP: INTEGER := 3;
+	TYPE calc_buffs_TYPE  	is ARRAY (2 downto 0) of CALCSIGNED;
+	TYPE alu_ops_buff_TYPE 	is ARRAY (2 downto 0) of alu_operator_TYPE;
+	
+-- 	component alu_top IS 
+-- 	generic
+-- 	(
+-- 	      RESET_VALUE : std_logic := '0'
+-- 	);
+-- 	port
+-- 	(
+-- 	  sys_clk : in std_logic;
+-- 	  sys_res_n : in std_logic;
+-- 
+-- 	      calc_data:	IN CALCSIGNED;
+-- 	      calc_data2:	IN CALCSIGNED;
+-- 	      calc_operator: IN  alu_operator_TYPE;
+-- 	      calc_start:	IN  STD_LOGIC := '0';
+-- 	      calc_finished:	OUT STD_LOGIC := '0';
+-- 	      calc_result:	OUT CALCSIGNED;
+-- 	      calc_status: 	OUT alu_calc_error_TYPE
+-- 	);
+--     END component alu_top;
 	
     
 end package parser_pkg;

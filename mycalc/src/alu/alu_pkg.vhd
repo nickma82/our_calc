@@ -1,6 +1,7 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.big_pkg.all;
 
 package alu_pkg is
     component alu_top IS 
@@ -22,4 +23,4 @@ package alu_pkg is
 	      calc_status: 	OUT alu_calc_error_TYPE
 	);
     END component alu_top;
-end package parser_pkg;
+end package alu_pkg;

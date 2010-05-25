@@ -58,6 +58,16 @@ vcom -work work $DIR/alu/alu_fsm_arc.vhd
 vcom -work work $DIR/alu/alu_top.vhd
 vcom -work work $DIR/alu/alu_top_struct.vhd
 
+###PARSER
+vcom -work work $DIR/parser/parser_pkg.vhd
+vcom -work work $DIR/parser/parser_sm_ent.vhd
+vcom -work work $DIR/parser/parser_sm_arc.vhd
+###vcom -work work $DIR/parser/char_unit_ent.vhd
+###vcom -work work $DIR/parser/char_unit_arc.vhd
+vcom -work work $DIR/parser/parser_top.vhd
+vcom -work work $DIR/parser/parser_top_struct.vhd
+#vcom -work work $DIR/parser/.vhd
+
 
 ## compile testbench
 vcom -work work calc_tb.vhd

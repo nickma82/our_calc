@@ -9,8 +9,10 @@ package big_pkg is
 	--- ALU
 	constant SIZEI: INTEGER := 32;
 	subtype CALCSIGNED is SIGNED((SIZEI-1) downto 0);
-	constant CALCMAX: INTEGER:=  2147483647; --  (2**(SIZEI-1))-1
-	constant CALCMIN: INTEGER:= -2147483647; -- -(2**(SIZEI-1));
+	
+	subtype MINMAX is INTEGER range -2147483648 TO 2147483647;
+	constant CALCMAX: MINMAX:=  2147483647; --  (2**(SIZEI-1))-1 , minmax'right;
+	constant CALCMIN: MINMAX:= -2147483648; -- -(2**(SIZEI-1));,   minmax'left;
 	
 	
 	--- PARSER

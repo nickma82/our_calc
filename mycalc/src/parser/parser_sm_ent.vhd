@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use work.big_pkg.all;
 use work.parser_pkg.all;
 
-entity parser_sm_top is
+entity parser_sm_ent is
   generic
   (
 	RESET_VALUE : std_logic := '0'
@@ -32,4 +32,4 @@ entity parser_sm_top is
 	charUnit_char_type: 	IN PARSER_CHAR_TYPE
 	
   );
-end parser_sm_top;
+end parser_sm_ent;
