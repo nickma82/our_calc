@@ -91,9 +91,9 @@ output : process(output_fsm_state)
 begin
 	case output_fsm_state is
 		when INIT =>
-			vga_command <= COMMAND_SET_BACKGROUND;
-			vga_command_data <= x"00FFFFFF";
-			position <= x"00";
+			--vga_command <= COMMAND_SET_BACKGROUND;
+			--vga_command_data <= x"00FFFFFF";
+			--position <= x"00";
 		when READY =>
 		when WRITE_CHAR =>
 			vga_command <= COMMAND_SET_CHAR;

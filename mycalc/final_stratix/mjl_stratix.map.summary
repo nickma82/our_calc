@@ -1,0 +1,12 @@
+Analysis & Synthesis Status : Successful - Tue May 25 13:23:23 2010
+Quartus II Version : 9.1 Build 222 10/21/2009 SJ Full Version
+Revision Name : mjl_stratix
+Top-level Entity Name : calc_top
+Family : Stratix
+Total logic elements : 556
+Total pins : 19
+Total virtual pins : 0
+Total memory bits : 98,304
+DSP block 9-bit elements : 0
+Total PLLs : 1
+Total DLLs : 0

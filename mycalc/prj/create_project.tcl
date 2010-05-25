@@ -51,21 +51,6 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE ../src/libs/sync_pkg.vhd
 	
 	################ PINNING
-	#7Seg
-	set_location_assignment PIN_T2 -to seg_b[6]
-	set_location_assignment PIN_AA11 -to seg_b[5]
-	set_location_assignment PIN_R6 -to seg_b[4]
-	set_location_assignment PIN_R4 -to seg_b[3]
-	set_location_assignment PIN_N8 -to seg_b[2]
-	set_location_assignment PIN_Y11 -to seg_b[0]
-	set_location_assignment PIN_N7 -to seg_b[1]
-	set_location_assignment PIN_R23 -to seg_a[6]
-	set_location_assignment PIN_R22 -to seg_a[5]
-	set_location_assignment PIN_R21 -to seg_a[4]
-	set_location_assignment PIN_R20 -to seg_a[3]
-	set_location_assignment PIN_R19 -to seg_a[2]
-	set_location_assignment PIN_R9 -to seg_a[1]
-	set_location_assignment PIN_R8 -to seg_a[0]
 	#System
 	set_location_assignment PIN_N3 -to sys_clk
 	set_location_assignment PIN_AF17 -to sys_res_n
@@ -77,22 +62,22 @@ if {$make_assignments} {
 	#usart
 	set_location_assignment PIN_D20 -to uart_cts
 	set_location_assignment PIN_D21 -to uart_rts
-	set_location_assignment PIN_D22 -to uart_txd
-	set_location_assignment PIN_D23 -to uart_rxd
+	set_location_assignment PIN_D22 -to uart_tx
+	set_location_assignment PIN_D23 -to uart_rx
 	#ps2 (bidirectional)
 	set_location_assignment PIN_E21 -to ps2_data
 	set_location_assignment PIN_Y26 -to ps2_clk
 	#vga
-	set_location_assignment PIN_E22 -to vga_r0
-	set_location_assignment PIN_T4 -to  vga_r1
-	set_location_assignment PIN_T7 -to vga_r2
-	set_location_assignment PIN_E23 -to vga_g0
-	set_location_assignment PIN_T5 -to vga_g1
-	set_location_assignment PIN_T24 -to vga_g2
-	set_location_assignment PIN_E24 -to vga_b0
-	set_location_assignment PIN_T6 -to vga_b1
-	set_location_assignment PIN_F1 -to vga_hsync_n
-	set_location_assignment PIN_F2 -to vga_vsync_n
+	set_location_assignment PIN_E22 -to r[0]
+	set_location_assignment PIN_T4 -to r[1]
+	set_location_assignment PIN_T7 -to r[2]
+	set_location_assignment PIN_E23 -to g[0]
+	set_location_assignment PIN_T5 -to g[1]
+	set_location_assignment PIN_T24 -to g[2]
+	set_location_assignment PIN_E24 -to b[0]
+	set_location_assignment PIN_T6 -to b[1]
+	set_location_assignment PIN_F1 -to hsync_n
+	set_location_assignment PIN_F2 -to vsync_n
 	
 	
 

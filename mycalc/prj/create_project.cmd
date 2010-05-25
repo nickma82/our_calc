@@ -1,4 +1,4 @@
 cd ..
-mkdir mjl_stratix
-cd mjl_stratix
+mkdir final_stratix
+cd final_stratix
 quartus_sh -t ../prj/create_project.tcl

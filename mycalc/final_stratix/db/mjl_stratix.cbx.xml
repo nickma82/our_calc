@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<LOG_ROOT>
+	<PROJECT NAME="mjl_stratix">
+		<CBX_INST_ENTRY INSTANCE_NAME="|calc_top|textmode_vga:textmode_vga_inst|font_rom:font_rom_inst|altsyncram:Mux0_rtl_1" CBX_FILE_NAME="altsyncram_7sv.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|calc_top|textmode_vga:textmode_vga_inst|video_memory:video_memory_inst|altsyncram:ram_rtl_0" CBX_FILE_NAME="altsyncram_cgm1.tdf"/>
+	</PROJECT>
+</LOG_ROOT>

@@ -23,7 +23,7 @@ use work.ringbuffer_pkg.all;
 --use work.alu.pkg.all;
 use work.debounce_pkg.all;
 use work.sync_pkg.all;
-use work.pll_pkg.all;
+--use work.pll_pkg.all;
 
 
 architecture struct of calc_top is
@@ -103,11 +103,11 @@ begin
 	
 	led_a <= not(btn_a_sync);
 	
-	--pll_vga_clk: pll
-	--PORT MAP (
-	--	inclk0	 => sys_clk,
-	--	c0	 => c0_pll_sig
-	--);
+	pll_vga_clk: pll
+	PORT MAP (
+		inclk0	 => sys_clk,
+		c0	 => c0_pll_sig
+	);
 	
 	
 	----- CALC CONNECTIVITY
@@ -144,7 +144,7 @@ begin
 		command => vga_command,
 		command_data => vga_command_data,
 		free => vga_free,
-		vga_clk => vga_clk,
+		vga_clk => c0_pll_sig,
 		vga_res_n => sys_res_n_sync,
 		vsync_n => vsync_n,
 		hsync_n => hsync_n,
