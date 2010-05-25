@@ -126,8 +126,11 @@ begin
 						ascii_next <= x"2F";
 						input_fsm_state_next <= Valid; 
 					end if;
-				when others => null;
-				
+				when others => 
+					if ps2_new_data = '1' then 
+						ascii_next <= x"00";
+						input_fsm_state_next <= READY; 
+					end if;				
 			end case;
 		when RELEASE =>
 			if ps2_new_data = '1' then input_fsm_state_next <= READY; end if;
