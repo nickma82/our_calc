@@ -31,10 +31,13 @@ type RS232_FSM_STATE_TYPE is
     (READY, SEND_INIT, SEND_BIT, SEND_DONE, RECV_INIT, RECV_WAIT, RECV_BIT, RECV_DONE);
 
 --constants
+constant baudValue : integer := 290;
 
 --signals
 signal RS232_fsm_state, RS232_fsm_state_next : RS232_FSM_STATE_TYPE;
-
+signal countBaud, countBaud_next : integer range 0 to 436 := 0;
+signal countBit, countBit_next : integer range 0 to 9 := 0;
+signal recvBuffer, recvBuffer_next : std_logic_vector(7 downto 0);
 
 begin
 
@@ -44,41 +47,50 @@ begin
 		RS232_fsm_state <= READY;
 	elsif rising_edge(sys_clk) then
 		RS232_fsm_state <= RS232_fsm_state_next;
+		countBaud <= countBaud_next;
+		countBit <= countBit_next;
 	end if;
 
 end process sync;
 
-next_state : process(RS232_fsm_state)
+next_state : process(RS232_fsm_state, uart_rx, countBaud, countBit)
 begin
 	RS232_fsm_state_next <= RS232_fsm_state;
 	
 	case RS232_fsm_state is
 		when READY =>
-			
-			
+			if uart_rx = '0' then
+				RS232_fsm_state_next <= RECV_INIT;
+			end if;
       		when SEND_INIT =>
-
+			
 		when SEND_BIT =>
 
 		when SEND_DONE =>
 		
 		when RECV_INIT =>
-
+			if countBaud >= 435 then			-- 1,5 mal die Bitzeit
+				RS232_fsm_state_next <= RECV_BIT;
+			end if;
 		when RECV_WAIT =>
 
 		when RECV_BIT =>
-		
+			if countBit >= 8 then
+				RS232_fsm_state_next <= READY;
+			end if;
 		when RECV_DONE =>
 			
 	end case;
 end process next_state;
 
-output : process(RS232_fsm_state)
+output : process(RS232_fsm_state, countBaud, countBit)
 begin
+	countBaud_next <= x"00";
+	countBit_next <= x"00";
+
 	case RS232_fsm_state is
 		when READY =>
-			
-			
+				
       		when SEND_INIT =>
 
 		when SEND_BIT =>
@@ -86,12 +98,20 @@ begin
 		when SEND_DONE =>
 		
 		when RECV_INIT =>
-
+			countBaud_next <= countBaud + 1;
+			countBit_next <= 0;
 		when RECV_WAIT =>
 
 		when RECV_BIT =>
-		
-		when RECV_DONE =>			
+			if countBaud >= 290 then
+				recvBuffer_next(countBit) <= uart_rx;
+				countBit_next <= countBit + 1;
+				countBaud_next <= x"00";
+			elsif
+				countBaud_next <= countBaud + 1;
+			end if;
+		when RECV_DONE =>
+			
 		when others => null;
 	end case;
 end process output;
