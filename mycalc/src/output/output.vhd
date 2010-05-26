@@ -118,7 +118,7 @@ begin
 		case output_fsm_state is
 			when INIT =>
 				vga_command_next <= COMMAND_SET_BACKGROUND;
-				vga_command_data_next <= x"00FFFFFF";
+				vga_command_data_next <= x"008B8878";
 				position_next <= x"00";
 			when WRITE_CHAR =>
 				vga_command_next <= COMMAND_SET_CHAR;
