@@ -26,13 +26,13 @@ architecture behav of parser_tb is
 	signal rb_read_data_rdy: STD_LOGIC;
 	signal rb_read_data:	 RAM_LINE;
 	
-	signal en:	STD_LOGIC;
-	signal get_next: STD_LOGIC;
-	signal next_valid:	STD_LOGIC;
-	signal digit: 		ONEDIGIT;
-	signal op:		alu_operator_TYPE;
-	signal lastChar_type : PARSER_CHAR_TYPE;
-	signal char_type: 	PARSER_CHAR_TYPE;
+	signal charUnit_en:	STD_LOGIC;
+	signal charUnit_get_next: STD_LOGIC;
+	signal charUnit_next_valid:	STD_LOGIC;
+	signal charUnit_digit: 		ONEDIGIT;
+	signal charUnit_op:		alu_operator_TYPE;
+	signal charUnit_lastChar_type : PARSER_CHAR_TYPE;
+	signal charUnit_char_type: 	PARSER_CHAR_TYPE;
 	
 	
   component parser_top is
@@ -65,19 +65,20 @@ architecture behav of parser_tb is
 	end component parser_top;
 	
 	
-	
+	signal intern_charUnit_on: std_logic := '0';
+	signal intern_charUnit_on_last: std_logic := '0';
 begin --behave
   --uut : entity work.parser_top
-  uut: parser_top
+  uut: entity work.parser_top
 	generic map
 	(
 			RESET_VALUE => RESET_VALUE
-	);  
+	)
 	port map
 	(	sys_clk => sys_clk,
 		sys_res_n => sys_res_n,
 			
-		parse_start	=> ps_start,
+		ps_start	=> ps_start,
 	    parse_new_data	=> parse_new_data,
 	    parse_data	=> parse_data,
 		
@@ -88,13 +89,13 @@ begin --behave
 		rb_read_data	=> rb_read_data,
 		
 		-- TEST input
-		en	=> en,
-		get_next	=> get_next,
-		next_valid	=> next_valid,
-		digit	=> digit,
-		op	=> op,
-		lastChar_type	=> lastChar_type,
-		char_type	=> char_type
+		en	=> charUnit_en,
+		get_next	=> charUnit_get_next,
+		next_valid	=> charUnit_next_valid,
+		digit	=> charUnit_digit,
+		op	=> charUnit_op,
+		lastChar_type	=> charUnit_lastChar_type,
+		char_type	=> charUnit_char_type
 	);
     
   process
@@ -108,12 +109,39 @@ begin --behave
     wait for 15 ns;
   end process;
   
+  
+  process
+  	variable trigger_nextValid: std_logic := '0';
+  begin
+  	if (intern_charUnit_on_last /= intern_charUnit_on) then
+  		intern_charUnit_on_last <= intern_charUnit_on;
+  		if intern_charUnit_on = '1' then
+  			trigger_nextValid := '1';
+  		end if;
+  	end if; 
+  	
+  	if (trigger_nextValid = '1' and charUnit_get_next = '1') then
+  		charUnit_next_valid <= '1';
+  	else
+  		charUnit_next_valid <= '0';
+  		trigger_nextValid := '0';
+  	end if;
+  	
+  	
+  	if stop = true then
+  		wait;
+  	end if;
+  	wait for 15 ns;
+  end process;
+  
+  
   process
   begin
     sys_res_n <= '0';
     --######## RESET Pins #######
 	--parser
     ps_start <= '1';
+    intern_charUnit_on <= '0';
 	--test input digitUnit
 	--##END RESET##
 	
@@ -122,23 +150,42 @@ begin --behave
     -- BEGIN TESTS
     
 	wait for 10 us;
-	stop <= true;
 	
-	
-	
-	
---     wait for 500 ns;
---     calc_data <=  to_signed(10, SIZEI); --Integer to Signed
---     calc_data2 <= to_signed(2, SIZEI);
---     calc_operator <= ADDITION;
---     wait for 10 ns;
---     calc_start <= '1';
---     wait for 2 us;
---     -- coverage off
---     assert calc_result(3 downto 0) = "1100"
--- 		report "result failed" 	severity failure;
---     -- coverage on
---     calc_start <= '0';
+	--(RESET, DIGIT, OP, EOL);
+	intern_charUnit_on <= '0';
+	wait for 500 ns;
+	charUnit_digit <=  0; 
+	charUnit_lastChar_type <= RESET;
+	charUnit_char_type	<= DIGIT;
+	charUnit_op		<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+		
+	for i in 0 to 7 loop
+		--(RESET, DIGIT, OP, EOL);
+		intern_charUnit_on <= '0';
+		wait for 500 ns;
+		charUnit_digit <=  i; 
+		charUnit_lastChar_type <= DIGIT;
+		charUnit_char_type	<= DIGIT;
+		charUnit_op		<= NOP;
+		wait for 10 ns;
+		intern_charUnit_on <= '1';
+		wait for 2 us;
+	end loop;
+    	
+    	
+    	--(RESET, DIGIT, OP, EOL);
+	intern_charUnit_on <= '0';
+	wait for 500 ns; 
+	charUnit_lastChar_type <= DIGIT;
+	charUnit_char_type	<= OP;
+	charUnit_op		<= SUBTRAKTION;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+    	
 --     
 --     
 --     wait for 500 ns;

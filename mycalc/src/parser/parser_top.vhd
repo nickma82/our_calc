@@ -22,13 +22,13 @@ entity parser_top is
 	rb_read_data:	in  RAM_LINE;
 	
 	-- TEST input
-	en:		IN STD_LOGIC;
-	get_next: 	IN STD_LOGIC;
-	next_valid:	OUT STD_LOGIC := '0';
-	digit: 		OUT ONEDIGIT;
-	op:		OUT alu_operator_TYPE := NOP;
-	lastChar_type : OUT PARSER_CHAR_TYPE  := RESET;
-	char_type: 	OUT PARSER_CHAR_TYPE  := RESET
+	en:		OUT STD_LOGIC;
+	get_next: 	OUT STD_LOGIC;
+	next_valid:	IN STD_LOGIC := '0';
+	digit: 		IN ONEDIGIT;
+	op:		IN alu_operator_TYPE := NOP;
+	lastChar_type : IN PARSER_CHAR_TYPE  := RESET;
+	char_type: 	IN PARSER_CHAR_TYPE  := RESET
 	);
 	
 end entity parser_top;

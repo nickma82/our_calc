@@ -6,10 +6,13 @@ use work.big_pkg.all;
 package parser_pkg is
     type PARSER_CHAR_TYPE is
       (RESET, DIGIT, OP, EOL);
-    
-	subtype ONEDIGIT is SIGNED(7 downto 0);
+    	
+    	--subtype ONEDIGIT is SIGNED(7 downto 0);
+    	subtype ONEDIGIT is INTEGER range 0 to 9;
 	
 	constant STAGES_TOP: INTEGER := 3;
+	subtype STAGE_POS_TYPE is INTEGER range 0 TO (STAGES_TOP-1);
+	
 	TYPE calc_buffs_TYPE  	is ARRAY (2 downto 0) of CALCSIGNED;
 	TYPE alu_ops_buff_TYPE 	is ARRAY (2 downto 0) of alu_operator_TYPE;
 	

@@ -63,7 +63,7 @@ begin
   begin
     case alu_fsm_state is
       when RESET =>
-      		calc_result(0) <= '0';
+      		--calc_result(0) <= '0';
 		calc_status <= RESET;
 		calc_finished <='0';
 		tmp_out_data := (others => '0');

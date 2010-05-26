@@ -56,19 +56,19 @@ vcom -work work calc_tb.vhd
 #coverage zeigt %des Codes der Simuliert ist
 # EIN START SIM cmd
 #vsim -coverage work.conf
-vsim -voptargs=+acc work.alu_tb
+vsim -voptargs=+acc work.parser_tb
 
 view -undock wave
 
 # add signals to waveform
 # add all testbench signals
-add wave -radix Decimal *
+add wave -group "parser tb" -radix Decimal *
 
 # add internal signals of unit under test
-#add wave -divider ALU_FSM
-#add wave uut/alu_logic_inst/alu_fsm*
-#add wave uut/alu_logic_inst/tmp*
+#add wave -divider PARSER
+add wave uut/parser_sm_inst/*
 #add wave -group "Div Comm" uut/div_*
+add wave -group "alu" -radix Decimal uut/alu_top_inst/*
 
 
 # auto-run simulation

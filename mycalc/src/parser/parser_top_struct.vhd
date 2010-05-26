@@ -21,7 +21,7 @@ architecture struct of parser_top is
 	    RESET_VALUE : std_logic := '0'
       );  
       port
-      (	sys_clkk		: in 	std_logic;
+      (	sys_clk		: in 	std_logic;
 	    sys_res_n       : in    std_logic;
 		    
 	    calc_data:	OUT CALCSIGNED;
@@ -89,7 +89,7 @@ BEGIN
 	generic map
 	(
 	    RESET_VALUE => RESET_VALUE
-	);
+	)
 	port map
 	(
 		sys_clk 	=>  sys_clk,
@@ -104,13 +104,13 @@ BEGIN
 		calc_status	=> calc_status
 		
 
-	)
+	);
 	
-	parser_sm_inst: parser_sm_ent
-	generic map
+      parser_sm_inst: parser_sm_ent
+      generic map
       (
 	    RESET_VALUE => RESET_VALUE
-      );  
+      )
       port map
       (	
 		sys_clk 	=>  sys_clk,
@@ -137,7 +137,6 @@ BEGIN
 	    charUnit_lastChar_type	=> lastChar_type,
 	    charUnit_char_type		=> char_type
       );
-    end component parser_sm_ent;
 	
 	
 	
