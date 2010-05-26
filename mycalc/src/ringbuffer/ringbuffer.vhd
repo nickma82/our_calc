@@ -108,6 +108,7 @@ begin
 
 	case ringbuffer_fsm_state is
 		when INIT =>
+			rb_busy <= '0';
 			linePointer_next <= 0;
 			charPointer_next <= 0;
 			--byte_buffer <= x"00";
@@ -146,8 +147,10 @@ begin
 				end loop;
 			end if;
 		when LINE_RDY =>
+			rb_busy <= '0';
 			rb_read_data_rdy <= '1';
 		when NEW_LINE =>
+			rb_busy <= '0';
 			--Der Zeiger auf die Zeile wird um eins erhöht und auf Überlauf kontrolliert
 			if linePointer >= LINE_NUMB - 1 then
 				linePointer_next <= 0;
