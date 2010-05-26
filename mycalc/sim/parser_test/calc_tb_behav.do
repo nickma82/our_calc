@@ -66,7 +66,7 @@ add wave -group "parser tb" -radix Decimal *
 
 # add internal signals of unit under test
 #add wave -divider PARSER
-add wave uut/parser_sm_inst/*
+add wave -radix Decimal uut/parser_sm_inst/*
 #add wave -group "Div Comm" uut/div_*
 add wave -group "alu" -radix Decimal uut/alu_top_inst/*
 

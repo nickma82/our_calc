@@ -10,9 +10,10 @@ use ieee.numeric_std.all;
 
 ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal char_firstOne, digit_firstOne: std_logic;
+  signal global_digit_neg:	STD_LOGIC;
   
   type PARSER_FSM_STATE_TYPE is
-    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, WRITE_RESULT);
+    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, WRITE_RESULT);
   signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
   type PARSER_CHAR_STATE_TYPE is
@@ -23,6 +24,7 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
 	  (RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
   signal parser_internal_status: PARSER_INTERNAL_STATE_TYPE;
   
+  signal debug_intern_buff_stage_pos, debug_intern_do_calc_stage: STAGE_POS_TYPE;
 BEGIN
 
 next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status)
@@ -103,45 +105,75 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	      if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
 		      parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
 	      elsif (charUnit_lastChar_type=OP and charUnit_op/= SUBTRAKTION) then
-		--parser_internal_status <= INVALID_OP_SEQUENCE;
-		parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
+			parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
 	      elsif parser_internal_status = TOO_MUCH_OPS then
 	      	parse_fsm_state_next   <= PARSE_ERROR;
-	      end if;
-	      
+	      elsif parser_internal_status = INVALID_OP_SEQUENCE then
+	      	parse_fsm_state_next   <= PARSE_ERROR;
+		  
 	      --Process Handling
-	      if char_state = ANALYZE_NEXT then
+	      elsif char_state = ANALYZE_NEXT then
 		    parse_fsm_state_next <= DIGIT_GETNEXT;
 	      elsif char_state = CALC_THIS then
-		    parse_fsm_state_next <= CALC;
+				if global_digit_neg= '1' then
+					--negative Handling
+					parse_fsm_state_next <= INVERT_SECOND_DATA;
+				else
+					parse_fsm_state_next <= CALC;
+				end if;
 	      end if;
     
-      when CALC =>
-		parse_fsm_state_next <= WAIT_CALC_RESULT;
+      when INVERT_SECOND_DATA=>
+		parse_fsm_state_next <= WAIT_INVERTATION_SECOND_DATA;
 	
-      when PARSE_ERROR =>
-		parse_fsm_state_next <= WRITE_RESULT;
-      
-      when WAIT_CALC_RESULT =>
+	  when WAIT_INVERTATION_SECOND_DATA =>
 		if calc_finished = '1' then
 			-- Error Handling
 			if calc_status /= GOOD then
 				parse_fsm_state_next <= PARSE_ERROR;
 			else
-				parse_fsm_state_next <= OP;
+				parse_fsm_state_next <= HANDLE_INVERTATION;
 			end if;
-			
+		end if;
+		
+	  when HANDLE_INVERTATION =>
+			parse_fsm_state_next <= CALC;
+		
+      when CALC =>
+		parse_fsm_state_next <= WAIT_CALC_RESULT;
+	
+	  
+	  when WAIT_CALC_RESULT =>
+		if calc_finished = '1' then
+			-- Error Handling
+			if calc_status /= GOOD then
+				parse_fsm_state_next <= PARSE_ERROR;
+			else
+				parse_fsm_state_next <= SAVE_CALC_RESULT;
+			end if;
 		end if;
 	  
+	  
 	  when SAVE_CALC_RESULT =>
-		null;
+		if char_state = CALC_THIS then 		--order essential
+			parse_fsm_state_next <= CALC;	--order essential
+		elsif charUnit_char_type= EOL then
+			parse_fsm_state_next <= WRITE_RESULT;
+		elsif char_state = ANALYZE_NEXT then
+			parse_fsm_state_next <= DIGIT_GETNEXT;
+		end if;
 	
       when WRITE_RESULT =>
-	  if parse_start= '0' then
-	      parse_fsm_state_next <= IDLE0;
-	  end if;
+		if parse_start= '0' then
+			parse_fsm_state_next <= IDLE0;
+		end if;
       
-      when others => 
+	  when PARSE_ERROR =>
+		if parse_start= '0' then
+			parse_fsm_state_next <= IDLE0;
+		end if;  
+      
+	  when others => 
 		--coverage off
 		assert false report "NEXT State logic- State not supported" severity error;
 		--coverage on
@@ -156,8 +188,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	variable op_buff:		alu_ops_buff_TYPE;
 	
 	variable calc_stage, operators_serial:	INTEGER := 0;
-	variable intern_op_pos, intern_digit_pos, intern_do_calc_stage: 	STAGE_POS_TYPE;
-	variable intern_digit_neg:	STD_LOGIC;
+	variable intern_do_calc_stage, intern_buff_stage_pos: 	STAGE_POS_TYPE;
 	variable intern_alu_op:		alu_operator_TYPE;
   begin
     case parse_fsm_state is
@@ -167,10 +198,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		charUnit_get_next <='0';
 			
 		calc_stage	   	 := 0;
-		operators_serial := 0;
-		intern_op_pos  := 0;
-		intern_digit_pos := 0; --unnötig
-		intern_digit_neg :='0';
+		operators_serial := 1;
+		intern_buff_stage_pos := 0;
+		global_digit_neg <='0';
 		intern_alu_op 	:= NOP; 
 		
 		char_state		<= IDLE0;
@@ -196,7 +226,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		if operators_serial>0 then --reset serial operators
 			operators_serial:=1;
 		end if;
-		calc_data <= calc_buff(intern_digit_pos);
+		calc_data <= calc_buff(intern_buff_stage_pos);
 		calc_data2<= to_signed(10, SIZEI);
 		calc_operator<= MULTIPLIKATION;
 		char_state <= CALC_DIGIT;
@@ -218,7 +248,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		
 	when DIGIT_SAVE_CALCED =>
 		calc_start <= '0';
-	  	calc_buff(intern_digit_pos):= calc_result;
+	  	calc_buff(intern_buff_stage_pos):= calc_result;
       
       when DIGIT_GETNEXT =>
 		-- --Moved to next_state logic
@@ -229,77 +259,136 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		char_state <= PROCESS_NEXT;
 	  
       when OP =>
-      ---calc_buff(intern_digit_pos);
+		---calc_buff(intern_buff_stage_pos);
 		charUnit_get_next <= '0'; 
-		operators_serial:= operators_serial+1;
-		intern_digit_pos:= intern_digit_pos+1;
-		if (operators_serial>=2 and charUnit_op=SUBTRAKTION) then
-			intern_digit_neg:= not(intern_digit_neg);	--invert intern_digit_neg if it's second op in series
+		
+		
+		if charUnit_char_type= EOL then
+			intern_do_calc_stage:= 	0;
+			char_state <= 	CALC_THIS;
+		elsif (operators_serial>=2) then
+			----------------------------------------------
+			-- Handling of two or more operators in series
+			----------------------------------------------
+			if charUnit_op=SUBTRAKTION then
+				global_digit_neg<= not(global_digit_neg);	--invert global_digit_neg if it's second op in series
+			else
+				parser_internal_status <= INVALID_OP_SEQUENCE; --second op isn't a minus
+				--double checked in next_state logic @ OP
+			end if;
 			if operators_serial>2 then
 				parser_internal_status <= TOO_MUCH_OPS; -- More than two ops in a row
 			end if;
+			char_state <= ANALYZE_NEXT;
 		else
-			intern_op_pos := intern_op_pos+1;
+			----------------------------------------------
+			-- When to calc decision logic
+			----------------------------------------------
+			case intern_buff_stage_pos is
+				when 0=> char_state <= ANALYZE_NEXT;
+				when 1=>
+					if charUnit_op = ADDITION or charUnit_op = SUBTRAKTION then
+						char_state <= 	CALC_THIS;
+						intern_do_calc_stage:= 	1;
+					else
+						char_state <= ANALYZE_NEXT;
+						intern_do_calc_stage:= (STAGES_TOP-1);
+					end if;
+				when 2=>
+					if charUnit_op = ADDITION or charUnit_op = SUBTRAKTION then
+						char_state <= 	CALC_THIS;
+						intern_do_calc_stage:= 0;
+					elsif charUnit_op = MULTIPLIKATION or charUnit_op = DIVISION then
+						char_state <= 	CALC_THIS;
+						intern_do_calc_stage:= 1;
+					else
+						char_state <= ANALYZE_NEXT;
+						intern_do_calc_stage:= (STAGES_TOP-1);
+					end if;
+				when others => 
+					--coverage off
+					assert false report "intern_buff_stage_pos- State not supported" severity error;
+					--coverage on
+			end case;
+			
+			op_buff(intern_buff_stage_pos) := charUnit_op;
+			operators_serial:= operators_serial+1;
+			intern_buff_stage_pos := intern_buff_stage_pos+1;
 		end if;
-		
-		
-		case intern_op_pos is
-			when 0=> null;
-			when 1=>
-				if charUnit_op = ADDITION or charUnit_op = SUBTRAKTION then
-					char_state <= 	CALC_THIS;
-					intern_do_calc_stage:= 	1;
-				else
-					char_state <= ANALYZE_NEXT;
-					intern_do_calc_stage:= (STAGES_TOP-1);
-				end if;
-			when 2=>
-				if charUnit_op = ADDITION or charUnit_op = SUBTRAKTION then
-					char_state <= 	CALC_THIS;
-					intern_do_calc_stage:= 0;
-				elsif charUnit_op = MULTIPLIKATION or charUnit_op = DIVISION then
-					char_state <= 	CALC_THIS;
-					intern_do_calc_stage:= 1;
-				else
-					char_state <= ANALYZE_NEXT;
-					intern_do_calc_stage:= (STAGES_TOP-1);
-				end if;
-			when others => 
-				--coverage off
-				assert false report "intern_op_pos- State not supported" severity error;
-				--coverage on
-		end case;
-		
+			
+			
 -- 		-- WHEN TO CALC decisions
--- 		char_state := 	CALC_THIS WHEN intern_op_pos=1 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  			CALC_THIS WHEN intern_op_pos=2 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  			CALC_THIS WHEN intern_op_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
+-- 		char_state := 	CALC_THIS WHEN intern_buff_stage_pos=1 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
+-- 	  			CALC_THIS WHEN intern_buff_stage_pos=2 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
+-- 	  			CALC_THIS WHEN intern_buff_stage_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
 -- 	  			ANALYZE_NEXT;
 -- 	  	
 -- 	  	-- CALC STAGE decisions
--- 	  	intern_do_calc_stage:= 	1 WHEN intern_op_pos=1 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  				0 WHEN intern_op_pos=2 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  				1 WHEN intern_op_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
+-- 	  	intern_do_calc_stage:= 	1 WHEN intern_buff_stage_pos=1 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
+-- 	  				0 WHEN intern_buff_stage_pos=2 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
+-- 	  				1 WHEN intern_buff_stage_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
 -- 	  				(STAGES_TOP-1);
 	  
+	  
+	  when INVERT_SECOND_DATA=>
+		----------------------------------------------
+		-- Inverting of the second SIGNED
+		----------------------------------------------
+		intern_buff_stage_pos:= intern_buff_stage_pos-1;
+		calc_start <= '0';
+		global_digit_neg<= '0';
+		calc_data<= calc_buff(intern_buff_stage_pos);
+		calc_data2<= to_signed(-1, SIZEI);
+		calc_operator<= MULTIPLIKATION;
+		
+	  when WAIT_INVERTATION_SECOND_DATA =>
+		calc_start <='1';
+	  
+	  when HANDLE_INVERTATION =>
+		calc_start <='0';
+		calc_buff(intern_buff_stage_pos):= calc_result;
+		intern_buff_stage_pos:= intern_buff_stage_pos+1;
+			
+	  
       when CALC =>
-		intern_op_pos := intern_op_pos+1;
+		intern_buff_stage_pos:= intern_buff_stage_pos-1;
+		-- give data to ALU
+		calc_data<=  	calc_buff(intern_buff_stage_pos-1);
+		calc_data2<= 	calc_buff(intern_buff_stage_pos);
+		calc_operator<=	op_buff(intern_buff_stage_pos-1);
+		
 		assert calc_stage<2
 			--coverage off
 			report "calc stage size exceeded" severity error;
 			--coverage on
 	  
-      when PARSE_ERROR =>
-		null;
-      
+	  
       when WAIT_CALC_RESULT =>
+		calc_start <= '1';
+      
+	  when SAVE_CALC_RESULT =>
+		calc_start <= '0';
+		
+		---Move results back, move op back, clean buffer
+		calc_buff(intern_buff_stage_pos):= to_signed(0, SIZEI);
+		calc_buff(intern_buff_stage_pos-1):= calc_result;
+		op_buff(intern_buff_stage_pos-1):= op_buff(intern_buff_stage_pos);
+		op_buff(intern_buff_stage_pos):= NOP;
+		
+		--Another stage to calc?
+		if intern_do_calc_stage< intern_buff_stage_pos-1 then
+			char_state <= 	CALC_THIS;
+		else
+			char_state <= ANALYZE_NEXT;
+		end if;
+		
+		
+		
+		
+      when WRITE_RESULT =>
 		null;
 	  
-      when SAVE_CALC_RESULT =>
-		intern_digit_neg:= '0';
-		null;
-      
-      when WRITE_RESULT =>
+	  when PARSE_ERROR =>
 		null;
 		
 	  when others => 
@@ -307,6 +396,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		assert false report "OUTPUT logic- State not supported" severity error;
 		--coverage on
     end case;
+	
+	debug_intern_buff_stage_pos <= intern_buff_stage_pos;
+	debug_intern_do_calc_stage <= intern_do_calc_stage;
   end process output;
   
 	

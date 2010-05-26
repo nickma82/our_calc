@@ -177,6 +177,7 @@ begin --behave
     	
     	
     	--(RESET, DIGIT, OP, EOL);
+	---------------------------OP
 	intern_charUnit_on <= '0';
 	wait for 500 ns; 
 	charUnit_lastChar_type <= DIGIT;
@@ -185,9 +186,114 @@ begin --behave
 	wait for 10 ns;
 	intern_charUnit_on <= '1';
 	wait for 2 us;
-    	
---     
---     
+    
+	
+	intern_charUnit_on <= '0';
+	wait for 500 ns;
+	charUnit_digit 		<=  2; 
+	charUnit_lastChar_type <= OP;
+	charUnit_char_type	<= DIGIT;
+	charUnit_op			<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	---------------------------OP
+	intern_charUnit_on <= '0';
+	wait for 500 ns; 
+	charUnit_lastChar_type <= DIGIT;
+	charUnit_char_type		<= OP;
+	charUnit_op				<= ADDITION;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	intern_charUnit_on <= '0';
+	wait for 500 ns;
+	charUnit_digit 		<=  1; 
+	charUnit_lastChar_type <= OP;
+	charUnit_char_type	<= DIGIT;
+	charUnit_op			<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	intern_charUnit_on <= '0';
+	wait for 500 ns;
+	charUnit_digit 		<=  2; 
+	charUnit_lastChar_type <= DIGIT;
+	charUnit_char_type	<= DIGIT;
+	charUnit_op			<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	
+	
+	---------------------------DIGIT/OP
+	intern_charUnit_on <= '0';
+	wait for 500 ns; 
+	charUnit_lastChar_type <= DIGIT;
+	charUnit_char_type		<= OP;
+	charUnit_op				<= MULTIPLIKATION;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	---------------------------OP/OP
+	intern_charUnit_on <= '0';
+	wait for 500 ns; 
+	charUnit_lastChar_type <= OP;
+	charUnit_char_type		<= OP;
+	charUnit_op				<= SUBTRAKTION;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	-------------------------OP/DIGIT
+	intern_charUnit_on <= '0';
+	wait for 500 ns;
+	charUnit_digit 		<=  2; 
+	charUnit_lastChar_type <= OP;
+	charUnit_char_type	<= DIGIT;
+	charUnit_op			<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	
+	---------------------------DIGIT/OP
+	intern_charUnit_on <= '0';
+	wait for 500 ns; 
+	charUnit_lastChar_type <= DIGIT;
+	charUnit_char_type		<= OP;
+	charUnit_op				<= DIVISION;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	
+	-------------------------OP/DIGIT
+	intern_charUnit_on <= '0';
+	wait for 500 ns;
+	charUnit_digit 		<=  4; 
+	charUnit_lastChar_type <= OP;
+	charUnit_char_type	<= DIGIT;
+	charUnit_op			<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
+	---------------------------DIGIT/OP
+	intern_charUnit_on <= '0';
+	wait for 500 ns; 
+	charUnit_lastChar_type <= DIGIT;
+	charUnit_char_type		<= EOL;
+	charUnit_op				<= NOP;
+	wait for 10 ns;
+	intern_charUnit_on <= '1';
+	wait for 2 us;
+	
 --     wait for 500 ns;
 --     calc_data <=  to_signed(-13, SIZEI); --Integer to Signed
 --     calc_data2 <= to_signed(11, SIZEI);

@@ -11,7 +11,7 @@ package parser_pkg is
     	subtype ONEDIGIT is INTEGER range 0 to 9;
 	
 	constant STAGES_TOP: INTEGER := 3;
-	subtype STAGE_POS_TYPE is INTEGER range 0 TO (STAGES_TOP-1);
+	subtype STAGE_POS_TYPE is INTEGER range 0 TO (STAGES_TOP);
 	
 	TYPE calc_buffs_TYPE  	is ARRAY (2 downto 0) of CALCSIGNED;
 	TYPE alu_ops_buff_TYPE 	is ARRAY (2 downto 0) of alu_operator_TYPE;
