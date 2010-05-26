@@ -21,7 +21,8 @@ architecture struct of parser_top is
 	    RESET_VALUE : std_logic := '0'
       );  
       port
-      (	sys_clk, sys_res_n       : in    std_logic;
+      (	sys_clkk		: in 	std_logic;
+	    sys_res_n       : in    std_logic;
 		    
 	    calc_data:	OUT CALCSIGNED;
 	    calc_data2:	OUT CALCSIGNED;
@@ -87,11 +88,11 @@ BEGIN
      alu_top_inst : alu_top
 	generic map
 	(
-	    RESET_VALUE => RESET_VALUEE
+	    RESET_VALUE => RESET_VALUE
 	);
 	port map
 	(
-		sys_clkk 	=>  sys_clkk,
+		sys_clk 	=>  sys_clk,
 		sys_res_n	=>  sys_res_n,
 		
 		calc_data	=> calc_data,
