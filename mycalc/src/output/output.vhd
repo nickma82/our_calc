@@ -45,7 +45,7 @@ constant BLUE : std_logic_vector(23 downto 0) := x"FF0000";
 
 --signals
 signal output_fsm_state, output_fsm_state_next, state_after_wait, state_after_wait_next : OUTPUT_FSM_STATE_TYPE;
-signal position, position_next		: std_logic_vector(7 downto 0);
+signal position, position_next		: std_logic_vector(6 downto 0);
 signal vga_command_next			: std_logic_vector(7 downto 0);
 signal vga_command_data_next		: std_logic_vector(31 downto 0);
 
@@ -56,6 +56,7 @@ begin
 	if sys_res_n = '0' then
 		output_fsm_state <= WAIT_STATE;
 		state_after_wait <= INIT;
+		position <= "0000000";
 	elsif rising_edge(sys_clk) then
 		output_fsm_state <= output_fsm_state_next;
 		vga_command <= vga_command_next;
@@ -119,7 +120,7 @@ begin
 			when INIT =>
 				vga_command_next <= COMMAND_SET_BACKGROUND;
 				vga_command_data_next <= x"008B8878";
-				position_next <= x"00";
+				position_next <= "0000000";
 			when WRITE_CHAR =>
 				vga_command_next <= COMMAND_SET_CHAR;
 				vga_command_data_next <= WHITE & inp_data;
@@ -127,10 +128,10 @@ begin
 			when WRITE_RESULT =>
 				vga_command_next <= COMMAND_SET_CHAR;
 				vga_command_data_next <= WHITE & pars_data;
-				position_next <= x"00";
+				position_next <= "0000000";
 			when DELETE =>
 				vga_command_next <= COMMAND_SET_CURSOR_COLUMN;
-				vga_command_data_next <= x"000000"&(position - 1);
+				vga_command_data_next <= x"000000"&'0'&(position - 1);
 				position_next <= position - 1;
 			when others => null;
 		end case;

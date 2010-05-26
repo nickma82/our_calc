@@ -102,6 +102,10 @@ begin
 	rb_busy <= '1';
 	rb_read_data_rdy <= '0';
 
+	for i in 0 to LINE_LENGTH -1 loop
+		rb_read_data(i) <= x"00";
+	end loop;
+
 	case ringbuffer_fsm_state is
 		when INIT =>
 			linePointer_next <= 0;
@@ -134,11 +138,11 @@ begin
 			rb_busy <= '0';
 			if conv_integer((rb_read_lineNr+linePointer)) >= LINE_NUMB then
 				for i in 0 to LINE_LENGTH -1 loop
-					rb_read_data(i) <= ram_next(conv_integer((rb_read_lineNr+linePointer)) - LINE_NUMB, i);
+					rb_read_data(i) <= ram(conv_integer((rb_read_lineNr+linePointer)) - LINE_NUMB, i);
 				end loop;
 			else
 				for i in 0 to LINE_LENGTH -1 loop
-					rb_read_data(i) <= ram_next(conv_integer((rb_read_lineNr+linePointer)), i);
+					rb_read_data(i) <= ram(conv_integer((rb_read_lineNr+linePointer)), i);
 				end loop;
 			end if;
 		when LINE_RDY =>
