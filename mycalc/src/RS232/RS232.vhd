@@ -7,9 +7,6 @@ use ieee.numeric_std.all;
 
 -- ENTITY
 entity RS232_ent is
-	--generic(
-		
-	--);
 	port(
 		sys_clk		: in std_logic;	
 		sys_res_n	: in std_logic;
@@ -28,7 +25,7 @@ architecture RS232_arc of RS232_ent is
 
 --type
 type RS232_FSM_STATE_TYPE is
-    (READY, SEND_INIT, SEND_BIT, SEND_DONE, RECV_INIT, RECV_WAIT, RECV_BIT, RECV_DONE, SEND_BYTE);
+    (READY, SEND_INIT, SEND_BIT, SEND_DONE, RECV_INIT, RECV_WAIT, RECV_BIT, RECV_DONE, SEND_BYTE, TEST);
 
 --constants
 constant baudValue : integer := 290;
@@ -66,6 +63,7 @@ begin
 	
 	case RS232_fsm_state is
 		when READY =>
+			RS232_fsm_state_next <= TEST;
 			if tx_go = '1' then
 				RS232_fsm_state_next <= SEND_INIT;
 				sendBuffer_next <= tx_data;
@@ -81,9 +79,9 @@ begin
 				RS232_fsm_state_next <= SEND_DONE;
 			end if;
 		when SEND_DONE =>
-			--if countBaud >= 290 then			--1 mal die Bitzeit
+			if countBaud >= 290 then			--1 mal die Bitzeit TODO sollte gelöscht werden können
 				RS232_fsm_state_next <= READY;
-			--end if;
+			end if;
 		when RECV_INIT =>
 			if countBaud >= 435 then			-- 1,5 mal die Bitzeit
 				RS232_fsm_state_next <= RECV_BIT;
@@ -102,7 +100,9 @@ begin
 			--if tx_rdy = '1' then
 				RS232_fsm_state_next <= READY;
 			--end if;
-		
+		when TEST =>
+			sendBuffer_next <= x"45";
+			RS232_fsm_state_next <= SEND_INIT;
 	end case;
 end process next_state;
 
@@ -157,6 +157,8 @@ begin
 		when SEND_BYTE =>
 			rx_recv <= '1';
 			rx_data <= recvBuffer;
+		when TEST =>
+			
 		when others => null;
 	end case;
 end process output;
