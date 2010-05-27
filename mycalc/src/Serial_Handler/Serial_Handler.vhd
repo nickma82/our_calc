@@ -34,13 +34,12 @@ architecture Serial_Handler_arc of Serial_Handler_ent is
 
 --type
 type Serial_Handler_FSM_STATE_TYPE is
-    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, DONE);
+    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, WAIT_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, DONE);
 
 --constants
 
 --signals
 signal Serial_Handler_fsm_state, Serial_Handler_fsm_state_next : Serial_Handler_FSM_STATE_TYPE;
-signal counter : std_logic_vector(7 downto 0);
 signal linePointer, linePointer_next : integer range 0 to LINE_NUMB - 1;				
 signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH - 1;
 signal currentLine, currentLine_next : RAM_LINE;
@@ -79,18 +78,32 @@ begin
 			if rb_busy = '1' then 
 				Serial_Handler_fsm_state_next <= REQ_LINE;
 			end if;
+			--NUR ZUM TESTEN
+			--TODO LÖSCHEN
+			--Serial_Handler_fsm_state_next <= REQ_LINE;
 		when REQ_LINE =>
+			Serial_Handler_fsm_state_next <= WAIT_LINE;
+		when WAIT_LINE =>
 			if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
 			end if;
+			--NUR ZUM TESTEN
+			--TODO LÖSCHEN
+			--Serial_Handler_fsm_state_next <= READ_LINE;
 		when READ_LINE =>
-			Serial_Handler_fsm_state_next <= WRITE_CHAR;
+			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WRITE_CHAR =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WAIT_CHAR =>
-			if linePointer <= 0 and charPointer >= 79 then
+			if charPointer >= 79 then
 				Serial_Handler_fsm_state_next <= DONE;
 			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
 			end if;
+			--if linePointer <= 0 and charPointer >= 79 then
+			--	Serial_Handler_fsm_state_next <= DONE;
+			--elsif charPointer >= 79 then
+			--	Serial_Handler_fsm_state_next <= REQ_LINE;
+			--elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
+			--end if;
 		when DONE =>
 			Serial_Handler_fsm_state_next <= READY;
 			
@@ -112,25 +125,42 @@ begin
 		when SEND_HISTORY =>
 			--Werte zurück setzen
 			--rb_read_lineNr <= x"50";
-			linePointer_next <= 50;
+			--TODO wieder einfügen	linePointer_next <= 50;
+			linePointer_next <= 0;
 			charPointer_next <= 0;
 		when REQ_LINE =>
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';
-			linePointer_next <= linePointer - 1;
+			--linePointer_next <= linePointer - 1;
+		when WAIT_LINE =>
+			rb_read_en <= '1';
 		when READ_LINE =>
+			--NUR ZUM TESTEN
+			--TODO LÖSCHEN
+			--currentLine_next(0) <= x"31";
+			--currentLine_next(1) <= x"32";
+			--currentLine_next(2) <= x"2B";
+			--currentLine_next(3) <= x"39";
+			--currentLine_next(4) <= x"30";
+			--currentLine_next(5) <= x"31";
+			--currentLine_next(6) <= x"00";
+			--for i in 7 to 80 loop	
+			--	currentLine_next(i) <= x"00";
+			--end loop;
+
+			rb_read_en <= '1';
 			currentLine_next <= rb_read_data;
 			charPointer_next <= 0;
 		when WRITE_CHAR =>
 			if currentLine(charPointer) = x"00" then
+				tx_data <= x"2D";
+				tx_go <= '1';
 				charPointer_next <= 79;
 			elsif rb_busy = '1' then
 				tx_data <= currentLine(charPointer);
 				tx_go <= '1';
 				charPointer_next <= charPointer + 1;
 			end if;
-		when WAIT_CHAR =>
-			tx_go <= '0';
 		when others => null;
 	end case;
 end process output;

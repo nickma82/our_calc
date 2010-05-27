@@ -28,7 +28,7 @@ architecture input_arc of input_ent is
 
 --type
 type INPUT_FSM_STATE_TYPE is
-    (READY, VALID, SPECIAL, RELEASE, ENTER, BACKSPACE);
+    (READY, VALID, SPECIAL, RELEASE, ENTER, BACKSPACE, HISTORY);
 
 --constants
 
@@ -114,6 +114,8 @@ begin
 					input_fsm_state_next <= VALID;
 				when x"F0" => input_fsm_state_next <= RELEASE;
 				when x"E0" => input_fsm_state_next <= SPECIAL;
+				when x"2E" =>	-- '.' zum RS232 senden
+					input_fsm_state_next <= HISTORY;
 				when others => null;
 			end case;
 			end if;
@@ -137,6 +139,8 @@ begin
 		when ENTER =>
 			input_fsm_state_next <= READY;
 		when BACKSPACE =>
+			input_fsm_state_next <= READY;
+		when HISTORY =>
 			input_fsm_state_next <= READY;
 	end case;
 end process next_state;
@@ -162,6 +166,8 @@ begin
 			pars_start <= '1';
 		when BACKSPACE =>
 			inp_del <= '1';
+		when HISTORY =>
+			inp_sendRS232 <= '1';
 		when others => null;
 	end case;
 end process output;
