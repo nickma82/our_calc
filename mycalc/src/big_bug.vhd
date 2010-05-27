@@ -17,7 +17,7 @@ package big_pkg is
 	
 	--- PARSER
 	type parser_status_TYPE is
-		(PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
+		(PRESET, PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
 	--@TODO alu_operator_TYPE  ---- WARNING
 	--	will be moved to PARSER_PKG
 	type alu_operator_TYPE is 

@@ -41,7 +41,7 @@ architecture behav of parser_tb is
   generic
   (
 		RESET_VALUE : std_logic := '0'
-  );  
+  );
   port
 	(	sys_clk, sys_res_n       : in    std_logic;	
 			

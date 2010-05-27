@@ -11,9 +11,10 @@ use ieee.numeric_std.all;
 ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal char_firstOne, digit_firstOne: std_logic;
   signal global_digit_neg:	STD_LOGIC;
+  signal intern_b2bcd_data_neg: boolean:= false;
   
   type PARSER_FSM_STATE_TYPE is
-    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, WRITE_RESULT);
+    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
   signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
   type PARSER_CHAR_STATE_TYPE is
@@ -27,7 +28,7 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal debug_intern_buff_stage_pos, debug_intern_do_calc_stage: STAGE_POS_TYPE;
 BEGIN
 
-next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status)
+next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy)
   -- charUnit_lastChar_type, charUnit_char_type: (RESET, DIGIT, OP, EOL)
   begin
     parse_fsm_state_next <= parse_fsm_state;
@@ -158,22 +159,44 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		if char_state = CALC_THIS then 		--order essential
 			parse_fsm_state_next <= CALC;	--order essential
 		elsif charUnit_char_type= EOL then
-			parse_fsm_state_next <= WRITE_RESULT;
+			parse_fsm_state_next <= PRE_PREPARE_RESULT;
 		elsif char_state = ANALYZE_NEXT then
 			parse_fsm_state_next <= DIGIT_GETNEXT;
 		end if;
 	
-      when WRITE_RESULT =>
+	when PRE_PREPARE_RESULT =>
+		parse_fsm_state_next<= PREPARE_RESULT;
+		
+	
+	when PREPARE_RESULT =>
+		if intern_b2bcd_data_neg then
+			parse_fsm_state_next<= WAITFOR_INVERTED_RESULT;
+		else 
+			parse_fsm_state_next<= WAIT_RESULT;
+		end if;
+	
+	when WAITFOR_INVERTED_RESULT =>
+		if calc_finished = '1' then
+			parse_fsm_state_next<= PUSH_INVERTED_RESULT;
+		end if;
+		
+	when PUSH_INVERTED_RESULT =>
+		parse_fsm_state_next<= WAIT_RESULT;
+	
+	when WAIT_RESULT =>
+		if b2bcd_data_rdy='1' then
+			parse_fsm_state_next<= RESULT_STABLE;
+		end if;
+	
+	when PARSE_ERROR =>
+		parse_fsm_state_next<= RESULT_STABLE;
+
+	when RESULT_STABLE =>
 		if parse_start= '0' then
 			parse_fsm_state_next <= IDLE0;
 		end if;
-      
-	  when PARSE_ERROR =>
-		if parse_start= '0' then
-			parse_fsm_state_next <= IDLE0;
-		end if;  
-      
-	  when others => 
+	
+	when others => 
 		--coverage off
 		assert false report "NEXT State logic- State not supported" severity error;
 		--coverage on
@@ -205,6 +228,10 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		
 		char_state		<= IDLE0;
 		parser_internal_status<= RESET;
+		parse_state<= PRESET;
+		parse_new_data <= '0';
+		
+		b2bcd_en<= '0';
 		
       
       when PARSE_INIT =>
@@ -385,16 +412,59 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		
 		
 		
-      when WRITE_RESULT =>
-		null;
-	  
-	  when PARSE_ERROR =>
+	when PRE_PREPARE_RESULT =>
+		parse_state<= PGOOD;
+		if calc_buff(intern_buff_stage_pos-1)< to_signed(0, SIZEI) then
+			--set Flag and Prepare inverted Result if result negative
+			b2bcd_data_neg<= '1';
+			intern_b2bcd_data_neg <= true;
+			calc_data<= calc_buff(intern_buff_stage_pos-1);
+			calc_data2<= to_signed(-1, SIZEI);
+			calc_operator<= MULTIPLIKATION;
+		else
+			b2bcd_data_neg<= '0';
+			intern_b2bcd_data_neg<= false;
+		end if;
+		b2bcd_data<= calc_buff(intern_buff_stage_pos-1);
+	
+	when PREPARE_RESULT =>
 		null;
 		
-	  when others => 
-		--coverage off
-		assert false report "OUTPUT logic- State not supported" severity error;
-		--coverage on
+	
+	when WAITFOR_INVERTED_RESULT =>
+		calc_start <= '1';
+		
+	when PUSH_INVERTED_RESULT =>
+		calc_start <= '0';
+		b2bcd_data<= calc_result;
+		
+	
+	when WAIT_RESULT =>
+		b2bcd_en<= '1';
+	
+	when PARSE_ERROR =>
+		--convert to
+		--(PRESET, PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
+		if calc_status/=GOOD then --(GOOD, RESET, DIV_ZERO, OVERFLOW)
+			case calc_status is
+				when DIV_ZERO=> parse_state<= 	PDIV_ZERO;
+				when OVERFLOW=> parse_state<=	POVERFLOW;
+				when others=> assert false report "calc_status error state- not supported" severity error;
+			end case;
+		elsif parser_internal_status/=GOOD then --(RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
+			case parser_internal_status is
+				when TOO_MUCH_OPS=>	parse_state<= PTOO_MUCH_OPS;
+				when INVALID_OP_SEQUENCE=> parse_state<= PINVALID_OP_SEQUENCE;
+				when others=> assert false report "parser_internal_status error state- not supported" severity error;
+			end case;
+		else
+			assert false report "PARSE Error CASE - not supported" severity error;
+		end if;
+		
+	when RESULT_STABLE =>
+		parse_new_data<='1';
+	
+	
     end case;
 	
 	debug_intern_buff_stage_pos <= intern_buff_stage_pos;

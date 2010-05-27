@@ -7,7 +7,7 @@
  USE ieee.std_logic_1164.all;
 
 
-function to_bcd ( data_neg: std_logic; bin : std_logic_vector(7 downto 0) ) return std_logic_vector is
+function to_bcd ( bin : std_logic_vector(7 downto 0) ) return std_logic_vector is
 	variable i,j : integer:=0;
 	variable bcd : std_logic_vector(11 downto 0) := (others => '0');
 	variable bint : std_logic_vector(7 downto 0) := bin;
@@ -38,6 +38,8 @@ function to_bcd ( data_neg: std_logic; bin : std_logic_vector(7 downto 0) ) retu
 end to_bcd;
 
 
+
+
 ARCHITECTURE alu_div OF alu_div_ent IS
 
   type B2BCD_FSM_STATE_TYPE is
@@ -45,7 +47,6 @@ ARCHITECTURE alu_div OF alu_div_ent IS
   signal b2bcd_fsm_state, b2bcd_fsm_state_next : B2BCD_FSM_STATE_TYPE;
 BEGIN
 	
-	division_by_zero <= '1';
 
   next_state : process(b2bcd_fsm_state)
   begin

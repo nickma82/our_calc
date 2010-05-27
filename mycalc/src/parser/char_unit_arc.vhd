@@ -65,8 +65,8 @@ end process next_state;
 	when IDLE0 =>
 		-- warte auf charUnit_get_next
 		next_ok <= '0';
-		charUnit_next_valid <= '0'
-		null;
+		charUnit_next_valid <= '0';
+		
 	
 	when SEND_CHAR =>
 		--parsen der einzelnen Chars
