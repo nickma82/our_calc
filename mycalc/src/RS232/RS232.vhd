@@ -47,6 +47,8 @@ begin
 	if sys_res_n = '0' then
 		RS232_fsm_state <= READY;
 		countBit <= 0;
+		recvBuffer <= x"00";
+		sendBuffer <= x"00";
 	elsif rising_edge(sys_clk) then
 		RS232_fsm_state <= RS232_fsm_state_next;
 		countBaud <= countBaud_next;
@@ -57,7 +59,7 @@ begin
 
 end process sync;
 
-next_state : process(RS232_fsm_state, uart_rx, countBaud, countBit, sendBuffer)
+next_state : process(RS232_fsm_state, uart_rx, countBaud, countBit, sendBuffer, tx_go, tx_data)
 begin
 	RS232_fsm_state_next <= RS232_fsm_state;
 	sendBuffer_next <= sendBuffer;
@@ -75,7 +77,7 @@ begin
 				RS232_fsm_state_next <= SEND_BIT;
 			end if;
 		when SEND_BIT =>
-			if countBit >= 8 then
+			if countBit >= 9 then
 				RS232_fsm_state_next <= SEND_DONE;
 			end if;
 		when SEND_DONE =>
@@ -110,16 +112,18 @@ begin
 	rx_recv <= '0';
 	rx_data <= x"00";
 	uart_tx <= '1';
+	tx_rdy <= '0';
 
 	case RS232_fsm_state is
 		when READY =>
-				
+			tx_rdy <= '1';
       		when SEND_INIT =>
 			countBaud_next <= countBaud + 1;
 			countBit_next <= 0;
 			uart_tx <= '0';
 		when SEND_BIT =>
-			uart_tx <= sendBuffer(countBit);
+			if countBit > 0 and countBit < 9 then uart_tx <= sendBuffer(countBit-1);
+			end if;
 			if countBaud >= 290 then
 				--uart_tx <= sendBuffer(countBit);
 				countBit_next <= countBit + 1;

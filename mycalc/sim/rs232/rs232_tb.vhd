@@ -94,6 +94,13 @@ begin
 	wait for 90 ns;
 	tx_go <= '0';
 	wait for 80 us;
+
+	wait for 50 us;
+	tx_data <= "10101101";
+	tx_go <= '1';
+	wait for 90 ns;
+	tx_go <= '0';
+	wait for 80 us;
 end process;
 
 end architecture behav;
