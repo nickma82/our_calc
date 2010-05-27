@@ -18,7 +18,7 @@ use work.input_pkg.all;
 use work.output_pkg.all;
 use work.ringbuffer_pkg.all;
 use work.serialhandler_pkg.all;
---use work.rs232_pkg.all;
+use work.rs232_pkg.all;
 --use work.parser_pkg.all;
 --use work.alu.pkg.all;
 use work.debounce_pkg.all;
@@ -68,12 +68,14 @@ architecture struct of calc_top is
 	signal rb_read_data_rdy	: std_logic := '0';
 	signal rb_read_data	: RAM_LINE;	
 
-	--SerialHandler
+	--SerialHandler und RS232
 	signal tx_rdy		: std_logic := '0';
 	signal tx_go		: std_logic := '0';
 	signal tx_data		: std_logic_vector(7 downto 0) := x"00";
 	signal rx_recv		: std_logic := '0';
 	signal rx_data		: std_logic_vector(7 downto 0) := x"00";
+
+	
 
 begin
 	sys_res_n_debounce_inst : debounce
@@ -210,6 +212,7 @@ begin
 		rb_read_data => rb_read_data
 	);
 
+	--Serial Handler
 	serialhandler_inst : Serial_Handler_ent
 	port map
 	(
@@ -226,5 +229,20 @@ begin
 		tx_data => tx_data,
 		rx_recv => rx_recv,
 		rx_data => rx_data
+	);
+	
+	--RS232
+	rs232_inst : rs232_ent
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		tx_rdy => tx_rdy,
+		tx_go => tx_go,
+		tx_data => tx_data,
+		rx_recv => rx_recv,
+		rx_data => rx_data,
+		uart_rx => uart_rx,
+		uart_tx => uart_tx
 	);
 end architecture struct;

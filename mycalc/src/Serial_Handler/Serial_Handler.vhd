@@ -78,11 +78,17 @@ begin
 			if rb_busy = '1' then 
 				Serial_Handler_fsm_state_next <= REQ_LINE;
 			end if;
+			--NUR ZUM TESTEN
+			--TODO LÖSCHEN
+			--Serial_Handler_fsm_state_next <= REQ_LINE;
 		when REQ_LINE =>
 			Serial_Handler_fsm_state_next <= WAIT_LINE;
 		when WAIT_LINE =>
 			if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
 			end if;
+			--NUR ZUM TESTEN
+			--TODO LÖSCHEN
+			--Serial_Handler_fsm_state_next <= READ_LINE;
 		when READ_LINE =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WRITE_CHAR =>
@@ -122,6 +128,19 @@ begin
 			rb_read_en <= '1';
 			linePointer_next <= linePointer - 1;
 		when READ_LINE =>
+			--NUR ZUM TESTEN
+			--TODO LÖSCHEN
+			--currentLine_next(0) <= x"31";
+			--currentLine_next(1) <= x"32";
+			--currentLine_next(2) <= x"2B";
+			--currentLine_next(3) <= x"39";
+			--currentLine_next(4) <= x"30";
+			--currentLine_next(5) <= x"31";
+			--currentLine_next(6) <= x"00";
+			--for i in 7 to 80 loop	
+			--	currentLine_next(i) <= x"00";
+			--end loop;
+
 			currentLine_next <= rb_read_data;
 			charPointer_next <= 0;
 		when WRITE_CHAR =>

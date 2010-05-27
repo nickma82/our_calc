@@ -18,7 +18,7 @@ entity calc_top is
 	r: out std_logic_vector(RED_BITS-1 downto 0);
 	g: out std_logic_vector(GREEN_BITS-1 downto 0);
 	b: out std_logic_vector(BLUE_BITS-1 downto 0)
-	--uart_tx: out std_logic;
-    	--uart_rx: in std_logic
+	uart_tx: out std_logic;
+    	uart_rx: in std_logic
   );
 end entity calc_top;
