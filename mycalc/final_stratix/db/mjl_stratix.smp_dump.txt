@@ -1,14 +1,27 @@
 
+State Machine - |calc_top|RS232_ent:rs232_inst|RS232_fsm_state
+Name RS232_fsm_state.SEND_BYTE RS232_fsm_state.RECV_DONE RS232_fsm_state.RECV_BIT RS232_fsm_state.RECV_WAIT RS232_fsm_state.RECV_INIT RS232_fsm_state.SEND_DONE RS232_fsm_state.SEND_BIT RS232_fsm_state.SEND_INIT RS232_fsm_state.READY 
+RS232_fsm_state.READY 0 0 0 0 0 0 0 0 0 
+RS232_fsm_state.SEND_INIT 0 0 0 0 0 0 0 1 1 
+RS232_fsm_state.SEND_BIT 0 0 0 0 0 0 1 0 1 
+RS232_fsm_state.SEND_DONE 0 0 0 0 0 1 0 0 1 
+RS232_fsm_state.RECV_INIT 0 0 0 0 1 0 0 0 1 
+RS232_fsm_state.RECV_WAIT 0 0 0 1 0 0 0 0 1 
+RS232_fsm_state.RECV_BIT 0 0 1 0 0 0 0 0 1 
+RS232_fsm_state.RECV_DONE 0 1 0 0 0 0 0 0 1 
+RS232_fsm_state.SEND_BYTE 1 0 0 0 0 0 0 0 1 
+
 State Machine - |calc_top|Serial_Handler_ent:serialhandler_inst|Serial_Handler_fsm_state
-Name Serial_Handler_fsm_state.DONE Serial_Handler_fsm_state.WAIT_CHAR Serial_Handler_fsm_state.WRITE_CHAR Serial_Handler_fsm_state.READ_LINE Serial_Handler_fsm_state.REQ_LINE Serial_Handler_fsm_state.SEND_HISTORY Serial_Handler_fsm_state.CHECK_BYTE Serial_Handler_fsm_state.READY 
-Serial_Handler_fsm_state.READY 0 0 0 0 0 0 0 0 
-Serial_Handler_fsm_state.CHECK_BYTE 0 0 0 0 0 0 1 1 
-Serial_Handler_fsm_state.SEND_HISTORY 0 0 0 0 0 1 0 1 
-Serial_Handler_fsm_state.REQ_LINE 0 0 0 0 1 0 0 1 
-Serial_Handler_fsm_state.READ_LINE 0 0 0 1 0 0 0 1 
-Serial_Handler_fsm_state.WRITE_CHAR 0 0 1 0 0 0 0 1 
-Serial_Handler_fsm_state.WAIT_CHAR 0 1 0 0 0 0 0 1 
-Serial_Handler_fsm_state.DONE 1 0 0 0 0 0 0 1 
+Name Serial_Handler_fsm_state.DONE Serial_Handler_fsm_state.WAIT_CHAR Serial_Handler_fsm_state.WRITE_CHAR Serial_Handler_fsm_state.READ_LINE Serial_Handler_fsm_state.WAIT_LINE Serial_Handler_fsm_state.REQ_LINE Serial_Handler_fsm_state.SEND_HISTORY Serial_Handler_fsm_state.CHECK_BYTE Serial_Handler_fsm_state.READY 
+Serial_Handler_fsm_state.READY 0 0 0 0 0 0 0 0 0 
+Serial_Handler_fsm_state.CHECK_BYTE 0 0 0 0 0 0 0 1 1 
+Serial_Handler_fsm_state.SEND_HISTORY 0 0 0 0 0 0 1 0 1 
+Serial_Handler_fsm_state.REQ_LINE 0 0 0 0 0 1 0 0 1 
+Serial_Handler_fsm_state.WAIT_LINE 0 0 0 0 1 0 0 0 1 
+Serial_Handler_fsm_state.READ_LINE 0 0 0 1 0 0 0 0 1 
+Serial_Handler_fsm_state.WRITE_CHAR 0 0 1 0 0 0 0 0 1 
+Serial_Handler_fsm_state.WAIT_CHAR 0 1 0 0 0 0 0 0 1 
+Serial_Handler_fsm_state.DONE 1 0 0 0 0 0 0 0 1 
 
 State Machine - |calc_top|ringbuffer_ent:ringbuffer_inst|ringbuffer_fsm_state
 Name ringbuffer_fsm_state.NEW_LINE ringbuffer_fsm_state.LINE_RDY ringbuffer_fsm_state.LINE_REQ ringbuffer_fsm_state.DELETE_CHAR ringbuffer_fsm_state.WRITE_CHAR ringbuffer_fsm_state.READY ringbuffer_fsm_state.INIT 
@@ -39,13 +52,14 @@ output_fsm_state.DELETE 0 1 0 0 0 1
 output_fsm_state.INIT 1 0 0 0 0 1 
 
 State Machine - |calc_top|input_ent:input_inst|input_fsm_state
-Name input_fsm_state.BACKSPACE input_fsm_state.ENTER input_fsm_state.RELEASE input_fsm_state.SPECIAL input_fsm_state.VALID input_fsm_state.READY 
-input_fsm_state.READY 0 0 0 0 0 0 
-input_fsm_state.VALID 0 0 0 0 1 1 
-input_fsm_state.SPECIAL 0 0 0 1 0 1 
-input_fsm_state.RELEASE 0 0 1 0 0 1 
-input_fsm_state.ENTER 0 1 0 0 0 1 
-input_fsm_state.BACKSPACE 1 0 0 0 0 1 
+Name input_fsm_state.HISTORY input_fsm_state.BACKSPACE input_fsm_state.ENTER input_fsm_state.RELEASE input_fsm_state.SPECIAL input_fsm_state.VALID input_fsm_state.READY 
+input_fsm_state.READY 0 0 0 0 0 0 0 
+input_fsm_state.VALID 0 0 0 0 0 1 1 
+input_fsm_state.SPECIAL 0 0 0 0 1 0 1 
+input_fsm_state.RELEASE 0 0 0 1 0 0 1 
+input_fsm_state.ENTER 0 0 1 0 0 0 1 
+input_fsm_state.BACKSPACE 0 1 0 0 0 0 1 
+input_fsm_state.HISTORY 1 0 0 0 0 0 1 
 
 State Machine - |calc_top|textmode_vga:textmode_vga_inst|console_sm_sync:console_sm_sync_inst|sync_state
 Name sync_state.STATE_WAIT_ACK_RELEASE sync_state.STATE_FINISHED sync_state.STATE_WAIT_ACK sync_state.STATE_IDLE 

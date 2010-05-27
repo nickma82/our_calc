@@ -325,8 +325,8 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : D18       :        :                   :      
 RESERVED_INPUT_WITH_WEAK_PULLUP : D19       :        :                   :         : 4         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D20       :        :                   :         : 4         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D21       :        :                   :         : 4         :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : D22       :        :                   :         : 4         :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : D23       :        :                   :         : 4         :                
+uart_tx                      : D22       : output : 3.3-V LVTTL       :         : 4         : Y              
+uart_rx                      : D23       : input  : 3.3-V LVTTL       :         : 4         : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : D24       :        :                   :         : 5         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D25       :        :                   :         : 5         :                
 VCCIO5                       : D26       : power  :                   : 3.3V    : 5         :                

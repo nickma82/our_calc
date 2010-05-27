@@ -42,6 +42,8 @@ vcom -work work $DIR/parser/parser_sm_ent.vhd
 vcom -work work $DIR/parser/parser_sm_arc.vhd
 ###vcom -work work $DIR/parser/char_unit_ent.vhd
 ###vcom -work work $DIR/parser/char_unit_arc.vhd
+vcom -work work $DIR/parser/b2bcd_ent.vhd
+vcom -work work $DIR/parser/b2bcd_arc.vhd
 vcom -work work $DIR/parser/parser_top.vhd
 vcom -work work $DIR/parser/parser_top_struct.vhd
 #vcom -work work $DIR/parser/.vhd

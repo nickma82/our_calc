@@ -284,9 +284,11 @@ BEGIN
 			parse_data(0+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
-		-- do negative
+		-- insert negative
 		if b2bcd_data_neg = '1' then
 			parse_data(10)<= X"2D";
+		else
+			parse_data(10)<= X"2B";
 		end if;
 	
 	when DONE=>

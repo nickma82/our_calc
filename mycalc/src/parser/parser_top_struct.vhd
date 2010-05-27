@@ -59,39 +59,58 @@ architecture struct of parser_top is
 
 
 
--- 		signal charUnit_en:		STD_LOGIC;
--- 		signal charUnit_get_next: 	STD_LOGIC;
--- 		signal charUnit_next_valid:	STD_LOGIC;
--- 		signal charUnit_digit: 		ONEDIGIT;
--- 		signal charUnit_op:		alu_operator_TYPE;
--- 		signal charUnit_lastChar_type : PARSER_CHAR_TYPE;
--- 		signal charUnit_char_type: 	PARSER_CHAR_TYPE;
+	signal charUnit_en:		STD_LOGIC;
+	signal charUnit_get_next: 	STD_LOGIC;
+	signal charUnit_next_valid:	STD_LOGIC;
+	signal charUnit_digit: 		ONEDIGIT;
+	signal charUnit_op:		alu_operator_TYPE;
+	signal charUnit_lastChar_type : PARSER_CHAR_TYPE;
+	signal charUnit_char_type: 	PARSER_CHAR_TYPE;
 
--- 	component char_unit is
--- 	generic
--- 	(
--- 		RESET_VALUE : std_logic := '0'
--- 	);  
--- 	port
--- 	(	sys_clk, sys_res_n       : in    std_logic;
--- 		
--- 		rb_busy:	in  STD_LOGIC;
--- 		rb_read_en:	out STD_LOGIC; 	--Eine neue Zeile wird angefordert.
--- 		rb_read_lineNr:	out LINE_NUM;	--Die neue Zeile die gelesen werden soll.
--- 		rb_read_data_rdy:in STD_LOGIC;	--Die neue Zeile kann gelesen werden.
--- 		rb_read_data:	in  RAM_LINE
--- 		
--- 		charUnit_en:		IN STD_LOGIC;
--- 		charUnit_get_next: 	IN STD_LOGIC;
--- 		charUnit_next_valid:	OUT STD_LOGIC := '0';
--- 		charUnit_digit: 		OUT ONEDIGIT;
--- 		charUnit_op:		OUT alu_operator_TYPE := NOP;
--- 		charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := RESET;
--- 		charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := RESET;
--- 		
--- 	);
--- 	end component char_unit;
+	component char_unit is
+	generic
+	(
+		RESET_VALUE : std_logic := '0'
+	);  
+	port
+	(	sys_clk, sys_res_n       : in    std_logic;
+		
+		rb_busy:	in  STD_LOGIC;
+		rb_read_en:	out STD_LOGIC; 	--Eine neue Zeile wird angefordert.
+		rb_read_lineNr:	out LINE_NUM;	--Die neue Zeile die gelesen werden soll.
+		rb_read_data_rdy:in STD_LOGIC;	--Die neue Zeile kann gelesen werden.
+		rb_read_data:	in  RAM_LINE
+		
+		charUnit_en:		IN STD_LOGIC;
+		charUnit_get_next: 	IN STD_LOGIC;
+		charUnit_next_valid:	OUT STD_LOGIC := '0';
+		charUnit_digit: 		OUT ONEDIGIT;
+		charUnit_op:		OUT alu_operator_TYPE := NOP;
+		charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := RESET;
+		charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := RESET;
+		
+	);
+	end component char_unit;
 
+	component b2bcd_ent is
+	generic
+	(
+		RESET_VALUE : std_logic := '0'
+	);
+	port
+	(	sys_clk, sys_res_n       : in    std_logic;
+		
+		rb_busy:	in  STD_LOGIC;
+		
+		b2bcd_en:	IN STD_LOGIC;
+		b2bcd_data:	IN CALCSIGNED; --SIGNED((SIZEI-1) downto 0);
+		b2bcd_data_neg: IN STD_LOGIC;
+		b2bcd_data_rdy: OUT STD_LOGIC;
+		
+		parse_data:	out RESULT_LINE --Der neue ASCII Code *10 Zellen
+		--parse_data(index:INTEGER)
+	);
+	end component b2bcd_ent;
 BEGIN
      ---parser_logic_instance
      
@@ -155,30 +174,52 @@ BEGIN
 	
 	
 	
--- 	char_unit_inst: char_unit
--- 	generic map
--- 	(
--- 		RESET_VALUE => RESET_VALUE
--- 	);  
--- 	port map
--- 	(	sys_clk 	=>  sys_clk,
--- 		sys_res_n	=>  sys_res_n,
--- 		
--- 		rb_busy	=> rb_busy,
--- 		rb_read_en	=> rb_read_en,
--- 		rb_read_lineNr	=> rb_read_lineNr,
--- 		rb_read_data_rdy=> rb_read_data_rdy,
--- 		rb_read_data	=> rb_read_data,
--- 		
--- 		charUnit_en	=> charUnit_en,
--- 		charUnit_get_next	=> charUnit_get_next,
--- 		charUnit_next_valid	=> charUnit_next_valid,
--- 		charUnit_digit	=> charUnit_digit,
--- 		charUnit_op	=> charUnit_op,
--- 		charUnit_lastChar_type	=> charUnit_lastChar_type,
--- 		charUnit_char_type	=> charUnit_char_type
--- 		
--- 	);
--- 	end component char_unit;
+	char_unit_inst: char_unit
+	generic map
+	(
+		RESET_VALUE => RESET_VALUE
+	);  
+	port map
+	(	sys_clk 	=>  sys_clk,
+		sys_res_n	=>  sys_res_n,
+		
+		rb_busy	=> rb_busy,
+		rb_read_en	=> rb_read_en,
+		rb_read_lineNr	=> rb_read_lineNr,
+		rb_read_data_rdy=> rb_read_data_rdy,
+		rb_read_data	=> rb_read_data,
+		
+		charUnit_en	=> charUnit_en,
+		charUnit_get_next	=> charUnit_get_next,
+		charUnit_next_valid	=> charUnit_next_valid,
+		charUnit_digit	=> charUnit_digit,
+		charUnit_op	=> charUnit_op,
+		charUnit_lastChar_type	=> charUnit_lastChar_type,
+		charUnit_char_type	=> charUnit_char_type
+		
+	);
+	end component char_unit;
+
+
+	
+	b2bcd_ent_inst: b2bcd_ent
+	generic map
+	(
+		RESET_VALUE =>  RESET_VALUE
+	)
+	port map
+	(	sys_clk  => sys_clk,
+		sys_res_n => sys_res_n,
+		
+		rb_busy => rb_busy,
+		
+		b2bcd_en => b2bcd_en,
+		b2bcd_data => b2bcd_data,
+		b2bcd_data_neg => b2bcd_data_neg,
+		b2bcd_data_rdy => b2bcd_data_rdy,
+		
+		parse_data => parse_data
+	);
+	
 	
 end architecture struct;

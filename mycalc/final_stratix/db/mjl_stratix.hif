@@ -20,69 +20,6 @@ VHSM_ON
 -- Start VHDL Libraries --
 -- End VHDL Libraries --
 # entity
-calc_top
-# storage
-db|mjl_stratix.(0).cnf
-db|mjl_stratix.(0).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|calc_top.vhd
-c44bf11a7d962b9f398e12cdac582a1
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|calc_top_struct.vhd
-be3461a13374ad2922e69b9ab9228e45
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-126728017968e463beb11965b28a4
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|sync_pkg.vhd
-d76c552f599f3aba17d0584d53296483
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_pkg.vhd
-498e2dac4a6f15f4a8203a4d67373878
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
-4b9a182b862cef2b0f881cd65bc8670
-|homes|s0726179|hwmod|our_calc|mycalc|src|input|input_pkg.vhd
-e511778cee466874852f7591a43519a
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|Serial_Handler|SerialHandler_pkg.vhd
-f3a344a1f2cf67ecad951aeae68330be
-|homes|s0726179|hwmod|our_calc|mycalc|src|output|output_pkg.vhd
-f89d4c114a162e58edf9b0e6976952b
-|homes|s0726179|hwmod|our_calc|mycalc|src|ringbuffer|ringbuffer_pkg.vhd
-fa64964c3451f77e5e4859897c5977
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller_pkg.vhd
-8ed1b13796e2dc2efd8df9a4c8d0ef
-}
-# hierarchies {
-|
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
 debounce
 # storage
 db|mjl_stratix.(1).cnf
@@ -2483,224 +2420,6 @@ textmode_vga:textmode_vga_inst|interval:blink_interval_inst
 
 # end
 # entity
-input_ent
-# storage
-db|mjl_stratix.(17).cnf
-db|mjl_stratix.(17).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|input|input.vhd
-658173a88781ff3eeb4da82150803bdf
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(ps2_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(inp_data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# hierarchies {
-input_ent:input_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-output_ent
-# storage
-db|mjl_stratix.(18).cnf
-db|mjl_stratix.(18).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|output|output.vhd
-c4c1abd73a3a7affde597582aadc635c
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(vga_command)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(vga_command_data)
-31 downto 0
-PARAMETER_STRING
-USR
- constraint(inp_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(pars_data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-126728017968e463beb11965b28a4
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
-4b9a182b862cef2b0f881cd65bc8670
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-output_ent:output_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-ringbuffer_ent
-# storage
-db|mjl_stratix.(19).cnf
-db|mjl_stratix.(19).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ringbuffer|ringbuffer.vhd
-a6603d8533cf936eb965df4ca0bd44
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(pars_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(inp_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rb_read_linenr)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rb_read_data)
-80 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-126728017968e463beb11965b28a4
-}
-# hierarchies {
-ringbuffer_ent:ringbuffer_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-Serial_Handler_ent
-# storage
-db|mjl_stratix.(20).cnf
-db|mjl_stratix.(20).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|Serial_Handler|Serial_Handler.vhd
-e58ebc5d8d5e261e79cbb41ab29e3a7
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(rb_read_linenr)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rb_read_data)
-80 downto 0
-PARAMETER_STRING
-USR
- constraint(tx_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rx_data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-126728017968e463beb11965b28a4
-}
-# hierarchies {
-Serial_Handler_ent:serialhandler_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
 altsyncram
 # storage
 db|mjl_stratix.(21).cnf
@@ -3643,6 +3362,332 @@ address_a0
 mjl_stratix.calc_top0.rtl.mif
 606f985ec8c1768c8ae66cbec18466cf
 }
+# macro_sequence
+
+# end
+# entity
+calc_top
+# storage
+db|mjl_stratix.(0).cnf
+db|mjl_stratix.(0).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|s0726179|hwmod|our_calc|mycalc|src|calc_top.vhd
+8cb3bb6e1a084c4c3df6225395e4af
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# include_file {
+|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|s0726179|hwmod|our_calc|mycalc|src|Serial_Handler|SerialHandler_pkg.vhd
+f3a344a1f2cf67ecad951aeae68330be
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|s0726179|hwmod|our_calc|mycalc|src|calc_top_struct.vhd
+28ef519649fde1771a1a98c39436979
+|homes|s0726179|hwmod|our_calc|mycalc|src|input|input_pkg.vhd
+e511778cee466874852f7591a43519a
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
+4b9a182b862cef2b0f881cd65bc8670
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller_pkg.vhd
+8ed1b13796e2dc2efd8df9a4c8d0ef
+|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_pkg.vhd
+498e2dac4a6f15f4a8203a4d67373878
+|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
+77c0c566f979e5c4978596f6ae57bf30
+|homes|s0726179|hwmod|our_calc|mycalc|src|output|output_pkg.vhd
+f89d4c114a162e58edf9b0e6976952b
+|homes|s0726179|hwmod|our_calc|mycalc|src|libs|sync_pkg.vhd
+d76c552f599f3aba17d0584d53296483
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|s0726179|hwmod|our_calc|mycalc|src|RS232|rs232_pkg.vhd
+e64fca0758c145221ad5b0f15b4b8f
+|homes|s0726179|hwmod|our_calc|mycalc|src|ringbuffer|ringbuffer_pkg.vhd
+fa64964c3451f77e5e4859897c5977
+}
+# hierarchies {
+|
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+input_ent
+# storage
+db|mjl_stratix.(17).cnf
+db|mjl_stratix.(17).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|s0726179|hwmod|our_calc|mycalc|src|input|input.vhd
+666a94913497904c53d35eab1a5ee95
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(ps2_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(inp_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# hierarchies {
+input_ent:input_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+output_ent
+# storage
+db|mjl_stratix.(18).cnf
+db|mjl_stratix.(18).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|s0726179|hwmod|our_calc|mycalc|src|output|output.vhd
+c4c1abd73a3a7affde597582aadc635c
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(vga_command)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(vga_command_data)
+31 downto 0
+PARAMETER_STRING
+USR
+ constraint(inp_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(pars_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
+4b9a182b862cef2b0f881cd65bc8670
+|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
+77c0c566f979e5c4978596f6ae57bf30
+|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+}
+# hierarchies {
+output_ent:output_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+ringbuffer_ent
+# storage
+db|mjl_stratix.(19).cnf
+db|mjl_stratix.(19).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|s0726179|hwmod|our_calc|mycalc|src|ringbuffer|ringbuffer.vhd
+e4adf07d5a8d9aa258d0272b626d3568
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(pars_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(inp_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rb_read_linenr)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rb_read_data)
+80 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
+77c0c566f979e5c4978596f6ae57bf30
+}
+# hierarchies {
+ringbuffer_ent:ringbuffer_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+Serial_Handler_ent
+# storage
+db|mjl_stratix.(20).cnf
+db|mjl_stratix.(20).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|s0726179|hwmod|our_calc|mycalc|src|Serial_Handler|Serial_Handler.vhd
+d972a5fe5b6c2d6d78d51ca93c9174c
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(rb_read_linenr)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rb_read_data)
+80 downto 0
+PARAMETER_STRING
+USR
+ constraint(tx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
+77c0c566f979e5c4978596f6ae57bf30
+}
+# hierarchies {
+Serial_Handler_ent:serialhandler_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+RS232_ent
+# storage
+db|mjl_stratix.(25).cnf
+db|mjl_stratix.(25).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|s0726179|hwmod|our_calc|mycalc|src|RS232|RS232.vhd
+a29d72fa8fd12ca1821ab41d3984455
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(tx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# hierarchies {
+RS232_ent:rs232_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
 # macro_sequence
 
 # end
