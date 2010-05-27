@@ -13,8 +13,9 @@ entity parser_top is
 		
 	ps_start:	IN STD_LOGIC;
 	parse_new_data: 	out STD_LOGIC;
+	parse_data:	out RESULT_LINE; 	--Der neue ASCII Code.
+	parse_state:	out parser_status_TYPE;	--
 	
-	parse_data:	out ASCII_CHAR; --Der neue ASCII Code.
 	rb_busy:	in  STD_LOGIC;
 	rb_read_en:	out STD_LOGIC; 	--Eine neue Zeile wird angefordert.
 	rb_read_lineNr:	out LINE_NUM;	--Die neue Zeile die gelesen werden soll.

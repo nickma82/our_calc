@@ -79,7 +79,7 @@ btn_a                        : A3        : input  : 3.3-V LVTTL       :         
 VCCIO3                       : A4        : power  :                   : 3.3V    : 3         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : A5        :        :                   :         : 3         :                
 led_a                        : A6        : output : 3.3-V LVTTL       :         : 3         : Y              
-led_b                        : A7        : output : 3.3-V LVTTL       :         : 3         : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : A7        :        :                   :         : 3         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : A8        :        :                   :         : 3         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : A9        :        :                   :         : 3         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : A10       :        :                   :         : 3         :                
@@ -325,8 +325,8 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : D18       :        :                   :      
 RESERVED_INPUT_WITH_WEAK_PULLUP : D19       :        :                   :         : 4         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D20       :        :                   :         : 4         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D21       :        :                   :         : 4         :                
-uart_tx                      : D22       : output : 3.3-V LVTTL       :         : 4         : Y              
-uart_rx                      : D23       : input  : 3.3-V LVTTL       :         : 4         : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : D22       :        :                   :         : 4         :                
+RESERVED_INPUT_WITH_WEAK_PULLUP : D23       :        :                   :         : 4         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D24       :        :                   :         : 5         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D25       :        :                   :         : 5         :                
 VCCIO5                       : D26       : power  :                   : 3.3V    : 5         :                

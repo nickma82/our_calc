@@ -21,7 +21,7 @@ entity parser_sm_ent is
 	
 	parse_start:	IN STD_LOGIC;
 	parse_new_data: 	out STD_LOGIC;	--pars new data out 1 Vom Parser kann ein neuer ASCII Code gelesenwerden.
-	parse_data:	out ASCII_CHAR; 		--Der neue ASCII Code.
+	parse_state: 	out parser_status_TYPE;	
 	
 	charUnit_en:		OUT STD_LOGIC :='0';
 	charUnit_get_next: 	OUT STD_LOGIC :='0';
@@ -29,7 +29,11 @@ entity parser_sm_ent is
 	charUnit_digit: 	IN ONEDIGIT;
 	charUnit_op:		IN alu_operator_TYPE;
 	charUnit_lastChar_type :IN PARSER_CHAR_TYPE;
-	charUnit_char_type: 	IN PARSER_CHAR_TYPE
+	charUnit_char_type: 	IN PARSER_CHAR_TYPE;
 	
+	b2bcd_en:	OUT STD_LOGIC := '0';
+	b2bcd_data:	OUT CALCSIGNED;
+	b2bcd_data_neg: OUT STD_LOGIC;
+	b2bcd_data_rdy: IN  STD_LOGIC
   );
 end parser_sm_ent;

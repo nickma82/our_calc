@@ -16,7 +16,8 @@ package big_pkg is
 	
 	
 	--- PARSER
-	
+	type parser_status_TYPE is
+		(PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
 	--@TODO alu_operator_TYPE  ---- WARNING
 	--	will be moved to PARSER_PKG
 	type alu_operator_TYPE is 
@@ -38,11 +39,12 @@ package big_pkg is
 	constant CHAR_LENGTH : INTEGER := 8;
 	constant LINE_LENGTH : INTEGER := 81;
 	constant LINE_NUMB : INTEGER := 51;
+	constant RESULT_LENGTH : INTEGER := 11;
 	--subtype RAM_CELL is integer range 0 to CHAR_LENGTH -1;
 	subtype RAM_CELL is std_logic_vector(CHAR_LENGTH -1 downto 0);
 	type RAM_LINE is array (LINE_LENGTH - 1 downto 0) of RAM_CELL;
 	type RAM_ARRAY is array (LINE_NUMB - 1 downto 0, LINE_LENGTH - 1 downto 0) of RAM_CELL;
-
+	type RESULT_LINE is array (RESULT_LENGTH - 1 downto 0) of RAM_CELL;
 	
 	
 	--- ALLGEMEIN

@@ -77,6 +77,8 @@ set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name VHDL_FILE ../src/Serial_Handler/Serial_Handler.vhd
+set_global_assignment -name VHDL_FILE ../src/Serial_Handler/SerialHandler_pkg.vhd
 set_global_assignment -name VHDL_FILE ../src/debounce/debounce_struct.vhd
 set_global_assignment -name VHDL_FILE ../src/debounce/debounce_fsm.vhd
 set_global_assignment -name VHDL_FILE ../src/debounce/debounce_fsm_beh.vhd

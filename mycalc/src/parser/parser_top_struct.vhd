@@ -14,7 +14,12 @@ architecture struct of parser_top is
 	signal calc_finished:	STD_LOGIC;
 	signal calc_result:	CALCSIGNED;
 	signal calc_status: 	alu_calc_error_TYPE;
-		
+	
+	signal b2bcd_en:	STD_LOGIC;
+	signal b2bcd_data:	CALCSIGNED;
+	signal b2bcd_data_neg: STD_LOGIC;
+	
+	signal b2bcd_data_rdy: STD_LOGIC;
     component parser_sm_ent is
       generic
       (
@@ -34,7 +39,7 @@ architecture struct of parser_top is
 	    
 	    parse_start:	IN STD_LOGIC;
 	    parse_new_data: 	out STD_LOGIC;	--pars new data out 1 Vom Parser kann ein neuer ASCII Code gelesenwerden.
-	    parse_data:	out ASCII_CHAR; 		--Der neue ASCII Code.
+	    parse_state: 	out parser_status_TYPE;	
 	    
 	    charUnit_en:		OUT STD_LOGIC :='0';
 	    charUnit_get_next: 	OUT STD_LOGIC :='0';
@@ -42,20 +47,25 @@ architecture struct of parser_top is
 	    charUnit_digit: 	IN ONEDIGIT;
 	    charUnit_op:		IN alu_operator_TYPE;
 	    charUnit_lastChar_type :IN PARSER_CHAR_TYPE;
-	    charUnit_char_type: 	IN PARSER_CHAR_TYPE
+	    charUnit_char_type: 	IN PARSER_CHAR_TYPE;
+	    
+	    b2bcd_en:	OUT STD_LOGIC :='0';
+	    b2bcd_data:	OUT CALCSIGNED;
+	    b2bcd_data_neg: OUT STD_LOGIC :='0';
+	    b2bcd_data_rdy: IN STD_LOGIC :='0'
 	    
       );
     end component parser_sm_ent;
 
 
 
--- 		signal en:		STD_LOGIC;
--- 		signal get_next: 	STD_LOGIC;
--- 		signal next_valid:	STD_LOGIC;
--- 		signal digit: 		ONEDIGIT;
--- 		signal op:		alu_operator_TYPE;
--- 		signal lastChar_type : PARSER_CHAR_TYPE;
--- 		signal char_type: 	PARSER_CHAR_TYPE;
+-- 		signal charUnit_en:		STD_LOGIC;
+-- 		signal charUnit_get_next: 	STD_LOGIC;
+-- 		signal charUnit_next_valid:	STD_LOGIC;
+-- 		signal charUnit_digit: 		ONEDIGIT;
+-- 		signal charUnit_op:		alu_operator_TYPE;
+-- 		signal charUnit_lastChar_type : PARSER_CHAR_TYPE;
+-- 		signal charUnit_char_type: 	PARSER_CHAR_TYPE;
 
 -- 	component char_unit is
 -- 	generic
@@ -126,7 +136,7 @@ BEGIN
 		
 	    parse_start	=> ps_start,
 	    parse_new_data	=> parse_new_data,
-	    parse_data	=> parse_data,
+	    parse_state => parse_state,
 	    
 		---- ERSETZEN DURCH INTERNE SIGNALE
 	    charUnit_en	=> en,
@@ -135,7 +145,12 @@ BEGIN
 	    charUnit_digit	=> 	digit,
 	    charUnit_op		=>	op,
 	    charUnit_lastChar_type	=> lastChar_type,
-	    charUnit_char_type		=> char_type
+	    charUnit_char_type		=> char_type,
+	    
+	    b2bcd_en 	=> b2bcd_en,
+	    b2bcd_data	=> b2bcd_data,
+	    b2bcd_data_neg=> b2bcd_data_neg,
+	    b2bcd_data_rdy=>b2bcd_data_rdy
       );
 	
 	

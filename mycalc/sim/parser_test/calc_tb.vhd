@@ -19,7 +19,9 @@ architecture behav of parser_tb is
 	signal ps_start:	STD_LOGIC;
 	signal parse_new_data: 	STD_LOGIC;
 
-	signal parse_data:	ASCII_CHAR;
+	signal parse_data:	RESULT_LINE; 	--Der neue ASCII Code.
+	signal parse_state:	parser_status_TYPE;	--
+	
 	signal rb_busy: STD_LOGIC;
 	signal rb_read_en:	STD_LOGIC;
 	signal rb_read_lineNr:	LINE_NUM;

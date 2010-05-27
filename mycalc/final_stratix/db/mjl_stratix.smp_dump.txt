@@ -1,4 +1,15 @@
 
+State Machine - |calc_top|Serial_Handler_ent:serialhandler_inst|Serial_Handler_fsm_state
+Name Serial_Handler_fsm_state.DONE Serial_Handler_fsm_state.WAIT_CHAR Serial_Handler_fsm_state.WRITE_CHAR Serial_Handler_fsm_state.READ_LINE Serial_Handler_fsm_state.REQ_LINE Serial_Handler_fsm_state.SEND_HISTORY Serial_Handler_fsm_state.CHECK_BYTE Serial_Handler_fsm_state.READY 
+Serial_Handler_fsm_state.READY 0 0 0 0 0 0 0 0 
+Serial_Handler_fsm_state.CHECK_BYTE 0 0 0 0 0 0 1 1 
+Serial_Handler_fsm_state.SEND_HISTORY 0 0 0 0 0 1 0 1 
+Serial_Handler_fsm_state.REQ_LINE 0 0 0 0 1 0 0 1 
+Serial_Handler_fsm_state.READ_LINE 0 0 0 1 0 0 0 1 
+Serial_Handler_fsm_state.WRITE_CHAR 0 0 1 0 0 0 0 1 
+Serial_Handler_fsm_state.WAIT_CHAR 0 1 0 0 0 0 0 1 
+Serial_Handler_fsm_state.DONE 1 0 0 0 0 0 0 1 
+
 State Machine - |calc_top|ringbuffer_ent:ringbuffer_inst|ringbuffer_fsm_state
 Name ringbuffer_fsm_state.NEW_LINE ringbuffer_fsm_state.LINE_RDY ringbuffer_fsm_state.LINE_REQ ringbuffer_fsm_state.DELETE_CHAR ringbuffer_fsm_state.WRITE_CHAR ringbuffer_fsm_state.READY ringbuffer_fsm_state.INIT 
 ringbuffer_fsm_state.INIT 0 0 0 0 0 0 0 
@@ -9,13 +20,23 @@ ringbuffer_fsm_state.LINE_REQ 0 0 1 0 0 0 1
 ringbuffer_fsm_state.LINE_RDY 0 1 0 0 0 0 1 
 ringbuffer_fsm_state.NEW_LINE 1 0 0 0 0 0 1 
 
+State Machine - |calc_top|output_ent:output_inst|state_after_wait
+Name state_after_wait.WAIT_STATE state_after_wait.DELETE state_after_wait.WRITE_RESULT state_after_wait.WRITE_CHAR state_after_wait.READY state_after_wait.INIT 
+state_after_wait.INIT 0 0 0 0 0 0 
+state_after_wait.READY 0 0 0 0 1 1 
+state_after_wait.WRITE_CHAR 0 0 0 1 0 1 
+state_after_wait.WRITE_RESULT 0 0 1 0 0 1 
+state_after_wait.DELETE 0 1 0 0 0 1 
+state_after_wait.WAIT_STATE 1 0 0 0 0 1 
+
 State Machine - |calc_top|output_ent:output_inst|output_fsm_state
-Name output_fsm_state.DELETE output_fsm_state.WRITE_RESULT output_fsm_state.WRITE_CHAR output_fsm_state.READY output_fsm_state.INIT 
-output_fsm_state.INIT 0 0 0 0 0 
-output_fsm_state.READY 0 0 0 1 1 
-output_fsm_state.WRITE_CHAR 0 0 1 0 1 
-output_fsm_state.WRITE_RESULT 0 1 0 0 1 
-output_fsm_state.DELETE 1 0 0 0 1 
+Name output_fsm_state.INIT output_fsm_state.DELETE output_fsm_state.WRITE_RESULT output_fsm_state.WRITE_CHAR output_fsm_state.READY output_fsm_state.WAIT_STATE 
+output_fsm_state.WAIT_STATE 0 0 0 0 0 0 
+output_fsm_state.READY 0 0 0 0 1 1 
+output_fsm_state.WRITE_CHAR 0 0 0 1 0 1 
+output_fsm_state.WRITE_RESULT 0 0 1 0 0 1 
+output_fsm_state.DELETE 0 1 0 0 0 1 
+output_fsm_state.INIT 1 0 0 0 0 1 
 
 State Machine - |calc_top|input_ent:input_inst|input_fsm_state
 Name input_fsm_state.BACKSPACE input_fsm_state.ENTER input_fsm_state.RELEASE input_fsm_state.SPECIAL input_fsm_state.VALID input_fsm_state.READY 
