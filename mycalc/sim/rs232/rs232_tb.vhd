@@ -18,13 +18,13 @@ architecture behav of rs232_tb is
 constant clock_period:time := 30 ns;
 
 signal sys_clk, sys_res_n: std_logic;
-signal tx_rdy		: out std_logic;
-signal tx_go		: in std_logic;
-signal tx_data		: in std_logic_vector(7 downto 0);
-signal rx_recv		: out std_logic;
-signal rx_data		: out std_logic_vector(7 downto 0);
-signal uart_rx		: in std_logic;
-signal uart_tx		: out std_logic;
+signal tx_rdy		: std_logic;
+signal tx_go		: std_logic;
+signal tx_data		: std_logic_vector(7 downto 0);
+signal rx_recv		: std_logic;
+signal rx_data		: std_logic_vector(7 downto 0);
+signal uart_rx		: std_logic;
+signal uart_tx		: std_logic;
 
 
 begin --behave
@@ -66,24 +66,34 @@ begin
 
 	-- BEGIN TESTS
 	--Receive Byte
+	wait for 10 us;
 	uart_rx <= '0';
 	wait for 8.68 us;
-	uart_rx <= '0';			--1 Bit
+	uart_rx <= '1';			--1 Bit
 	wait for 8.68 us;
 	uart_rx <= '0';			--2 Bit
 	wait for 8.68 us;
-	uart_rx <= '0';			--3 Bit
+	uart_rx <= '1';			--3 Bit
 	wait for 8.68 us;
 	uart_rx <= '0';			--4 Bit
 	wait for 8.68 us;
-	uart_rx <= '0';			--5 Bit
+	uart_rx <= '1';			--5 Bit
 	wait for 8.68 us;
 	uart_rx <= '0';			--6 Bit
 	wait for 8.68 us;
-	uart_rx <= '0';			--7 Bit
+	uart_rx <= '1';			--7 Bit
 	wait for 8.68 us;
 	uart_rx <= '0';			--8 Bit
 	wait for 8.68 us;
+	uart_rx <= '1';			--Stoppbit	
+
+	--send Byte
+	wait for 50 us;
+	tx_data <= "11001100";
+	tx_go <= '1';
+	wait for 90 ns;
+	tx_go <= '0';
+	wait for 80 us;
 end process;
 
 end architecture behav;
