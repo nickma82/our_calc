@@ -106,7 +106,7 @@ begin
 	end case;
 end process next_state;
 
-output : process(RS232_fsm_state, countBaud, countBit, sendBuffer)
+output : process(RS232_fsm_state, countBaud, countBit, sendBuffer, uart_rx, recvBuffer)
 begin
 	countBaud_next <= 0;
 	rx_recv <= '0';
@@ -114,6 +114,8 @@ begin
 	uart_tx <= '1';
 	tx_rdy <= '0';
 	uart_tx <= '1';
+	countBit_next <= countBit;
+	recvBuffer_next <= recvBuffer;
 
 	case RS232_fsm_state is
 		when READY =>

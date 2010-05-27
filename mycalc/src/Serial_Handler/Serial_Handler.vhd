@@ -94,12 +94,16 @@ begin
 		when WRITE_CHAR =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WAIT_CHAR =>
-			if linePointer <= 0 and charPointer >= 79 then
+			if charPointer >= 79 then
 				Serial_Handler_fsm_state_next <= DONE;
-			elsif charPointer >= 79 then
-				Serial_Handler_fsm_state_next <= REQ_LINE;
 			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
 			end if;
+			--if linePointer <= 0 and charPointer >= 79 then
+			--	Serial_Handler_fsm_state_next <= DONE;
+			--elsif charPointer >= 79 then
+			--	Serial_Handler_fsm_state_next <= REQ_LINE;
+			--elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
+			--end if;
 		when DONE =>
 			Serial_Handler_fsm_state_next <= READY;
 			
@@ -121,12 +125,13 @@ begin
 		when SEND_HISTORY =>
 			--Werte zurück setzen
 			--rb_read_lineNr <= x"50";
-			linePointer_next <= 50;
+			--TODO wieder einfügen	linePointer_next <= 50;
+			linePointer_next <= 0;
 			charPointer_next <= 0;
 		when REQ_LINE =>
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';
-			linePointer_next <= linePointer - 1;
+			--linePointer_next <= linePointer - 1;
 		when READ_LINE =>
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN

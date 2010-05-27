@@ -39,7 +39,7 @@ begin --behave
 
 uut : entity work.Serial_Handler_ent
 
-port map
+	port map
 	(
 		sys_clk	=> sys_clk,
 		sys_res_n => sys_res_n,
