@@ -34,13 +34,12 @@ architecture Serial_Handler_arc of Serial_Handler_ent is
 
 --type
 type Serial_Handler_FSM_STATE_TYPE is
-    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, DONE);
+    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, WAIT_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, DONE);
 
 --constants
 
 --signals
 signal Serial_Handler_fsm_state, Serial_Handler_fsm_state_next : Serial_Handler_FSM_STATE_TYPE;
-signal counter : std_logic_vector(7 downto 0);
 signal linePointer, linePointer_next : integer range 0 to LINE_NUMB - 1;				
 signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH - 1;
 signal currentLine, currentLine_next : RAM_LINE;
@@ -80,15 +79,19 @@ begin
 				Serial_Handler_fsm_state_next <= REQ_LINE;
 			end if;
 		when REQ_LINE =>
+			Serial_Handler_fsm_state_next <= WAIT_LINE;
+		when WAIT_LINE =>
 			if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
 			end if;
 		when READ_LINE =>
-			Serial_Handler_fsm_state_next <= WRITE_CHAR;
+			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WRITE_CHAR =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WAIT_CHAR =>
 			if linePointer <= 0 and charPointer >= 79 then
 				Serial_Handler_fsm_state_next <= DONE;
+			elsif charPointer >= 79 then
+				Serial_Handler_fsm_state_next <= REQ_LINE;
 			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
 			end if;
 		when DONE =>
@@ -123,14 +126,14 @@ begin
 			charPointer_next <= 0;
 		when WRITE_CHAR =>
 			if currentLine(charPointer) = x"00" then
+				tx_data <= x"2D";
+				tx_go <= '1';
 				charPointer_next <= 79;
 			elsif rb_busy = '1' then
 				tx_data <= currentLine(charPointer);
 				tx_go <= '1';
 				charPointer_next <= charPointer + 1;
 			end if;
-		when WAIT_CHAR =>
-			tx_go <= '0';
 		when others => null;
 	end case;
 end process output;
