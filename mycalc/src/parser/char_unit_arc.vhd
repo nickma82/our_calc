@@ -50,8 +50,12 @@ next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_
 	when CHAR_SEND =>	--Daten anlegen
 		charunit_fsm_state_next <= CHAR_VALID;
 	when CHAR_VALID =>	--Daten zum lesen freigeben
-		if currentLine(charPointer-1) = x"00" then
-			charunit_fsm_state_next <= RESET;
+		if charPointer > 0 then
+			if currentLine(charPointer - 1) = x"00" then
+				charunit_fsm_state_next <= RESET;
+			else
+				charunit_fsm_state_next <= CHAR_WAIT;
+			end if;
 		else
 			charunit_fsm_state_next <= CHAR_WAIT;
 		end if;
@@ -59,21 +63,23 @@ next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_
 end process next_state;
   
 
-output : process(charunit_fsm_state, charPointer)
+output : process(charunit_fsm_state, charPointer, currentLine)
   begin
+	charUnit_next_valid <= '0';
+	rb_read_en <= '0';
     case charunit_fsm_state is
 	when RESET =>
-		rb_read_en <= 'L'; --weak low
-      		rb_read_lineNr <= 0; 
+		rb_read_en <= '0'; --weak low
+      		rb_read_lineNr <= x"00"; 
       		charUnit_next_valid <= '0';
       		next_ok <= '0';      		
 	when LINE_REQ =>			--Zeile 0 anfordern
-		rb_read_lineNr <= 0;
+		rb_read_lineNr <= x"00";
 		rb_read_en <= '1';
 	when LINE_READY =>			
 		
 	when CHAR_WAIT =>
-		
+		charUnit_next_valid <= '0';
 	when CHAR_SEND =>
 		--parsen der einzelnen Chars
 		--next_ok <= '1';
@@ -150,13 +156,15 @@ output : process(charunit_fsm_state, charPointer)
   end process output;
 
 
- sync : process(sys_clk, sys_res_n)
-  begin
-    if sys_res_n = '0' then
-      charunit_fsm_state <= RESET;
-    elsif rising_edge(sys_clk) then
-      charunit_fsm_state <= charunit_fsm_state_next;
-    end if;
- end process sync;
+sync : process(sys_clk, sys_res_n)
+	begin
+		if sys_res_n = '0' then
+			charunit_fsm_state <= RESET;
+		elsif rising_edge(sys_clk) then
+			charunit_fsm_state <= charunit_fsm_state_next;
+			currentLine <= currentLine_next;
+			charPointer <= charPointer_next;
+ 		end if;
+end process sync;
 
 END architecture char_unit;
