@@ -119,6 +119,8 @@ BEGIN
 
   calc : process(b2bcd_fsm_state, count)
   	variable scratch_tmp	: std_logic_vector(75 downto 0) := (others =>'0');
+  	variable move_reg	: integer range 0 to SIZEI_BCD_CHARS := 0;
+  	variable move_lock	: boolean:= false;
   begin	
 	b2bcd_data_rdy <= '0';
 	--start_next <= start_decode;
@@ -150,14 +152,6 @@ BEGIN
 		
 		
 	when INIT =>
-		enable_next <= '1';
--- 		if(b2bcd_data < 0) then
--- 			sign_next <= '1';
--- 		else
--- 			sign_next <= '0';
--- 		end if;
-		
-		--scratch_tmp(31 downto 0) := std_logic_vector(b2bcd_data);
 		scratch_tmp(31 downto 0) := std_logic_vector(b2bcd_data);
 		scratch_tmp(75 downto 32) := "00000000000000000000000000000000000000000000";
 		scratch_tmp(31) := '0';
@@ -172,41 +166,41 @@ BEGIN
 			scratch_tmp(0) := '0';
 		end if;
 		
-		--if(count <= 31) then
-			if(scratch_tmp(35 downto 32) > "0100") then
-				scratch_tmp(35 downto 32) := std_logic_vector(unsigned(scratch_tmp(35 downto 32)) + 3);
-			end if;
-			if(scratch_tmp(39 downto 36) > "0100") then
-				scratch_tmp(39 downto 36) := std_logic_vector(unsigned(scratch_tmp(39 downto 36)) + 3);
-			end if;
-			if(scratch_tmp(43 downto 40) > "0100") then
-				scratch_tmp(43 downto 40) := std_logic_vector(unsigned(scratch_tmp(43 downto 40)) + 3);
-			end if;
-			if(scratch_tmp(47 downto 44) > "0100") then
-				scratch_tmp(47 downto 44) := std_logic_vector(unsigned(scratch_tmp(47 downto 44)) + 3);
-			end if;
-			if(scratch_tmp(51 downto 48) > "0100") then
-				scratch_tmp(51 downto 48) := std_logic_vector(unsigned(scratch_tmp(51 downto 48)) + 3);
-			end if;
-			if(scratch_tmp(55 downto 52) > "0100") then
-				scratch_tmp(55 downto 52) := std_logic_vector(unsigned(scratch_tmp(55 downto 52)) + 3);
-			end if;
-			if(scratch_tmp(59 downto 56) > "0100") then
-				scratch_tmp(59 downto 56) := std_logic_vector(unsigned(scratch_tmp(59 downto 56)) + 3);
-			end if;
-			if(scratch_tmp(63 downto 60) > "0100") then
-				scratch_tmp(63 downto 60) := std_logic_vector(unsigned(scratch_tmp(63 downto 60)) + 3);
-			end if;
-			if(scratch_tmp(67 downto 64) > "0100") then
-				scratch_tmp(67 downto 64) := std_logic_vector(unsigned(scratch_tmp(67 downto 64)) + 3);
-			end if;
-			if(scratch_tmp(71 downto 68) > "0100") then
-				scratch_tmp(71 downto 68) := std_logic_vector(unsigned(scratch_tmp(71 downto 68)) + 3);
-			end if;
-			if(scratch_tmp(75 downto 72) > "0100") then
-				scratch_tmp(75 downto 72) := std_logic_vector(unsigned(scratch_tmp(75 downto 72)) + 3);
-			end if;
-		--end if;
+		
+		
+		if(scratch_tmp(35 downto 32) > "0100") then
+			scratch_tmp(35 downto 32) := std_logic_vector(unsigned(scratch_tmp(35 downto 32)) + 3);
+		end if;
+		if(scratch_tmp(39 downto 36) > "0100") then
+			scratch_tmp(39 downto 36) := std_logic_vector(unsigned(scratch_tmp(39 downto 36)) + 3);
+		end if;
+		if(scratch_tmp(43 downto 40) > "0100") then
+			scratch_tmp(43 downto 40) := std_logic_vector(unsigned(scratch_tmp(43 downto 40)) + 3);
+		end if;
+		if(scratch_tmp(47 downto 44) > "0100") then
+			scratch_tmp(47 downto 44) := std_logic_vector(unsigned(scratch_tmp(47 downto 44)) + 3);
+		end if;
+		if(scratch_tmp(51 downto 48) > "0100") then
+			scratch_tmp(51 downto 48) := std_logic_vector(unsigned(scratch_tmp(51 downto 48)) + 3);
+		end if;
+		if(scratch_tmp(55 downto 52) > "0100") then
+			scratch_tmp(55 downto 52) := std_logic_vector(unsigned(scratch_tmp(55 downto 52)) + 3);
+		end if;
+		if(scratch_tmp(59 downto 56) > "0100") then
+			scratch_tmp(59 downto 56) := std_logic_vector(unsigned(scratch_tmp(59 downto 56)) + 3);
+		end if;
+		if(scratch_tmp(63 downto 60) > "0100") then
+			scratch_tmp(63 downto 60) := std_logic_vector(unsigned(scratch_tmp(63 downto 60)) + 3);
+		end if;
+		if(scratch_tmp(67 downto 64) > "0100") then
+			scratch_tmp(67 downto 64) := std_logic_vector(unsigned(scratch_tmp(67 downto 64)) + 3);
+		end if;
+		if(scratch_tmp(71 downto 68) > "0100") then
+			scratch_tmp(71 downto 68) := std_logic_vector(unsigned(scratch_tmp(71 downto 68)) + 3);
+		end if;
+		if(scratch_tmp(75 downto 72) > "0100") then
+			scratch_tmp(75 downto 72) := std_logic_vector(unsigned(scratch_tmp(75 downto 72)) + 3);
+		end if;
 		
 		
 		
@@ -215,20 +209,88 @@ BEGIN
 	when SAVE_RESULT =>
 		scratch_tmp(75 downto 1) := scratch_tmp(74 downto 0);
 		scratch_tmp(0) := '0';
+		move_reg:=0;
+		move_lock:=false;
 		
-		parse_data(0)(3 downto 0) <= scratch_tmp(35 downto 32);
-		parse_data(1)(3 downto 0) <= scratch_tmp(39 downto 36);
-		parse_data(2)(3 downto 0) <= scratch_tmp(43 downto 40);
-		parse_data(3)(3 downto 0) <= scratch_tmp(47 downto 44);
-		parse_data(4)(3 downto 0) <= scratch_tmp(51 downto 48);
-		parse_data(5)(3 downto 0) <= scratch_tmp(55 downto 52);
-		parse_data(6)(3 downto 0) <= scratch_tmp(59 downto 56);
-		parse_data(7)(3 downto 0) <= scratch_tmp(63 downto 60);
-		parse_data(8)(3 downto 0) <= scratch_tmp(67 downto 64);
-		parse_data(9)(3 downto 0) <= scratch_tmp(71 downto 68);
+		
+		---KANN DURCH FUNKTION ERSETZT WERDEN
+		if unsigned(scratch_tmp(71 downto 68))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(9+move_reg)(3 downto 0) <= scratch_tmp(71 downto 68);
+			parse_data(9+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(67 downto 64))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(8+move_reg)(3 downto 0) <= scratch_tmp(67 downto 64);	
+			parse_data(8+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(63 downto 60))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(7+move_reg)(3 downto 0) <= scratch_tmp(63 downto 60);
+			parse_data(7+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(59 downto 56))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(6+move_reg)(3 downto 0) <= scratch_tmp(59 downto 56);
+			parse_data(6+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(55 downto 52))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(5+move_reg)(3 downto 0) <= scratch_tmp(55 downto 52);
+			parse_data(5+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(51 downto 48))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(4+move_reg)(3 downto 0) <= scratch_tmp(51 downto 48);
+			parse_data(4+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(47 downto 44))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(3+move_reg)(3 downto 0) <= scratch_tmp(47 downto 44);
+			parse_data(3+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(43 downto 40))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(2+move_reg)(3 downto 0) <= scratch_tmp(43 downto 40);
+			parse_data(2+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(39 downto 36))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(1+move_reg)(3 downto 0) <= scratch_tmp(39 downto 36);
+			parse_data(1+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		if unsigned(scratch_tmp(35 downto 32))/=0 then move_lock:= true;
+			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
+		if move_lock then 
+			parse_data(0+move_reg)(3 downto 0) <= scratch_tmp(35 downto 32);
+			parse_data(0+move_reg)(5 downto 4) <= "11"; 
+		end if;
+		
+		-- do negative
+		if b2bcd_data_neg = '1' then
+			parse_data(10)<= X"2D";
+		end if;
 	
 	when DONE=>
-		enable_next <= '0';
+		
 		count_next <= 0;
 		b2bcd_data_rdy <= '1';
     end case;
@@ -248,12 +310,9 @@ BEGIN
 	enable <= '0';
     elsif rising_edge(sys_clk) then
 	b2bcd_fsm_state <= b2bcd_fsm_state_next;
-	
 	start <= start_next;
 	count <= count_next;
-	enable <= enable_next;
 	scratch <= scratch_next;
--- 	sign <= sign_next;
     end if;
  end process sync;
 
