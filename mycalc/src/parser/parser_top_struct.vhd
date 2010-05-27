@@ -20,6 +20,7 @@ architecture struct of parser_top is
 	signal b2bcd_data_neg: STD_LOGIC;
 	
 	signal b2bcd_data_rdy: STD_LOGIC;
+    
     component parser_sm_ent is
       generic
       (
@@ -67,7 +68,7 @@ architecture struct of parser_top is
 	signal charUnit_lastChar_type : PARSER_CHAR_TYPE;
 	signal charUnit_char_type: 	PARSER_CHAR_TYPE;
 
-	component char_unit is
+	component char_unit_ent is
 	generic
 	(
 		RESET_VALUE : std_logic := '0'
@@ -77,9 +78,9 @@ architecture struct of parser_top is
 		
 		rb_busy:	in  STD_LOGIC;
 		rb_read_en:	out STD_LOGIC; 	--Eine neue Zeile wird angefordert.
-		rb_read_lineNr:	out LINE_NUM;	--Die neue Zeile die gelesen werden soll.
+		rb_read_lineNr:	out std_logic_vector(7 downto 0);	--Die neue Zeile die gelesen werden soll.
 		rb_read_data_rdy:in STD_LOGIC;	--Die neue Zeile kann gelesen werden.
-		rb_read_data:	in  RAM_LINE
+		rb_read_data:	in  RAM_LINE;
 		
 		charUnit_en:		IN STD_LOGIC;
 		charUnit_get_next: 	IN STD_LOGIC;
@@ -87,10 +88,10 @@ architecture struct of parser_top is
 		charUnit_digit: 		OUT ONEDIGIT;
 		charUnit_op:		OUT alu_operator_TYPE := NOP;
 		charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := RESET;
-		charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := RESET;
+		charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := RESET
 		
 	);
-	end component char_unit;
+	end component char_unit_ent;
 
 	component b2bcd_ent is
 	generic
@@ -158,13 +159,13 @@ BEGIN
 	    parse_state => parse_state,
 	    
 		---- ERSETZEN DURCH INTERNE SIGNALE
-	    charUnit_en	=> en,
-	    charUnit_get_next	=> get_next,
-	    charUnit_next_valid	=> next_valid,
-	    charUnit_digit	=> 	digit,
-	    charUnit_op		=>	op,
-	    charUnit_lastChar_type	=> lastChar_type,
-	    charUnit_char_type		=> char_type,
+	    charUnit_en	=> charUnit_en,
+	    charUnit_get_next	=> charUnit_get_next,
+	    charUnit_next_valid	=> charUnit_next_valid,
+	    charUnit_digit	=> 	charUnit_digit,
+	    charUnit_op		=>	charUnit_op,
+	    charUnit_lastChar_type	=> charUnit_lastChar_type,
+	    charUnit_char_type		=> charUnit_char_type,
 	    
 	    b2bcd_en 	=> b2bcd_en,
 	    b2bcd_data	=> b2bcd_data,
@@ -174,11 +175,11 @@ BEGIN
 	
 	
 	
-	char_unit_inst: char_unit
+	char_unit_inst: char_unit_ent
 	generic map
 	(
 		RESET_VALUE => RESET_VALUE
-	);  
+	)
 	port map
 	(	sys_clk 	=>  sys_clk,
 		sys_res_n	=>  sys_res_n,
@@ -198,7 +199,6 @@ BEGIN
 		charUnit_char_type	=> charUnit_char_type
 		
 	);
-	end component char_unit;
 
 
 	
