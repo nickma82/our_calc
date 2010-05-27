@@ -64,6 +64,7 @@ end process clkgenerator;
 
 process
 begin
+	wait for 15 ns;	
 	sys_res_n <= '0';
 	wait for 30 ns;
 	sys_res_n <= '1';
@@ -71,7 +72,7 @@ begin
 
 	-- BEGIN TESTS
 	-- erste Zeile voll schreiben
-	for i in 0 to 72 loop
+	for i in 0 to 40 loop
 		inp_data <= x"AF";
 		wait for 30 ns;
 		inp_new_data <= '1';
@@ -117,10 +118,10 @@ begin
 	wait for 30 ns;
 	
 	--neue Zeile
-	rb_char_newline <= '1';
-	wait for 30 ns;
-	rb_char_newline <= '0';
-	wait for 30 ns;
+	--rb_char_newline <= '1';
+	--wait for 30 ns;
+	--rb_char_newline <= '0';
+	--wait for 30 ns;
 
 	--Zeile erneut abfragen
 	rb_read_lineNr <= x"00";
@@ -133,12 +134,12 @@ begin
 	wait for 30 ns;
 
 	--testen ob überlauf der Zeilen funktioniert
-	for i in 0 to 52 loop
-		rb_char_newline <= '1';
-		wait for 30 ns;
-		rb_char_newline <= '0';
-		wait for 30 ns;
-	end loop;
+	--for i in 0 to 52 loop
+	--	rb_char_newline <= '1';
+	--	wait for 30 ns;
+	--	rb_char_newline <= '0';
+	--	wait for 30 ns;
+	--end loop;
 
 end process;
 

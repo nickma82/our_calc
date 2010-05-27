@@ -84,7 +84,8 @@ begin
 		when DELETE_CHAR =>
 			ringbuffer_fsm_state_next <= READY;
 		when LINE_REQ =>
-			ringbuffer_fsm_state_next <= LINE_RDY;
+			if rb_read_en = '0' then ringbuffer_fsm_state_next <= LINE_RDY;
+			end if;
 		when LINE_RDY =>
 			ringbuffer_fsm_state_next <= READY;
 		when NEW_LINE =>
@@ -146,9 +147,10 @@ begin
 					rb_read_data(i) <= ram(conv_integer((rb_read_lineNr+linePointer)), i);
 				end loop;
 			end if;
+			rb_read_data_rdy <= '1';
 		when LINE_RDY =>
 			rb_busy <= '0';
-			rb_read_data_rdy <= '1';
+			--rb_read_data_rdy <= '1';
 		when NEW_LINE =>
 			rb_busy <= '0';
 			--Der Zeiger auf die Zeile wird um eins erhöht und auf Überlauf kontrolliert

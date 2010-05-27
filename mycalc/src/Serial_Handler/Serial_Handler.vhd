@@ -132,6 +132,8 @@ begin
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';
 			--linePointer_next <= linePointer - 1;
+		when WAIT_LINE =>
+			rb_read_en <= '1';
 		when READ_LINE =>
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
@@ -146,6 +148,7 @@ begin
 			--	currentLine_next(i) <= x"00";
 			--end loop;
 
+			rb_read_en <= '1';
 			currentLine_next <= rb_read_data;
 			charPointer_next <= 0;
 		when WRITE_CHAR =>

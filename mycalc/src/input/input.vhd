@@ -115,7 +115,7 @@ begin
 				when x"F0" => input_fsm_state_next <= RELEASE;
 				when x"E0" => input_fsm_state_next <= SPECIAL;
 				when x"2E" =>	-- '.' zum RS232 senden
-					input_fsm_state_next <= RELEASE;
+					input_fsm_state_next <= HISTORY;
 				when others => null;
 			end case;
 			end if;

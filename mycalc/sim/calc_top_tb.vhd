@@ -21,6 +21,8 @@ constant clock_period:time := 30 ns;
 
 	
 	signal sys_clk, sys_res_n: std_logic;
+	signal uart_rx		: std_logic;
+	signal uart_tx		: std_logic;
 
 	--VGA
 	signal vga_free:std_logic;
@@ -33,7 +35,7 @@ constant clock_period:time := 30 ns;
 	signal inp_sendRS232 : std_logic := '0';
 	signal pars_start : std_logic := '0';
 	signal inp_data : std_logic_vector(7 downto 0) := x"00";
-	signal ps2_data_intern : std_logic_vector(7 downto 0) := x"00";
+	signal ps2_data : std_logic_vector(7 downto 0) := x"00";
 
 	--Output
 	signal vga_command	: std_logic_vector(7 downto 0) := x"00";
@@ -150,7 +152,9 @@ end process clkgenerator;
 process
 begin
 	-- INIT
-	
+	uart_rx <= '1';
+	ps2_data <= x"00";
+	ps2_new_data <= '0';
 
 	wait for 15 ns;
 	sys_res_n <= '0';
@@ -159,7 +163,47 @@ begin
 	wait for 90 ns;
 
 	-- BEGIN TESTS
-	
+	-- Eingabe '0'
+	ps2_data <= x"70";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = "00110000";
+	wait for 90 ns;
+
+	-- Eingabe '7'
+	ps2_data <= x"6C";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = x"37";
+	wait for 90 ns;
+
+	-- Eingabe '0'
+	ps2_data <= x"70";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = "00110000";
+	wait for 90 ns;
+
+	-- Eingabe '.' --History
+	ps2_data <= x"2E";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = x"37";
+	wait for 90 ns;
+
+	wait for 300 us;
 end process;
 
 end architecture behav;
