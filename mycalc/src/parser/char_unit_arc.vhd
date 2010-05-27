@@ -16,7 +16,7 @@ ARCHITECTURE char_unit OF char_unit_ent IS
 	signal next_ok: STD_LOGIC := '0';
 	
   type CHAR_UNIT_STATE_TYPE is
-    (RESET, LINE_WAIT, LINE_REQ, LINE_READY, CHAR_WAIT, CHAR_SEND, CHAR_VALID);
+    (RESET, LINE_WAIT, LINE_REQ, LINE_READY, CHAR_WAIT, CHAR_SEND, CHAR_VALID, CHAR_EOL);
   signal charunit_fsm_state, charunit_fsm_state_next : CHAR_UNIT_STATE_TYPE;
 
 signal currentLine, currentLine_next : RAM_LINE;
@@ -44,21 +44,32 @@ next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_
 		currentLine_next <= rb_read_data;
 		charunit_fsm_state_next <= CHAR_WAIT;
 	when CHAR_WAIT =>	--Warten bis nächstes Zeichen angefordert wird
-		if charUnit_get_next = '1' then
-			charunit_fsm_state_next <= CHAR_SEND;
+		if charunit_en = '1' then		
+			if charUnit_get_next = '1' then
+				charunit_fsm_state_next <= CHAR_SEND;
+			end if;
+		else
+			charunit_fsm_state_next <= RESET;
 		end if;
 	when CHAR_SEND =>	--Daten anlegen
 		charunit_fsm_state_next <= CHAR_VALID;
 	when CHAR_VALID =>	--Daten zum lesen freigeben
-		if charPointer > 0 then
-			if currentLine(charPointer - 1) = x"00" then
-				charunit_fsm_state_next <= RESET;
+		if charunit_get_next = '0' then
+			if charPointer > 0 then
+				if currentLine(charPointer - 1) = x"00" then
+					charunit_fsm_state_next <= CHAR_WAIT;
+				else
+					charunit_fsm_state_next <= CHAR_WAIT;
+				end if;
 			else
 				charunit_fsm_state_next <= CHAR_WAIT;
 			end if;
-		else
+		end if;
+	when CHAR_EOL =>
+		if charunit_en = '0' then
 			charunit_fsm_state_next <= CHAR_WAIT;
 		end if;
+			
     end case;
 end process next_state;
   
@@ -72,7 +83,8 @@ output : process(charunit_fsm_state, charPointer, currentLine)
 		rb_read_en <= '0'; --weak low
       		rb_read_lineNr <= x"00"; 
       		charUnit_next_valid <= '0';
-      		next_ok <= '0';      		
+      		next_ok <= '0';     
+		charPointer_next <= 0; 		
 	when LINE_REQ =>			--Zeile 0 anfordern
 		rb_read_lineNr <= x"00";
 		rb_read_en <= '1';

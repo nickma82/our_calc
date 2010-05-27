@@ -102,7 +102,7 @@ begin
 	for i in 0 to 7 loop	
 		wait for 90 ns;
 		charUnit_get_next <= '1';
-		wait for 30 ns;
+		wait for 120 ns;
 		charUnit_get_next <= '0';
 	end loop;
 	
