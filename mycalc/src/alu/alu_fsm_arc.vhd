@@ -98,21 +98,32 @@ begin
 	      null;
       
       when PRE_CALC =>
-      		if calc_operator= DIVISION then
-			if (calc_data<0 and calc_data2<0) then
-				--intern_div_neg_sig_next <= resize( intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
-				intern_div_neg_sig_next<= false;
-			elsif calc_data<0 then
-				intern_div_neg_sig_next<= true;
-			elsif calc_data2<0 then
-				intern_div_neg_sig_next<= true;
-			end if;
-			
-			if calc_data2<0 then
-				--intern_div_neg_sig_next <= resize(intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
-				div_dividend_var_next<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
-			end if;
+	if calc_operator= DIVISION then
+		-- Setze negativ flag
+		if (calc_data<0 and calc_data2<0) then
+			--intern_div_neg_sig_next <= resize( intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
+			intern_div_neg_sig_next<= false;
+		elsif calc_data<0 then
+			intern_div_neg_sig_next<= true;
+		elsif calc_data2<0 then
+			intern_div_neg_sig_next<= true;
 		end if;
+		
+		--Invertiere
+		if calc_data<0 then
+			--calc_data: SIGNED((SIZEI-1) downto 0);
+			div_number_var_next <= std_logic_vector( resize(calc_data* to_signed(-1 , calc_data'LENGTH ), calc_data'LENGTH ) );
+		else
+			div_number_var_next<= std_logic_vector( calc_data);
+		end if;
+		
+		if calc_data2<0 then
+			--intern_div_neg_sig_next <= resize(intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
+			div_dividend_var_next<= std_logic_vector( resize(calc_data2*to_signed(-1 , calc_data2'LENGTH ), calc_data2'LENGTH ));
+		else
+			div_dividend_var_next<= std_logic_vector(calc_data2);
+		end if;
+	end if;
       		
       		
       		
@@ -145,12 +156,12 @@ begin
 				--------------------------------------------------------------------------------------------
 				-- Speichert Vorzeichen, wandelt in positive Zahlen und wandelt danach in std_logic_vector's
 				--------------------------------------------------------------------------------------------
-				div_number_var_next <= std_logic_vector( resize(calc_data*resize(intern_div_neg_sig, calc_data'LENGTH ), calc_data'LENGTH ));
 				
 				
-				if calc_data2>=0 then
-					div_dividend_var_next<= std_logic_vector(calc_data2);
-				end if;
+				
+-- 				if calc_data2>=0 then
+-- 					div_dividend_var_next<= std_logic_vector(calc_data2);
+-- 				end if;
 				intern_wait_div_next <= '1';
 			-- coverage off
 			when others =>
@@ -168,7 +179,12 @@ begin
 			-- Restore Vorzeichen, wandeln in signed
 			----------------------------------------
 			calc_status_var_next <= div_calc_status;
-			calc_result_var_next <= resize( signed(div_result)* resize(intern_div_neg_sig, div_result'LENGTH ), calc_result'LENGTH);
+			if intern_div_neg_sig_next then
+				--std_logic_vector( resize(calc_data* to_signed(-1 , calc_data'LENGTH ), calc_data'LENGTH ) )
+				calc_result_var_next <= resize( signed(div_result)* to_signed(-1 , div_result'LENGTH ), calc_result'LENGTH);
+			else
+				calc_result_var_next<= signed(div_result);
+			end if;
 			
 			intern_calc_finished_next <= '1';
 		end if;
