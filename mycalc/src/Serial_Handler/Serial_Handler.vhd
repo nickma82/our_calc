@@ -140,19 +140,19 @@ begin
 		when READ_LINE =>
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
-			--currentLine_next(0) <= x"31";
-			--currentLine_next(1) <= x"32";
-			--currentLine_next(2) <= x"2B";
-			--currentLine_next(3) <= x"39";
-			--currentLine_next(4) <= x"30";
-			--currentLine_next(5) <= x"31";
-			--currentLine_next(6) <= x"00";
+			currentLine_next(0) <= x"31";
+			currentLine_next(1) <= x"32";
+			currentLine_next(2) <= x"2B";
+			currentLine_next(3) <= x"39";
+			currentLine_next(4) <= x"30";
+			currentLine_next(5) <= x"31";
+			currentLine_next(6) <= x"00";
 			--for i in 7 to 80 loop	
 			--	currentLine_next(i) <= x"00";
 			--end loop;
 
 			rb_read_en <= '1';
-			currentLine_next <= rb_read_data;
+			--currentLine_next <= rb_read_data;
 			charPointer_next <= 0;
 		when WRITE_CHAR =>
 			if currentLine(charPointer) = x"00" then

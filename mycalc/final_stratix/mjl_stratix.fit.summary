@@ -1,11 +1,11 @@
-Fitter Status : Successful - Thu May 27 22:48:24 2010
+Fitter Status : Successful - Fri May 28 12:19:30 2010
 Quartus II Version : 9.1 Build 222 10/21/2009 SJ Full Version
 Revision Name : mjl_stratix
 Top-level Entity Name : calc_top
 Family : Stratix
 Device : EP1S25F672C6
 Timing Models : Final
-Total logic elements : 2,161 / 25,660 ( 8 % )
+Total logic elements : 842 / 25,660 ( 3 % )
 Total pins : 18 / 474 ( 4 % )
 Total virtual pins : 0
 Total memory bits : 98,304 / 1,944,576 ( 5 % )

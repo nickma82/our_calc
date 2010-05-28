@@ -80,7 +80,7 @@ architecture struct of calc_top is
 	
 
 begin
-	
+	parser_top_inst: parser_top
 	generic map
 	(
 	      RESET_VALUE => RES_N_DEFAULT_VALUE
@@ -100,24 +100,24 @@ begin
 		rb_read_en 	=>	rb_read_en,
 		rb_read_lineNr =>	rb_read_lineNr,
 		rb_read_data_rdy =>	rb_read_data_rdy,
-		rb_read_data 	=>	rb_read_data,
-	 );
+		rb_read_data 	=>	rb_read_data
+	);
 	 
 	
 	sys_res_n_debounce_inst : debounce
 	generic map
 	(
-	CLK_FREQ => CLK_FREQ,
-	TIMEOUT => TIMEOUT,
-	RESET_VALUE => RES_N_DEFAULT_VALUE,
-	SYNC_STAGES => SYNC_STAGES
+		CLK_FREQ => CLK_FREQ,
+		TIMEOUT => TIMEOUT,
+		RESET_VALUE => RES_N_DEFAULT_VALUE,
+		SYNC_STAGES => SYNC_STAGES
 	)
 	port map
 	(
-	sys_clk => sys_clk,
-	sys_res_n => '1',
-	data_in => sys_res_n,
-	data_out => sys_res_n_sync
+		sys_clk => sys_clk,
+		sys_res_n => '1',
+		data_in => sys_res_n,
+		data_out => sys_res_n_sync
 	);
 	
 	btn_a_debounce_inst : debounce

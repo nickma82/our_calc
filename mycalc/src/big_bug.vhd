@@ -49,6 +49,7 @@ package big_pkg is
 	type RESULT_LINE is array (RESULT_LENGTH - 1 downto 0) of RAM_CELL;
 	
 	
+	
 	--- ALLGEMEIN
 	subtype ASCII_CHAR is std_logic_vector(7 downto 0);
 	

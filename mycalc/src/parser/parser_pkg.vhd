@@ -39,5 +39,5 @@ package parser_pkg is
 	      rb_read_data:	in  RAM_LINE
 	 );
 	 end component parser_top;
-    
+
 end package parser_pkg;

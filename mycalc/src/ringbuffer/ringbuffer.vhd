@@ -33,7 +33,7 @@ end entity ringbuffer_ent;
 architecture ringbuffer_arc of ringbuffer_ent is
 
 --type
-signal ram, ram_next : RAM_ARRAY;
+signal ram, ram_next : RAM_ARRAY;-- := (OTHERS => (OTHERS => '0'));
 
 type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE);
 

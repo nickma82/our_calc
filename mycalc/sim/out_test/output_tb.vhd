@@ -5,6 +5,8 @@ use IEEE.std_logic_arith.all;
 
 use ieee.numeric_std.all;
 
+USE work.big_pkg.all;
+
 --ENTITY
 entity output_tb is
 
@@ -25,7 +27,7 @@ signal inp_new_data	: std_logic;
 signal inp_data		: std_logic_vector(7 downto 0);
 signal inp_del		: std_logic;
 signal pars_new_data	: std_logic;
-signal pars_data	: std_logic_vector(7 downto 0);
+signal pars_data	: RESULT_LINE;
 
 
 begin --behave
@@ -109,9 +111,20 @@ begin
 	wait for 30 ns;
 
 	-- vom Parser '='
-	pars_data <= x"3D";
+	pars_data(0) <= x"30";
+	pars_data(1) <= x"31";
+	pars_data(2) <= x"32";
+	pars_data(3) <= x"33";
+	pars_data(4) <= x"34";
+	pars_data(5) <= x"35";
+	pars_data(6) <= x"36";
+	pars_data(7) <= x"37";
+	pars_data(8) <= x"00";
 	wait for 30 ns;
 	pars_new_data <= '1';
+
+	
+	wait for 30 ns;
 	vga_free <= '0';
 	wait for 30 ns;
 	pars_new_data <= '0';
@@ -120,17 +133,6 @@ begin
 	--assert vga_command_data(31 downto 0) = "xxxxx";
 	wait for 30 ns;
 
-	-- vom Parser '5'
-	pars_data <= x"35";
-	wait for 30 ns;
-	pars_new_data <= '1';
-	vga_free <= '0';
-	wait for 30 ns;
-	pars_new_data <= '0';
-	wait for 30 ns;
-	vga_free <= '1';
-	--assert vga_command_data(31 downto 0) = "xxxxx";
-	wait for 30 ns;
 end process;
 
 end architecture behav;

@@ -63,7 +63,7 @@ begin
 	
 	case RS232_fsm_state is
 		when READY =>
-			RS232_fsm_state_next <= TEST;
+			--RS232_fsm_state_next <= TEST;
 			if tx_go = '1' then
 				RS232_fsm_state_next <= SEND_INIT;
 				sendBuffer_next <= tx_data;
@@ -71,7 +71,7 @@ begin
 				RS232_fsm_state_next <= RECV_INIT;
 			end if;
       		when SEND_INIT =>
-			if countBaud >= 290 then
+			if countBaud >= 289 then
 				RS232_fsm_state_next <= SEND_BIT;
 			end if;
 		when SEND_BIT =>
@@ -79,7 +79,7 @@ begin
 				RS232_fsm_state_next <= SEND_DONE;
 			end if;
 		when SEND_DONE =>
-			if countBaud >= 290 then			--1 mal die Bitzeit TODO sollte gelöscht werden können
+			if countBaud >= 435 then			--1 mal die Bitzeit TODO sollte gelöscht werden können
 				RS232_fsm_state_next <= READY;
 			end if;
 		when RECV_INIT =>
@@ -93,15 +93,17 @@ begin
 				RS232_fsm_state_next <= RECV_DONE;
 			end if;
 		when RECV_DONE =>
-			if countBaud >= 435 then			-- 1,5 mal die Bitzeit
-				RS232_fsm_state_next <= SEND_BYTE;
+			if countBaud >= 580 then			-- 1,5 mal die Bitzeit
+				--RS232_fsm_state_next <= SEND_BYTE;
+				sendBuffer_next <= x"36";
+				RS232_fsm_state_next <= SEND_INIT;
 			end if;
 		when SEND_BYTE =>
 			--if tx_rdy = '1' then
 				RS232_fsm_state_next <= READY;
 			--end if;
 		when TEST =>						-- send 'Z' "01011010"
-			sendBuffer_next <= x"5A";
+			sendBuffer_next <= x"36";--x"5A";
 			RS232_fsm_state_next <= SEND_INIT;
 	end case;
 end process next_state;
@@ -124,7 +126,7 @@ begin
 			countBaud_next <= countBaud + 1;
 			countBit_next <= 0;
 			uart_tx <= '0';
-			if countBaud >= 290 then
+			if countBaud >= 289 then
 				countBaud_next <= 0;
 			end if;
 		when SEND_BIT =>
@@ -132,7 +134,7 @@ begin
 				uart_tx <= sendBuffer(countBit);
 			end if;
 				
-			if countBaud >= 290 then
+			if countBaud >= 289 then
 				countBit_next <= countBit + 1;
 				countBaud_next <= 0;
 			else
@@ -145,7 +147,7 @@ begin
 			countBit_next <= 0;
 			recvBuffer_next <= x"00";
 		when RECV_BIT =>
-			if countBaud >= 290 then
+			if countBaud >= 289 then
 				recvBuffer_next(countBit) <= uart_rx;
 				countBit_next <= countBit + 1;
 				countBaud_next <= 0;

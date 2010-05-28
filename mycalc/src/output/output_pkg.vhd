@@ -1,6 +1,7 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.big_pkg.all;
 
 package output_pkg is
     component output_ent IS
@@ -14,7 +15,7 @@ package output_pkg is
 		inp_data		: in std_logic_vector(7 downto 0);
 		inp_del			: in std_logic;
 		pars_new_data		: in std_logic;
-		pars_data		: in std_logic_vector(7 downto 0)
+		pars_data		: in RESULT_LINE --std_logic_vector(7 downto 0)
 	);
     END component output_ent;
 end package output_pkg;

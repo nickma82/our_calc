@@ -1,15 +1,16 @@
 
 State Machine - |calc_top|RS232_ent:rs232_inst|RS232_fsm_state
-Name RS232_fsm_state.SEND_BYTE RS232_fsm_state.RECV_DONE RS232_fsm_state.RECV_BIT RS232_fsm_state.RECV_WAIT RS232_fsm_state.RECV_INIT RS232_fsm_state.SEND_DONE RS232_fsm_state.SEND_BIT RS232_fsm_state.SEND_INIT RS232_fsm_state.READY 
-RS232_fsm_state.READY 0 0 0 0 0 0 0 0 0 
-RS232_fsm_state.SEND_INIT 0 0 0 0 0 0 0 1 1 
-RS232_fsm_state.SEND_BIT 0 0 0 0 0 0 1 0 1 
-RS232_fsm_state.SEND_DONE 0 0 0 0 0 1 0 0 1 
-RS232_fsm_state.RECV_INIT 0 0 0 0 1 0 0 0 1 
-RS232_fsm_state.RECV_WAIT 0 0 0 1 0 0 0 0 1 
-RS232_fsm_state.RECV_BIT 0 0 1 0 0 0 0 0 1 
-RS232_fsm_state.RECV_DONE 0 1 0 0 0 0 0 0 1 
-RS232_fsm_state.SEND_BYTE 1 0 0 0 0 0 0 0 1 
+Name RS232_fsm_state.TEST RS232_fsm_state.SEND_BYTE RS232_fsm_state.RECV_DONE RS232_fsm_state.RECV_BIT RS232_fsm_state.RECV_WAIT RS232_fsm_state.RECV_INIT RS232_fsm_state.SEND_DONE RS232_fsm_state.SEND_BIT RS232_fsm_state.SEND_INIT RS232_fsm_state.READY 
+RS232_fsm_state.READY 0 0 0 0 0 0 0 0 0 0 
+RS232_fsm_state.SEND_INIT 0 0 0 0 0 0 0 0 1 1 
+RS232_fsm_state.SEND_BIT 0 0 0 0 0 0 0 1 0 1 
+RS232_fsm_state.SEND_DONE 0 0 0 0 0 0 1 0 0 1 
+RS232_fsm_state.RECV_INIT 0 0 0 0 0 1 0 0 0 1 
+RS232_fsm_state.RECV_WAIT 0 0 0 0 1 0 0 0 0 1 
+RS232_fsm_state.RECV_BIT 0 0 0 1 0 0 0 0 0 1 
+RS232_fsm_state.RECV_DONE 0 0 1 0 0 0 0 0 0 1 
+RS232_fsm_state.SEND_BYTE 0 1 0 0 0 0 0 0 0 1 
+RS232_fsm_state.TEST 1 0 0 0 0 0 0 0 0 1 
 
 State Machine - |calc_top|Serial_Handler_ent:serialhandler_inst|Serial_Handler_fsm_state
 Name Serial_Handler_fsm_state.DONE Serial_Handler_fsm_state.WAIT_CHAR Serial_Handler_fsm_state.WRITE_CHAR Serial_Handler_fsm_state.READ_LINE Serial_Handler_fsm_state.WAIT_LINE Serial_Handler_fsm_state.REQ_LINE Serial_Handler_fsm_state.SEND_HISTORY Serial_Handler_fsm_state.CHECK_BYTE Serial_Handler_fsm_state.READY 
