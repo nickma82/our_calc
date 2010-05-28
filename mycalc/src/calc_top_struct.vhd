@@ -203,28 +203,6 @@ begin
 		pars_new_data => pars_new_data,
 		pars_data => pars_data
 	);
-	
-	--Ringbuffer
-	--ringbuffer_inst : ringbuffer_ent
-	--port map
-	--(
-	--	sys_clk	=> sys_clk,
-	--	sys_res_n => sys_res_n,
-	--	rb_busy => rb_busy,
-	--	pars_new_data => pars_new_data,
-	--	pars_data => pars_data,
-	--	inp_new_data => inp_new_data,
-	--	inp_data => inp_data,
-	--	inp_del => inp_del,
-	--	rb_char_newline => rb_char_newline,
-	--	rb_read_en => rb_read_en,
-	--	rb_read_lineNr => rb_read_lineNr,
-	--	rb_read_data_rdy => rb_read_data_rdy,
-	--	rb_read_data => rb_read_data,
-	--	rb_pars_en => rb_pars_en,
-	--	rb_pars_lineNr => rb_pars_lineNr,
-	--	rb_pars_data_rdy => rb_pars_data_rdy
-	--);
 
 	--Serial Handler
 	serialhandler_inst : Serial_Handler_ent
@@ -260,6 +238,7 @@ begin
 		uart_tx => uart_tx
 	);
 
+	--Ringbuffer
 	ringbuffer_inst : ringbuffer2_ent
 	port map
 	(
@@ -297,23 +276,23 @@ begin
 	);
 
 	--Parser
-	--parser_top_inst : parser_top
-	--generic map
-	--(
-	--      RESET_VALUE => RES_N_DEFAULT_VALUE
-	--) 
-	--port map
-	--(
-	--	sys_clk	=> sys_clk,
-	--	sys_res_n => sys_res_n,
-	--	rb_busy => rb_busy,
-	--	rb_read_en => rb_pars_en,
-	--	rb_read_lineNr => rb_pars_lineNr,
-	--	rb_read_data_rdy => rb_pars_data_rdy,
-	--	rb_read_data => rb_read_data,
-	--	ps_start => pars_start,
-	--	parse_new_data => pars_new_data,
-	--	parse_data => pars_data,
-	--	parse_state => pars_state
-	--);
+	parser_top_inst : parser_top
+	generic map
+	(
+	      RESET_VALUE => RES_N_DEFAULT_VALUE
+	) 
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		rb_busy => rb_busy,
+		rb_read_en => rb_pars_en,
+		rb_read_lineNr => rb_pars_lineNr,
+		rb_read_data_rdy => rb_pars_data_rdy,
+		rb_read_data => rb_read_data,
+		ps_start => pars_start,
+		parse_new_data => pars_new_data,
+		parse_data => pars_data,
+		parse_state => pars_state
+	);
 end architecture struct;
