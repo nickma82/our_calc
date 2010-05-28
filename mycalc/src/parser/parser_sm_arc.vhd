@@ -50,7 +50,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	  if char_state = ANALYZE_NEXT then
 		parse_fsm_state_next <= DIGIT_GETNEXT;
 	  elsif char_state = CALC_DIGIT then
-		parse_fsm_state_next <= DIGIT_CALC_STAGE1;
+		if calc_finished = '0' then 
+			parse_fsm_state_next <= DIGIT_CALC_STAGE1;
+		end if;
 	  end if;
 	  
 	  
@@ -65,7 +67,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		end if;
       
       when DIGIT_PREPARE_STAGE2 =>
-      	  parse_fsm_state_next <= DIGIT_CALC_STAGE2;
+      	  if calc_finished = '0' then 
+      	  	parse_fsm_state_next <= DIGIT_CALC_STAGE2;
+      	  end if;
       
 
       when DIGIT_CALC_STAGE2 =>
@@ -125,7 +129,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	      end if;
     
       when INVERT_SECOND_DATA=>
-		parse_fsm_state_next <= WAIT_INVERTATION_SECOND_DATA;
+		if calc_finished = '0' then 
+			parse_fsm_state_next <= WAIT_INVERTATION_SECOND_DATA;
+		end if;
 	
 	  when WAIT_INVERTATION_SECOND_DATA =>
 		if calc_finished = '1' then
@@ -141,7 +147,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			parse_fsm_state_next <= CALC;
 		
       when CALC =>
-		parse_fsm_state_next <= WAIT_CALC_RESULT;
+		if calc_finished = '0' then 
+			parse_fsm_state_next <= WAIT_CALC_RESULT;
+		end if;
 	
 	  
 	  when WAIT_CALC_RESULT =>
@@ -170,7 +178,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	
 	when PREPARE_RESULT =>
 		if intern_b2bcd_data_neg then
-			parse_fsm_state_next<= WAITFOR_INVERTED_RESULT;
+			if calc_finished = '0' then 
+				parse_fsm_state_next<= WAITFOR_INVERTED_RESULT;
+			end if;
 		else 
 			parse_fsm_state_next<= WAIT_RESULT;
 		end if;
@@ -369,7 +379,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		calc_operator<= MULTIPLIKATION;
 		
 	  when WAIT_INVERTATION_SECOND_DATA =>
-		calc_start <='1';
+		calc_start <= '1';
 	  
 	  when HANDLE_INVERTATION =>
 		calc_start <='0';

@@ -125,7 +125,8 @@ begin --behave
 	rb_read_data(11) <= x"33";
 	rb_read_data(12) <= x"2B"; --+
 	rb_read_data(13) <= x"31";
-	rb_read_data(14) <= x"00"; --EOF
+	rb_read_data(14) <= x"31";
+	rb_read_data(15) <= x"00"; --EOF
 	--test input digitUnit
 	--##END RESET##
 	wait for 100 ns;
