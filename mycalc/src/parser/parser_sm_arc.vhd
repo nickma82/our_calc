@@ -95,7 +95,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 						digit_firstOne	<= '0';
 						parse_fsm_state_next<= DIGIT;
 					when OP =>    parse_fsm_state_next<= OP;
-					when EOL =>   parse_fsm_state_next<= CALC;
+					when EOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
 					when others => assert false report "NEXTDIGIT State not supported" severity error;
 				end case;
 			end if; --Error if end
@@ -378,7 +378,14 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			
 	  
       when CALC =>
-		intern_buff_stage_pos:= intern_buff_stage_pos-1;
+		if intern_buff_stage_pos >1 then --EOL Handling
+			intern_buff_stage_pos:= intern_buff_stage_pos-1;
+		else
+			assert charUnit_char_type= EOL
+				report "buff stage invalid" severity error;
+		end if;
+		
+		
 		-- give data to ALU
 		calc_data<=  	calc_buff(intern_buff_stage_pos-1);
 		calc_data2<= 	calc_buff(intern_buff_stage_pos);

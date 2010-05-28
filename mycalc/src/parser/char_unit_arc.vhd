@@ -153,7 +153,7 @@ output : process(charunit_fsm_state, charPointer, currentLine)
 				charUnit_digit <= 0;
 				charUnit_op <= MULTIPLIKATION;
 				charUnit_char_type <= OP;
-			when x"4A" =>		-- /
+			when x"2F" =>		-- /
 				charUnit_digit <= 0;
 				charUnit_op <= DIVISION;
 				charUnit_char_type <= OP;

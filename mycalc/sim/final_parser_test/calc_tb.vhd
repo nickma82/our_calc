@@ -90,7 +90,15 @@ begin --behave
   
 
   
-  
+  --	Key		Hex
+  --	Space	20
+  --	0		30
+  --	9		39
+  --	*		2A
+  --	+		2B
+  --	-		2D
+  --	/		2F
+  --	EOF		00 ?
   process
   begin
     sys_res_n <= '0';
@@ -102,13 +110,22 @@ begin --behave
 	--parser
 	rb_read_data_rdy<= '0';
 	ps_start <= '1';
-    	rb_read_data(0) <= x"31";
-	rb_read_data(1) <= x"32";
-	rb_read_data(2) <= x"2B";
-	rb_read_data(3) <= x"39";
-	rb_read_data(4) <= x"30";
-	rb_read_data(5) <= x"31";
-	rb_read_data(6) <= x"00";
+    
+	rb_read_data(0) <= x"31";
+	rb_read_data(1) <= x"31"; 
+	rb_read_data(2) <= x"2B"; --+
+	rb_read_data(3) <= x"31";
+	rb_read_data(4) <= x"32";
+	rb_read_data(5) <= x"2A"; --*
+	rb_read_data(6) <= x"31";
+	rb_read_data(7) <= x"33";
+	rb_read_data(8) <= x"2F"; --/
+	rb_read_data(9) <= x"2D"; -- -
+	rb_read_data(10) <= x"31";
+	rb_read_data(11) <= x"33";
+	rb_read_data(12) <= x"2B"; --+
+	rb_read_data(13) <= x"31";
+	rb_read_data(14) <= x"00"; --EOF
 	--test input digitUnit
 	--##END RESET##
 	wait for 100 ns;
