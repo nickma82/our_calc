@@ -14,7 +14,7 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal intern_b2bcd_data_neg: boolean:= false;
   
   type PARSER_FSM_STATE_TYPE is
-    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
+    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
   signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
   type PARSER_CHAR_STATE_TYPE is
@@ -30,6 +30,7 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   
   signal charUnit_en_var, charUnit_en_var_next, charUnit_get_next_var, charUnit_get_next_var_next: STD_LOGIC :='0';
   signal operators_serial, operators_serial_next:	INTEGER := 0;
+  signal intern_buff_stage_pos, intern_buff_stage_pos_next: 	STAGE_POS_TYPE;
 BEGIN
 
 next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy, calc_status, charUnit_lastChar_type, charUnit_char_type, char_firstOne, charUnit_op,  global_digit_neg, intern_b2bcd_data_neg)
@@ -132,12 +133,15 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	      elsif char_state = CALC_THIS then
 				if global_digit_neg= '1' then
 					--negative Handling
-					parse_fsm_state_next <= INVERT_SECOND_DATA;
+					parse_fsm_state_next <= PRE_INVERT_SECOND_DATA;
 				else
 					parse_fsm_state_next <= CALC;
 				end if;
 	      end if;
-    
+    	
+    	when PRE_INVERT_SECOND_DATA=>
+    		parse_fsm_state_next <= INVERT_SECOND_DATA;
+    	
       when INVERT_SECOND_DATA=>
 		if calc_finished = '0' then 
 			parse_fsm_state_next <= WAIT_INVERTATION_SECOND_DATA;
@@ -231,9 +235,10 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	variable op_buff:		alu_ops_buff_TYPE;
 	
 	variable calc_stage:	INTEGER := 0;
-	variable intern_do_calc_stage, intern_buff_stage_pos: 	STAGE_POS_TYPE;
+	variable intern_do_calc_stage: STAGE_POS_TYPE;
   begin
   	
+  	intern_buff_stage_pos_next<= intern_buff_stage_pos; 
   	operators_serial_next<= operators_serial; 
   	charUnit_get_next_var_next<= charUnit_get_next_var; 
   	charUnit_en_var_next<= charUnit_en_var; 
@@ -246,7 +251,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			
 		calc_stage	   	 := 0;
 		operators_serial_next <= 1;
-		intern_buff_stage_pos := 0;
+		intern_buff_stage_pos_next <= 0;
 		global_digit_neg_next <='0';
 		
 		char_state		<= IDLE0;
@@ -363,7 +368,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			
 			op_buff(intern_buff_stage_pos) := charUnit_op;
 			operators_serial_next<= operators_serial+1;
-			intern_buff_stage_pos := intern_buff_stage_pos+1;
+			intern_buff_stage_pos_next <= intern_buff_stage_pos+1;
 		end if;
 			
 			
@@ -379,12 +384,14 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 -- 	  				1 WHEN intern_buff_stage_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
 -- 	  				(STAGES_TOP-1);
 	  
+	  when PRE_INVERT_SECOND_DATA=>
+	  	intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
 	  
 	  when INVERT_SECOND_DATA=>
 		----------------------------------------------
 		-- Inverting of the second SIGNED
 		----------------------------------------------
-		intern_buff_stage_pos:= intern_buff_stage_pos-1;
+		
 		calc_start <= '0';
 		global_digit_neg_next<= '0';
 		calc_data<= calc_buff(intern_buff_stage_pos);
@@ -397,22 +404,26 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	  when HANDLE_INVERTATION =>
 		calc_start <='0';
 		calc_buff(intern_buff_stage_pos):= calc_result;
-		intern_buff_stage_pos:= intern_buff_stage_pos+1;
+		intern_buff_stage_pos_next<= intern_buff_stage_pos+1;
 			
 	  
       when CALC =>
 		if intern_buff_stage_pos >1 then --EOL Handling
-			intern_buff_stage_pos:= intern_buff_stage_pos-1;
+			intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
+			-- give data to ALU
+			calc_data<=  	calc_buff(intern_buff_stage_pos-1-1);
+			calc_data2<= 	calc_buff(intern_buff_stage_pos-1);
+			calc_operator<=	op_buff(intern_buff_stage_pos-1-1);
 		else
+			-- give data to ALU
+			calc_data<=  	calc_buff(intern_buff_stage_pos-1);
+			calc_data2<= 	calc_buff(intern_buff_stage_pos);
+			calc_operator<=	op_buff(intern_buff_stage_pos-1);
 			assert charUnit_char_type= EOL
 				report "buff stage invalid" severity error;
 		end if;
 		
 		
-		-- give data to ALU
-		calc_data<=  	calc_buff(intern_buff_stage_pos-1);
-		calc_data2<= 	calc_buff(intern_buff_stage_pos);
-		calc_operator<=	op_buff(intern_buff_stage_pos-1);
 		
 		assert calc_stage<2
 			--coverage off
@@ -509,6 +520,8 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
     elsif rising_edge(sys_clk) then
       parse_fsm_state <= parse_fsm_state_next;
       
+      
+      intern_buff_stage_pos<= intern_buff_stage_pos_next;
       operators_serial<= operators_serial_next;
       charUnit_get_next<= charUnit_get_next_var_next;
       charUnit_get_next_var<= charUnit_get_next_var_next;
