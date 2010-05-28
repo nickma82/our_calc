@@ -17,7 +17,7 @@ entity ringbuffer_ent is
 		sys_res_n	: in std_logic;
 		rb_busy		: out std_logic;
 		pars_new_data	: in std_logic;
-		pars_data	: in std_logic_vector(7 downto 0);
+		pars_data	: in RESULT_LINE;--in std_logic_vector(7 downto 0);
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
@@ -35,14 +35,14 @@ architecture ringbuffer_arc of ringbuffer_ent is
 --type
 signal ram, ram_next : RAM_ARRAY;-- := (OTHERS => (OTHERS => '0'));
 
-type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, WRITE_CHAR, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE);
+type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE);
 
 --signals
 signal ringbuffer_fsm_state, ringbuffer_fsm_state_next : RINGBUFFER_FSM_STATE_TYPE;
 signal linePointer, linePointer_next 	: integer range 0 to LINE_NUMB -1;				--zeigt auf die derzeitige Zeile, Zeile 0
 signal charPointer, charPointer_next	: integer range 0 to LINE_LENGTH -1;				--zeigt auf derzeitigen Char in Zeile 0
-signal byte_buffer, byte_buffer_next : std_logic_vector(7 downto 0);					--speichert zu schreibendes Byte zwischen
---signal ram_line_next			: RAMLINE;
+signal byte_buffer, byte_buffer_next 	: std_logic_vector(7 downto 0);					--speichert zu schreibendes Byte zwischen
+signal result_buffer, result_buffer_next : RESULT_LINE;
 
 begin
 
@@ -55,6 +55,7 @@ begin
 		linePointer <= linePointer_next;
 		charPointer <= charPointer_next;
 		byte_buffer <= byte_buffer_next;
+		result_buffer <= result_buffer_next;
 		ram <= ram_next;
 	end if;
 
@@ -73,13 +74,15 @@ begin
 				byte_buffer_next <= inp_data;
 				ringbuffer_fsm_state_next <= WRITE_CHAR;
 			elsif pars_new_data = '1' then 
-				byte_buffer_next <= pars_data;
-				ringbuffer_fsm_state_next <= WRITE_CHAR;
+				result_buffer_next <= pars_data;
+				ringbuffer_fsm_state_next <= WRITE_RESULT;
 			elsif rb_read_en = '1' then ringbuffer_fsm_state_next <= LINE_REQ;
 			elsif inp_del = '1' then ringbuffer_fsm_state_next <= DELETE_CHAR;
 			elsif rb_char_newline = '1' then ringbuffer_fsm_state_next <= NEW_LINE;
 			end if;
       		when WRITE_CHAR =>
+			ringbuffer_fsm_state_next <= READY;
+		when WRITE_RESULT =>
 			ringbuffer_fsm_state_next <= READY;
 		when DELETE_CHAR =>
 			ringbuffer_fsm_state_next <= READY;
@@ -129,6 +132,21 @@ begin
 			if charPointer < LINE_LENGTH - 1 then
 				ram_next(linePointer, charPointer) <= byte_buffer;
 				charPointer_next <= charPointer + 1;
+			end if;
+		when WRITE_RESULT =>
+			rb_busy <= '0';
+			if charPointer < LINE_LENGTH - 1 then
+				ram_next(linePointer, charPointer)   <= result_buffer(0);
+				ram_next(linePointer, charPointer+1) <= result_buffer(1);
+				ram_next(linePointer, charPointer+2) <= result_buffer(2);
+				ram_next(linePointer, charPointer+3) <= result_buffer(3);
+				ram_next(linePointer, charPointer+4) <= result_buffer(4);
+				ram_next(linePointer, charPointer+5) <= result_buffer(5);
+				ram_next(linePointer, charPointer+6) <= result_buffer(6);
+				ram_next(linePointer, charPointer+7) <= result_buffer(7);
+				ram_next(linePointer, charPointer+8) <= result_buffer(8);
+				ram_next(linePointer, charPointer+9) <= result_buffer(9);
+				--charPointer_next <= charPointer + 1;
 			end if;
 		when DELETE_CHAR =>
 			rb_busy <= '0';
