@@ -20,7 +20,7 @@ ARCHITECTURE alu_fsm OF alu_fsm_ent IS
 	signal calc_status_var, calc_status_var_next: 	alu_calc_error_TYPE;
 	signal calc_finished_var, calc_finished_var_next: STD_LOGIC;
 	
-	signal intern_div_sign_next, intern_div_sign: SIGNED(1 downto 0);
+	signal intern_div_neg_sig_next, intern_div_neg_sig: boolean;
 	signal div_en_var, div_en_var_next: STD_LOGIC;
 	signal calc_result_var, calc_result_var_next: CALCSIGNED;
 	signal div_number_var, div_number_var_next:	STD_LOGIC_VECTOR((SIZE - 1) downto 0);
@@ -68,7 +68,7 @@ begin
   
   
   
- output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status)
+ output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status,div_dividend_var, div_number_var, calc_result_var, div_en_var, intern_div_neg_sig, intern_calc_finished, calc_status_var, calc_finished_var, div_result)
  	variable tmp_data1, tmp_data2, double_calcsigned: SIGNED((SIZEI*2-1) downto 0);
  	
   begin
@@ -80,7 +80,7 @@ begin
   	tmp_data2:= (others=>'0');
   	double_calcsigned:= (others=>'0');
   	div_en_var_next<= div_en_var; 
-  	intern_div_sign_next<= intern_div_sign;
+  	intern_div_neg_sig_next<= intern_div_neg_sig;
   	intern_calc_finished_next<= intern_calc_finished;
   	calc_status_var_next<= calc_status_var;
   	calc_finished_var_next <= calc_finished_var;
@@ -90,7 +90,7 @@ begin
 		calc_finished_var_next <='0';
 		intern_calc_finished_next <= '0';
 		intern_wait_div_next <= '0';
-		intern_div_sign_next <= to_signed(1, 2);
+		intern_div_neg_sig_next <= false;
 		
 		--port resets
 		div_en_var_next <= '0';
@@ -99,11 +99,23 @@ begin
       
       when PRE_CALC =>
       		if calc_operator= DIVISION then
-			if calc_data<0 then
-					intern_div_sign_next <= resize( intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
+			if (calc_data<0 and calc_data2<0) then
+				--intern_div_neg_sig_next <= resize( intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
+				intern_div_neg_sig_next<= false;
+			elsif calc_data<0 then
+				intern_div_neg_sig_next<= true;
+			elsif calc_data2<0 then
+				intern_div_neg_sig_next<= true;
+			end if;
+			
+			if calc_data2<0 then
+				--intern_div_neg_sig_next <= resize(intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
+				div_dividend_var_next<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
 			end if;
 		end if;
-      
+      		
+      		
+      		
       when CALC =>
         	case calc_operator is
         		when ADDITION | SUBTRAKTION | MULTIPLIKATION =>
@@ -133,12 +145,10 @@ begin
 				--------------------------------------------------------------------------------------------
 				-- Speichert Vorzeichen, wandelt in positive Zahlen und wandelt danach in std_logic_vector's
 				--------------------------------------------------------------------------------------------
-				div_number_var_next <= std_logic_vector( resize(calc_data*resize(intern_div_sign, calc_data'LENGTH ), calc_data'LENGTH ));
+				div_number_var_next <= std_logic_vector( resize(calc_data*resize(intern_div_neg_sig, calc_data'LENGTH ), calc_data'LENGTH ));
 				
-				if calc_data2<0 then
-					intern_div_sign_next <= resize(intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
-					div_dividend_var_next<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
-				else 
+				
+				if calc_data2>=0 then
 					div_dividend_var_next<= std_logic_vector(calc_data2);
 				end if;
 				intern_wait_div_next <= '1';
@@ -158,7 +168,8 @@ begin
 			-- Restore Vorzeichen, wandeln in signed
 			----------------------------------------
 			calc_status_var_next <= div_calc_status;
-			calc_result_var_next <= resize( signed(div_result)* resize(intern_div_sign, div_result'LENGTH ), calc_result'LENGTH);
+			calc_result_var_next <= resize( signed(div_result)* resize(intern_div_neg_sig, div_result'LENGTH ), calc_result'LENGTH);
+			
 			intern_calc_finished_next <= '1';
 		end if;
 		
@@ -183,7 +194,7 @@ begin
       calc_result_var<= calc_result_var_next;
       div_en<=  div_en_var_next;
       div_en_var<=  div_en_var_next;
-      intern_div_sign <= intern_div_sign_next;
+      intern_div_neg_sig <= intern_div_neg_sig_next;
       intern_wait_div <= intern_wait_div_next;
       intern_calc_finished <= intern_calc_finished_next;
       calc_finished    <= calc_finished_var_next;

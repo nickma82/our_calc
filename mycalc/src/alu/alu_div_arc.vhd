@@ -12,7 +12,7 @@ use IEEE.STD_LOGIC_ARITH.all;
 ARCHITECTURE alu_div OF alu_div_ent IS
 
     type DIV_FSM_STATE_TYPE is
-      (RESET, INIT0, CALC_NEXT, HANDLE_OUT);
+      (RESET, PRE_INIT, INIT, CALC_NEXT, HANDLE_OUT);
     signal div_fsm_state, div_fsm_state_next : DIV_FSM_STATE_TYPE;
   
     signal buf, buf_next: STD_LOGIC_VECTOR((2 * SIZE - 1) downto 0);
@@ -27,9 +27,10 @@ ARCHITECTURE alu_div OF alu_div_ent IS
     
     signal internal_calc_done, internal_calc_done_next: std_logic := '0';
     
-    signal result_var, result_var_next: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+    --signal result_var_next: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
     signal calc_finished_var_next, calc_finished_var: STD_LOGIC ;
     signal calc_status_var_next, calc_status_var: alu_calc_error_TYPE;
+    signal result_var, result_var_next: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 BEGIN
 
 next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
@@ -38,16 +39,18 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
     case div_fsm_state is
       when RESET =>
       	if div_en = '1' then
-		    div_fsm_state_next <=INIT0; 
+		    div_fsm_state_next <=PRE_INIT; 
 		end if; 
-      when INIT0 =>
-      	--elsif to_integer(unsigned(cnt)) = CNT_MAX then
-      	if internal_calc_done = '1' then
-      	    div_fsm_state_next <=HANDLE_OUT;
-        else 
-            div_fsm_state_next <=CALC_NEXT;
-        end if;
-      
+      when PRE_INIT =>
+      		div_fsm_state_next <=INIT;
+      when INIT =>
+		--elsif to_integer(unsigned(cnt)) = CNT_MAX then
+		if internal_calc_done = '1' then
+		div_fsm_state_next <=HANDLE_OUT;
+		else 
+		div_fsm_state_next <=CALC_NEXT;
+		end if;
+		
       when CALC_NEXT =>
         if internal_calc_done = '1' then
             div_fsm_state_next <=HANDLE_OUT;
@@ -64,7 +67,7 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
   
 
   --result, sm, calc_finished, internal_calc_done, calc_status, calc_status_var_next, buf, dbuf
-output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, buf, dbuf, sm)
+output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, buf, dbuf, sm, rm_var, calc_finished_var, calc_status_var)
   begin
    	sm_next <= sm;
    	internal_calc_done_next <= internal_calc_done;
@@ -73,17 +76,19 @@ output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, b
    	rm_var_next <= rm_var;
    	calc_finished_var_next <= calc_finished_var; 
    	calc_status_var_next <= calc_status_var;
-   	
+   	result_var_next<= result_var;
     case div_fsm_state is
       when RESET =>
-      	result_var_next <= (others => '0');
+      	--result_var_next <= (others => '0');
         rm_var_next <= (others => '0');
         sm_next <= 0;
+        
         
       	calc_finished_var_next <= '0';
         internal_calc_done_next <= '0';
         calc_status_var_next <= RESET;
-      when INIT0 =>
+        result_var_next<= (others => '0');
+      when PRE_INIT =>
       		buf1_next <= (others => '0'); --buf1 = 0
 		dbuf_next <= dividend;	 --dbuf = dividend
 		calc_status_var_next <= GOOD;
@@ -100,6 +105,8 @@ output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, b
 	    buf2_next <= number;		 --buf2 = number
       	end if;
       	
+      when INIT =>
+      	 null;
       		
       when CALC_NEXT =>
       	if internal_calc_done = '0' then
@@ -109,6 +116,7 @@ output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, b
             else
             	buf_next <= buf((2 * SIZE - 2) downto 0) & '0'; --left shift
             end if;
+            
             if sm /= SIZE-1 then --set back sm
                 sm_next <= sm + 1;
             else
@@ -119,7 +127,7 @@ output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, b
        
       when HANDLE_OUT =>
         rm_var_next <= buf1;
-        result <= buf2;
+        result_var_next <= buf2;
         
        -- calc_status_var_next  <=  calc_status_var_next;
         calc_finished_var_next <= internal_calc_done;
@@ -134,6 +142,8 @@ output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, b
     elsif rising_edge(sys_clk) then
       div_fsm_state <= div_fsm_state_next;
 	
+	result<= result_var_next;
+	result_var<= result_var_next;
 	sm <= sm_next;
 	calc_finished <= calc_finished_var_next;
 	calc_finished_var <= calc_finished_var_next;
@@ -143,7 +153,7 @@ output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, b
 	buf <= buf_next;
 	dbuf <= dbuf_next;
 	rm_var <= rm_var_next;
-	result_var <= result_var_next;
+	
     end if;
  end process sync;
 
