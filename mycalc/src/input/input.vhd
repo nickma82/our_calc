@@ -20,7 +20,7 @@ entity input_ent is
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
 		pars_start	: out std_logic;
-		btn_a_sync	: in std_logic;
+		btn_a_sync	: in std_logic
 	);
 end entity input_ent;
 
@@ -124,9 +124,10 @@ begin
 			if btn_a_sync_last /= btn_a_sync then
 				-- HANDLE Button a
 				 btn_a_sync_last := btn_a_sync;
-				 if btn_a_sync_last then
+				 if btn_a_sync_last= '1' then
 					input_fsm_state_next <= HISTORY;
 				 end if;
+			end if;
 			end if;
       		when VALID =>
 			input_fsm_state_next <= READY;

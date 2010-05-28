@@ -40,6 +40,5 @@ package parser_pkg is
 	 );
 	 end component parser_top;
 	
-end entity parser_top;
     
 end package parser_pkg;

@@ -20,255 +20,6 @@ VHSM_ON
 -- Start VHDL Libraries --
 -- End VHDL Libraries --
 # entity
-debounce
-# storage
-db|mjl_stratix.(1).cnf
-db|mjl_stratix.(1).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce.vhd
-348cc46f8be6aef621f3e724b8a26
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-clk_freq
-33330000
-PARAMETER_SIGNED_DEC
-USR
-timeout
-1000000000000 fs
-PARAMETER_PHYSICAL
-USR
-reset_value
-'1'
-PARAMETER_ENUM
-USR
-sync_stages
-2
-PARAMETER_SIGNED_DEC
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|sync_pkg.vhd
-d76c552f599f3aba17d0584d53296483
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_pkg.vhd
-498e2dac4a6f15f4a8203a4d67373878
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_struct.vhd
-3c8770242777239faf6233ea682de69
-}
-# hierarchies {
-debounce:sys_res_n_debounce_inst
-debounce:btn_a_debounce_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-sync
-# storage
-db|mjl_stratix.(2).cnf
-db|mjl_stratix.(2).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|sync.vhd
-63dd6b5f895ae02acdd6425e8e67e5c
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-sync_stages
-2
-PARAMETER_SIGNED_DEC
-USR
-reset_value
-'1'
-PARAMETER_ENUM
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|sync_beh.vhd
-d2b24e389c8ebaf6636609631447c6a
-}
-# hierarchies {
-debounce:sys_res_n_debounce_inst|sync:sync_inst
-debounce:btn_a_debounce_inst|sync:sync_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-debounce_fsm
-# storage
-db|mjl_stratix.(3).cnf
-db|mjl_stratix.(3).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_fsm.vhd
-880a9afe775fe464a7fa8927a8f96
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-reset_value
-'1'
-PARAMETER_ENUM
-USR
-cnt_max
-33333
-PARAMETER_SIGNED_DEC
-USR
- constraint(cnt)
-15 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_fsm_beh.vhd
-ad5242dd91da6ac523136ed09c8fd6ca
-}
-# hierarchies {
-debounce:sys_res_n_debounce_inst|debounce_fsm:fsm_inst
-debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-counter
-# storage
-db|mjl_stratix.(4).cnf
-db|mjl_stratix.(4).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|counter.vhd
-46a64fd8d3f6d58b999aa04a7d6fa8
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-cnt_max
-33333
-PARAMETER_SIGNED_DEC
-USR
- constraint(cnt)
-15 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_pkg.vhd
-498e2dac4a6f15f4a8203a4d67373878
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|counter_beh.vhd
-ff622ebe8b2d9ec19e87e62c463aa662
-}
-# hierarchies {
-debounce:sys_res_n_debounce_inst|counter:counter_inst
-debounce:btn_a_debounce_inst|counter:counter_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-pll
-# storage
-db|mjl_stratix.(5).cnf
-db|mjl_stratix.(5).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|pll|pll.vhd
-46e27624fb9b81e6631854b73a05083
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# hierarchies {
-pll:pll_vga_clk
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
 altpll
 # storage
 db|mjl_stratix.(6).cnf
@@ -1754,672 +1505,6 @@ pll:pll_vga_clk|altpll:altpll_component
 
 # end
 # entity
-ps2_keyboard_controller
-# storage
-db|mjl_stratix.(7).cnf
-db|mjl_stratix.(7).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller.vhd
-5379fbe27c91bccb8249a9976c2b35
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-clk_freq
-33330000
-PARAMETER_SIGNED_DEC
-USR
-sync_stages
-2
-PARAMETER_SIGNED_DEC
-USR
- constraint(data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller_beh.vhd
-6b9ade2bc92ad9689549b3b649d71fbf
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_transceiver_pkg.vhd
-27ed6a1b2fa8da3426834b2ffd6e3
-}
-# hierarchies {
-ps2_keyboard_controller:ps2_keyboard_controller_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-ps2_transceiver
-# storage
-db|mjl_stratix.(8).cnf
-db|mjl_stratix.(8).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_transceiver.vhd
-f36eb8905095ae377426e929b8bb
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-clk_freq
-33330000
-PARAMETER_SIGNED_DEC
-USR
-sync_stages
-2
-PARAMETER_SIGNED_DEC
-USR
- constraint(input_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(output_data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_transceiver_beh.vhd
-b4a21fc1765a39468c7e64309a2b5ca4
-}
-# hierarchies {
-ps2_keyboard_controller:ps2_keyboard_controller_inst|ps2_transceiver:ps2_transceiver_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-textmode_vga
-# storage
-db|mjl_stratix.(9).cnf
-db|mjl_stratix.(9).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga.vhd
-7e7aaadf2c78d755ac62459a3942a5f
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-vga_clk_freq
-25000000
-PARAMETER_SIGNED_DEC
-USR
-blink_interval_ms
-1000
-PARAMETER_SIGNED_DEC
-USR
-sync_stages
-2
-PARAMETER_SIGNED_DEC
-USR
- constraint(command)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(command_data)
-31 downto 0
-PARAMETER_STRING
-USR
- constraint(r)
-2 downto 0
-PARAMETER_STRING
-USR
- constraint(g)
-2 downto 0
-PARAMETER_STRING
-USR
- constraint(b)
-1 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
-4b9a182b862cef2b0f881cd65bc8670
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_struct.vhd
-a36618d2763583e3ac24bd67f4c478
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-textmode_vga_h_sm
-# storage
-db|mjl_stratix.(10).cnf
-db|mjl_stratix.(10).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_h_sm.vhd
-fd4d16b6910659f28351d5de42c6cb
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(background_color)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(char_cnt)
-6 downto 0
-PARAMETER_STRING
-USR
- constraint(char_line_cnt)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(cursor_column)
-6 downto 0
-PARAMETER_STRING
-USR
- constraint(cursor_line)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(cursor_color)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(decoded_char)
-0 to 7
-PARAMETER_STRING
-USR
- constraint(color)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rgb)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_h_sm_beh.vhd
-5897479d50b19d9c9e75372f24715fe
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|textmode_vga_h_sm:textmode_vga_h_sm_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-textmode_vga_v_sm
-# storage
-db|mjl_stratix.(11).cnf
-db|mjl_stratix.(11).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_v_sm.vhd
-ad3c904e66641117ed7a2178c299ae
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(char_line_cnt)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(char_height_pixel)
-3 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_v_sm_beh.vhd
-5e2eae07026ec51e70e6441d331813
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|textmode_vga_v_sm:textmode_vga_v_sm_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-video_memory
-# storage
-db|mjl_stratix.(12).cnf
-db|mjl_stratix.(12).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|video_memory.vhd
-62ac587ddd6a36adadad2889c3d4eb
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-data_width
-16
-PARAMETER_SIGNED_DEC
-USR
-row_addr_width
-5
-PARAMETER_SIGNED_DEC
-USR
-col_addr_width
-7
-PARAMETER_SIGNED_DEC
-USR
- constraint(vga_row_address)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(vga_col_address)
-6 downto 0
-PARAMETER_STRING
-USR
- constraint(vga_data)
-15 downto 0
-PARAMETER_STRING
-USR
- constraint(sm_row_address)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(sm_col_address)
-6 downto 0
-PARAMETER_STRING
-USR
- constraint(sm_data)
-15 downto 0
-PARAMETER_STRING
-USR
- constraint(sm_scroll_address)
-4 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|video_memory_beh.vhd
-32d828f0c36d6d4f2f90fb73624283f7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|video_memory:video_memory_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-font_rom
-# storage
-db|mjl_stratix.(13).cnf
-db|mjl_stratix.(13).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_rom.vhd
-e1eec1249295a1ffb222d231dbd2150
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(char)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(char_height_pixel)
-3 downto 0
-PARAMETER_STRING
-USR
- constraint(decoded_char)
-0 to 7
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_rom_beh.vhd
-611276e8f65f5c3b3910e93f1e14f57
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|font_rom:font_rom_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-console_sm
-# storage
-db|mjl_stratix.(14).cnf
-db|mjl_stratix.(14).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|console_sm.vhd
-1579852acd3dba15cbbc8df6687930
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(command)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(command_data)
-31 downto 0
-PARAMETER_STRING
-USR
- constraint(column_address)
-6 downto 0
-PARAMETER_STRING
-USR
- constraint(row_address)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(data)
-15 downto 0
-PARAMETER_STRING
-USR
- constraint(scroll_address)
-4 downto 0
-PARAMETER_STRING
-USR
- constraint(background_color)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(cursor_color)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|console_sm_beh.vhd
-2925753b73718babd33b9cfd65bb31
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|console_sm:console_sm_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-console_sm_sync
-# storage
-db|mjl_stratix.(15).cnf
-db|mjl_stratix.(15).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|console_sm_sync.vhd
-4e4e3f466b6c4ed52e49c2c5a955973
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-sync_stages
-2
-PARAMETER_SIGNED_DEC
-USR
- constraint(command_sys)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(command_data_sys)
-31 downto 0
-PARAMETER_STRING
-USR
- constraint(command_vga)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(command_data_vga)
-31 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
-5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|console_sm_sync_beh.vhd
-c0c622fa0f8e386ac37c9f6ecaed51
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|console_sm_sync:console_sm_sync_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-interval
-# storage
-db|mjl_stratix.(16).cnf
-db|mjl_stratix.(16).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|interval.vhd
-806b46be40bd476e9ea36e1e8fc73d95
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
-clk_freq
-25000000
-PARAMETER_SIGNED_DEC
-USR
-interval_time_ms
-1000
-PARAMETER_SIGNED_DEC
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|interval_beh.vhd
-dd608db0e45c60b972276e383b745185
-}
-# hierarchies {
-textmode_vga:textmode_vga_inst|interval:blink_interval_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
 altsyncram
 # storage
 db|mjl_stratix.(21).cnf
@@ -3376,7 +2461,7 @@ ON
 }
 # case_insensitive
 # source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|calc_top.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|calc_top.vhd
 8cb3bb6e1a084c4c3df6225395e4af
 5
 # internal_option {
@@ -3390,39 +2475,954 @@ AUTO_ROM_RECOGNITION
 ON
 }
 # include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|Serial_Handler|SerialHandler_pkg.vhd
-f3a344a1f2cf67ecad951aeae68330be
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
-50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-|homes|s0726179|hwmod|our_calc|mycalc|src|calc_top_struct.vhd
-28ef519649fde1771a1a98c39436979
-|homes|s0726179|hwmod|our_calc|mycalc|src|input|input_pkg.vhd
-e511778cee466874852f7591a43519a
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
-4b9a182b862cef2b0f881cd65bc8670
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller_pkg.vhd
-8ed1b13796e2dc2efd8df9a4c8d0ef
-|homes|s0726179|hwmod|our_calc|mycalc|src|debounce|debounce_pkg.vhd
-498e2dac4a6f15f4a8203a4d67373878
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-77c0c566f979e5c4978596f6ae57bf30
-|homes|s0726179|hwmod|our_calc|mycalc|src|output|output_pkg.vhd
-f89d4c114a162e58edf9b0e6976952b
-|homes|s0726179|hwmod|our_calc|mycalc|src|libs|sync_pkg.vhd
-d76c552f599f3aba17d0584d53296483
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
 5fe6c31f7a4212576c3f4229f6e933f
-|homes|s0726179|hwmod|our_calc|mycalc|src|RS232|rs232_pkg.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|RS232|rs232_pkg.vhd
 e64fca0758c145221ad5b0f15b4b8f
-|homes|s0726179|hwmod|our_calc|mycalc|src|ringbuffer|ringbuffer_pkg.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|output|output_pkg.vhd
+f89d4c114a162e58edf9b0e6976952b
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|calc_top_struct.vhd
+28ef519649fde1771a1a98c39436979
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|libs|sync_pkg.vhd
+d76c552f599f3aba17d0584d53296483
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce_pkg.vhd
+498e2dac4a6f15f4a8203a4d67373878
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|input|input_pkg.vhd
+e511778cee466874852f7591a43519a
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
+4b9a182b862cef2b0f881cd65bc8670
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller_pkg.vhd
+8ed1b13796e2dc2efd8df9a4c8d0ef
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|big_bug.vhd
+3e2379b194793da6a874dce4882f0
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ringbuffer|ringbuffer_pkg.vhd
 fa64964c3451f77e5e4859897c5977
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|Serial_Handler|SerialHandler_pkg.vhd
+f3a344a1f2cf67ecad951aeae68330be
 }
 # hierarchies {
 |
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+debounce
+# storage
+db|mjl_stratix.(1).cnf
+db|mjl_stratix.(1).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce.vhd
+348cc46f8be6aef621f3e724b8a26
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+clk_freq
+33330000
+PARAMETER_SIGNED_DEC
+USR
+timeout
+1000000000000 fs
+PARAMETER_PHYSICAL
+USR
+reset_value
+'1'
+PARAMETER_ENUM
+USR
+sync_stages
+2
+PARAMETER_SIGNED_DEC
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|libs|sync_pkg.vhd
+d76c552f599f3aba17d0584d53296483
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce_pkg.vhd
+498e2dac4a6f15f4a8203a4d67373878
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce_struct.vhd
+3c8770242777239faf6233ea682de69
+}
+# hierarchies {
+debounce:sys_res_n_debounce_inst
+debounce:btn_a_debounce_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+sync
+# storage
+db|mjl_stratix.(2).cnf
+db|mjl_stratix.(2).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|libs|sync.vhd
+63dd6b5f895ae02acdd6425e8e67e5c
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+sync_stages
+2
+PARAMETER_SIGNED_DEC
+USR
+reset_value
+'1'
+PARAMETER_ENUM
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|libs|sync_beh.vhd
+d2b24e389c8ebaf6636609631447c6a
+}
+# hierarchies {
+debounce:sys_res_n_debounce_inst|sync:sync_inst
+debounce:btn_a_debounce_inst|sync:sync_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+debounce_fsm
+# storage
+db|mjl_stratix.(3).cnf
+db|mjl_stratix.(3).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce_fsm.vhd
+880a9afe775fe464a7fa8927a8f96
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+reset_value
+'1'
+PARAMETER_ENUM
+USR
+cnt_max
+33333
+PARAMETER_SIGNED_DEC
+USR
+ constraint(cnt)
+15 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce_fsm_beh.vhd
+ad5242dd91da6ac523136ed09c8fd6ca
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+}
+# hierarchies {
+debounce:sys_res_n_debounce_inst|debounce_fsm:fsm_inst
+debounce:btn_a_debounce_inst|debounce_fsm:fsm_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+counter
+# storage
+db|mjl_stratix.(4).cnf
+db|mjl_stratix.(4).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|libs|counter.vhd
+46a64fd8d3f6d58b999aa04a7d6fa8
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+cnt_max
+33333
+PARAMETER_SIGNED_DEC
+USR
+ constraint(cnt)
+15 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|debounce|debounce_pkg.vhd
+498e2dac4a6f15f4a8203a4d67373878
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|libs|counter_beh.vhd
+ff622ebe8b2d9ec19e87e62c463aa662
+}
+# hierarchies {
+debounce:sys_res_n_debounce_inst|counter:counter_inst
+debounce:btn_a_debounce_inst|counter:counter_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+pll
+# storage
+db|mjl_stratix.(5).cnf
+db|mjl_stratix.(5).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|pll|pll.vhd
+46e27624fb9b81e6631854b73a05083
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# hierarchies {
+pll:pll_vga_clk
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+ps2_keyboard_controller
+# storage
+db|mjl_stratix.(7).cnf
+db|mjl_stratix.(7).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller.vhd
+5379fbe27c91bccb8249a9976c2b35
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+clk_freq
+33330000
+PARAMETER_SIGNED_DEC
+USR
+sync_stages
+2
+PARAMETER_SIGNED_DEC
+USR
+ constraint(data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|ps2|src|ps2_transceiver_pkg.vhd
+27ed6a1b2fa8da3426834b2ffd6e3
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|ps2|src|ps2_keyboard_controller_beh.vhd
+6b9ade2bc92ad9689549b3b649d71fbf
+}
+# hierarchies {
+ps2_keyboard_controller:ps2_keyboard_controller_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+ps2_transceiver
+# storage
+db|mjl_stratix.(8).cnf
+db|mjl_stratix.(8).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|ps2|src|ps2_transceiver.vhd
+f36eb8905095ae377426e929b8bb
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+clk_freq
+33330000
+PARAMETER_SIGNED_DEC
+USR
+sync_stages
+2
+PARAMETER_SIGNED_DEC
+USR
+ constraint(input_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(output_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|ps2|src|ps2_transceiver_beh.vhd
+b4a21fc1765a39468c7e64309a2b5ca4
+}
+# hierarchies {
+ps2_keyboard_controller:ps2_keyboard_controller_inst|ps2_transceiver:ps2_transceiver_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+textmode_vga
+# storage
+db|mjl_stratix.(9).cnf
+db|mjl_stratix.(9).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga.vhd
+7e7aaadf2c78d755ac62459a3942a5f
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+vga_clk_freq
+25000000
+PARAMETER_SIGNED_DEC
+USR
+blink_interval_ms
+1000
+PARAMETER_SIGNED_DEC
+USR
+sync_stages
+2
+PARAMETER_SIGNED_DEC
+USR
+ constraint(command)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(command_data)
+31 downto 0
+PARAMETER_STRING
+USR
+ constraint(r)
+2 downto 0
+PARAMETER_STRING
+USR
+ constraint(g)
+2 downto 0
+PARAMETER_STRING
+USR
+ constraint(b)
+1 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
+4b9a182b862cef2b0f881cd65bc8670
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_struct.vhd
+a36618d2763583e3ac24bd67f4c478
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+textmode_vga_h_sm
+# storage
+db|mjl_stratix.(10).cnf
+db|mjl_stratix.(10).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_h_sm.vhd
+fd4d16b6910659f28351d5de42c6cb
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(background_color)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(char_cnt)
+6 downto 0
+PARAMETER_STRING
+USR
+ constraint(char_line_cnt)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(cursor_column)
+6 downto 0
+PARAMETER_STRING
+USR
+ constraint(cursor_line)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(cursor_color)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(decoded_char)
+0 to 7
+PARAMETER_STRING
+USR
+ constraint(color)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rgb)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_h_sm_beh.vhd
+5897479d50b19d9c9e75372f24715fe
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|textmode_vga_h_sm:textmode_vga_h_sm_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+textmode_vga_v_sm
+# storage
+db|mjl_stratix.(11).cnf
+db|mjl_stratix.(11).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_v_sm.vhd
+ad3c904e66641117ed7a2178c299ae
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(char_line_cnt)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(char_height_pixel)
+3 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_v_sm_beh.vhd
+5e2eae07026ec51e70e6441d331813
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|textmode_vga_v_sm:textmode_vga_v_sm_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+video_memory
+# storage
+db|mjl_stratix.(12).cnf
+db|mjl_stratix.(12).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|video_memory.vhd
+62ac587ddd6a36adadad2889c3d4eb
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+data_width
+16
+PARAMETER_SIGNED_DEC
+USR
+row_addr_width
+5
+PARAMETER_SIGNED_DEC
+USR
+col_addr_width
+7
+PARAMETER_SIGNED_DEC
+USR
+ constraint(vga_row_address)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(vga_col_address)
+6 downto 0
+PARAMETER_STRING
+USR
+ constraint(vga_data)
+15 downto 0
+PARAMETER_STRING
+USR
+ constraint(sm_row_address)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(sm_col_address)
+6 downto 0
+PARAMETER_STRING
+USR
+ constraint(sm_data)
+15 downto 0
+PARAMETER_STRING
+USR
+ constraint(sm_scroll_address)
+4 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|video_memory_beh.vhd
+32d828f0c36d6d4f2f90fb73624283f7
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|video_memory:video_memory_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+font_rom
+# storage
+db|mjl_stratix.(13).cnf
+db|mjl_stratix.(13).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_rom.vhd
+e1eec1249295a1ffb222d231dbd2150
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(char)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(char_height_pixel)
+3 downto 0
+PARAMETER_STRING
+USR
+ constraint(decoded_char)
+0 to 7
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_rom_beh.vhd
+611276e8f65f5c3b3910e93f1e14f57
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|font_rom:font_rom_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+console_sm
+# storage
+db|mjl_stratix.(14).cnf
+db|mjl_stratix.(14).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|console_sm.vhd
+1579852acd3dba15cbbc8df6687930
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(command)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(command_data)
+31 downto 0
+PARAMETER_STRING
+USR
+ constraint(column_address)
+6 downto 0
+PARAMETER_STRING
+USR
+ constraint(row_address)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(data)
+15 downto 0
+PARAMETER_STRING
+USR
+ constraint(scroll_address)
+4 downto 0
+PARAMETER_STRING
+USR
+ constraint(background_color)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(cursor_color)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|console_sm_beh.vhd
+2925753b73718babd33b9cfd65bb31
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|console_sm:console_sm_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+console_sm_sync
+# storage
+db|mjl_stratix.(15).cnf
+db|mjl_stratix.(15).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|console_sm_sync.vhd
+4e4e3f466b6c4ed52e49c2c5a955973
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+sync_stages
+2
+PARAMETER_SIGNED_DEC
+USR
+ constraint(command_sys)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(command_data_sys)
+31 downto 0
+PARAMETER_STRING
+USR
+ constraint(command_vga)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(command_data_vga)
+31 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+50de39ba3ab3b4572deb0f6e994ffa
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|console_sm_sync_beh.vhd
+c0c622fa0f8e386ac37c9f6ecaed51
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|console_sm_sync:console_sm_sync_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+interval
+# storage
+db|mjl_stratix.(16).cnf
+db|mjl_stratix.(16).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|interval.vhd
+806b46be40bd476e9ea36e1e8fc73d95
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+clk_freq
+25000000
+PARAMETER_SIGNED_DEC
+USR
+interval_time_ms
+1000
+PARAMETER_SIGNED_DEC
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|interval_beh.vhd
+dd608db0e45c60b972276e383b745185
+}
+# hierarchies {
+textmode_vga:textmode_vga_inst|interval:blink_interval_inst
 }
 # lmf
 |opt|quartus|quartus|lmf|maxplus2.lmf
@@ -3441,7 +3441,7 @@ ON
 }
 # case_insensitive
 # source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|input|input.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|input|input.vhd
 666a94913497904c53d35eab1a5ee95
 5
 # internal_option {
@@ -3474,6 +3474,159 @@ input_ent:input_inst
 
 # end
 # entity
+ringbuffer_ent
+# storage
+db|mjl_stratix.(19).cnf
+db|mjl_stratix.(19).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ringbuffer|ringbuffer.vhd
+11706b1db194b981a67284dcef47ee
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(pars_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(inp_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rb_read_linenr)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rb_read_data)
+80 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|big_bug.vhd
+3e2379b194793da6a874dce4882f0
+}
+# hierarchies {
+ringbuffer_ent:ringbuffer_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+Serial_Handler_ent
+# storage
+db|mjl_stratix.(20).cnf
+db|mjl_stratix.(20).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|Serial_Handler|Serial_Handler.vhd
+80b2e3e536465cd85b68697c6d23780
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(rb_read_linenr)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rb_read_data)
+80 downto 0
+PARAMETER_STRING
+USR
+ constraint(tx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# include_file {
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|big_bug.vhd
+3e2379b194793da6a874dce4882f0
+}
+# hierarchies {
+Serial_Handler_ent:serialhandler_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
+RS232_ent
+# storage
+db|mjl_stratix.(25).cnf
+db|mjl_stratix.(25).cnf
+# logic_option {
+AUTO_RAM_RECOGNITION
+ON
+}
+# case_insensitive
+# source_file
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|RS232|RS232.vhd
+b4a4e366d2b0eab4b0b2f4d6477d50d4
+5
+# internal_option {
+HDL_INITIAL_FANOUT_LIMIT
+OFF
+AUTO_RESOURCE_SHARING
+OFF
+AUTO_RAM_RECOGNITION
+ON
+AUTO_ROM_RECOGNITION
+ON
+}
+# user_parameter {
+ constraint(tx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+ constraint(rx_data)
+7 downto 0
+PARAMETER_STRING
+USR
+}
+# hierarchies {
+RS232_ent:rs232_inst
+}
+# lmf
+|opt|quartus|quartus|lmf|maxplus2.lmf
+9a59d39b0706640b4b2718e8a1ff1f
+# macro_sequence
+
+# end
+# entity
 output_ent
 # storage
 db|mjl_stratix.(18).cnf
@@ -3484,8 +3637,8 @@ ON
 }
 # case_insensitive
 # source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|output|output.vhd
-c4c1abd73a3a7affde597582aadc635c
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|output|output.vhd
+424f8f5850c6231380f07a5fd1772b4e
 5
 # internal_option {
 HDL_INITIAL_FANOUT_LIMIT
@@ -3516,174 +3669,21 @@ PARAMETER_STRING
 USR
 }
 # include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|math_pkg.vhd
-1ddf88e8dec9bded6c57d8920be9c7
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|big_bug.vhd
+3e2379b194793da6a874dce4882f0
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|mjl_stratix|textmode_vga_platform_dependent_pkg.vhd
 50de39ba3ab3b4572deb0f6e994ffa
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
-1af3cb471271a94399a87d402b4a1661
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_component_pkg.vhd
 4b9a182b862cef2b0f881cd65bc8670
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-77c0c566f979e5c4978596f6ae57bf30
-|homes|s0726179|hwmod|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|textmode_vga_pkg.vhd
+1af3cb471271a94399a87d402b4a1661
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|ip|textmode_vga|src|font_pkg.vhd
 5fe6c31f7a4212576c3f4229f6e933f
+|homes|a0725146|Desktop|Git|our_calc|mycalc|src|math_pkg.vhd
+1ddf88e8dec9bded6c57d8920be9c7
 }
 # hierarchies {
 output_ent:output_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-ringbuffer_ent
-# storage
-db|mjl_stratix.(19).cnf
-db|mjl_stratix.(19).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|ringbuffer|ringbuffer.vhd
-e4adf07d5a8d9aa258d0272b626d3568
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(pars_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(inp_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rb_read_linenr)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rb_read_data)
-80 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-77c0c566f979e5c4978596f6ae57bf30
-}
-# hierarchies {
-ringbuffer_ent:ringbuffer_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-Serial_Handler_ent
-# storage
-db|mjl_stratix.(20).cnf
-db|mjl_stratix.(20).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|Serial_Handler|Serial_Handler.vhd
-d972a5fe5b6c2d6d78d51ca93c9174c
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(rb_read_linenr)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rb_read_data)
-80 downto 0
-PARAMETER_STRING
-USR
- constraint(tx_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rx_data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# include_file {
-|homes|s0726179|hwmod|our_calc|mycalc|src|big_bug.vhd
-77c0c566f979e5c4978596f6ae57bf30
-}
-# hierarchies {
-Serial_Handler_ent:serialhandler_inst
-}
-# lmf
-|opt|quartus|quartus|lmf|maxplus2.lmf
-9a59d39b0706640b4b2718e8a1ff1f
-# macro_sequence
-
-# end
-# entity
-RS232_ent
-# storage
-db|mjl_stratix.(25).cnf
-db|mjl_stratix.(25).cnf
-# logic_option {
-AUTO_RAM_RECOGNITION
-ON
-}
-# case_insensitive
-# source_file
-|homes|s0726179|hwmod|our_calc|mycalc|src|RS232|RS232.vhd
-a29d72fa8fd12ca1821ab41d3984455
-5
-# internal_option {
-HDL_INITIAL_FANOUT_LIMIT
-OFF
-AUTO_RESOURCE_SHARING
-OFF
-AUTO_RAM_RECOGNITION
-ON
-AUTO_ROM_RECOGNITION
-ON
-}
-# user_parameter {
- constraint(tx_data)
-7 downto 0
-PARAMETER_STRING
-USR
- constraint(rx_data)
-7 downto 0
-PARAMETER_STRING
-USR
-}
-# hierarchies {
-RS232_ent:rs232_inst
 }
 # lmf
 |opt|quartus|quartus|lmf|maxplus2.lmf

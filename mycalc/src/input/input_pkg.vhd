@@ -13,7 +13,8 @@ package input_pkg is
 		inp_data	: out std_logic_vector(7 downto 0);
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
-		pars_start	: out std_logic
+		pars_start	: out std_logic;
+		btn_a_sync	: in std_logic
 	);
     END component input_ent;
 end package input_pkg;
