@@ -94,9 +94,9 @@ begin
 			end if;
 		when RECV_DONE =>
 			if countBaud >= 580 then			-- 1,5 mal die Bitzeit
-				--RS232_fsm_state_next <= SEND_BYTE;
-				sendBuffer_next <= x"36";
-				RS232_fsm_state_next <= SEND_INIT;
+				RS232_fsm_state_next <= SEND_BYTE;
+				--sendBuffer_next <= x"36";
+				--RS232_fsm_state_next <= SEND_INIT;
 			end if;
 		when SEND_BYTE =>
 			--if tx_rdy = '1' then
@@ -158,7 +158,7 @@ begin
 			countBaud_next <= countBaud + 1;
 		when SEND_BYTE =>
 			rx_recv <= '1';
-			rx_data <= recvBuffer;
+			rx_data <= x"53";--recvBuffer;
 		when TEST =>
 			
 		when others => null;

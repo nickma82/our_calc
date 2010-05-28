@@ -255,23 +255,23 @@ begin
 	);
 
 	--Parser
-	parser_top_inst : parser_top
-	generic map
-	(
-	      RESET_VALUE => RES_N_DEFAULT_VALUE
-	) 
-	port map
-	(
-		sys_clk	=> sys_clk,
-		sys_res_n => sys_res_n,
-		rb_busy => rb_busy,
-		rb_read_en => rb_pars_en,
-		rb_read_lineNr => rb_pars_lineNr,
-		rb_read_data_rdy => rb_pars_data_rdy,
-		rb_read_data => rb_read_data,
-		ps_start => pars_start,
-		parse_new_data => pars_new_data,
-		parse_data => pars_data,
-		parse_state => pars_state
-	);
+	--parser_top_inst : parser_top
+	--generic map
+	--(
+	--      RESET_VALUE => RES_N_DEFAULT_VALUE
+	--) 
+	--port map
+	--(
+	--	sys_clk	=> sys_clk,
+	--	sys_res_n => sys_res_n,
+	--	rb_busy => rb_busy,
+	--	rb_read_en => rb_pars_en,
+	--	rb_read_lineNr => rb_pars_lineNr,
+	--	rb_read_data_rdy => rb_pars_data_rdy,
+	--	rb_read_data => rb_read_data,
+	--	ps_start => pars_start,
+	--	parse_new_data => pars_new_data,
+	--	parse_data => pars_data,
+	--	parse_state => pars_state
+	--);
 end architecture struct;

@@ -71,24 +71,25 @@ begin
 			end if;
       		when CHECK_BYTE =>
 			--TODO richtiges Byte checken, derzeit 'S' für send
-			if rx_data = x"53" then Serial_Handler_fsm_state_next <= SEND_HISTORY;
-			else Serial_Handler_fsm_state_next <= READY;
-			end if;
+			--if rx_data = x"53" then Serial_Handler_fsm_state_next <= SEND_HISTORY;
+			--else Serial_Handler_fsm_state_next <= READY;
+			--end if;
+			Serial_Handler_fsm_state_next <= SEND_HISTORY;
 		when SEND_HISTORY =>
-			if rb_busy = '1' then 
-				Serial_Handler_fsm_state_next <= REQ_LINE;
-			end if;
+			--if rb_busy = '1' then 
+			--	Serial_Handler_fsm_state_next <= REQ_LINE;
+			--end if;
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
-			--Serial_Handler_fsm_state_next <= REQ_LINE;
+			Serial_Handler_fsm_state_next <= REQ_LINE;
 		when REQ_LINE =>
 			Serial_Handler_fsm_state_next <= WAIT_LINE;
 		when WAIT_LINE =>
-			if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
-			end if;
+			--if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
+			--end if;
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
-			--Serial_Handler_fsm_state_next <= READ_LINE;
+			Serial_Handler_fsm_state_next <= READ_LINE;
 		when READ_LINE =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WRITE_CHAR =>
