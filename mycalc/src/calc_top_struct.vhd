@@ -34,7 +34,8 @@ architecture struct of calc_top is
 	constant SYNC_STAGES : integer := 2;
 	constant BTN_A_RESET_VALUE : std_logic := '1';
 	
-	signal sys_res_n_sync, btn_a_sync : std_logic;
+	signal sys_res_n_sync : std_logic;
+	signal btn_a_sync : std_logic;
 	signal c0_pll_sig: std_logic;
 	
 

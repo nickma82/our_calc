@@ -39,18 +39,19 @@ end entity ringbuffer2_ent;
 -- ARCHITECTURE
 architecture ringbuffer2_arc of ringbuffer2_ent is
 
-type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE, WRITE_RAM, READ_RAM, WAIT_RAM, PARS_REQ, PARS_RDY);
+type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE, WRITE_RAM, READ_RAM, WAIT_RAM, PARS_REQ, PARS_RDY, WRITE_RESULT);
 
 --signals
 signal ringbuffer_fsm_state, ringbuffer_fsm_state_next : RINGBUFFER_FSM_STATE_TYPE;
 signal linePointer, linePointer_next 	: integer range 0 to LINE_NUMB -1;				--zeigt auf die derzeitige Zeile, Zeile 0
 signal charPointer, charPointer_next	: integer range 0 to LINE_LENGTH -1;				--zeigt auf derzeitigen Char in Zeile 0
-signal byte_buffer, byte_buffer_next	: std_logic_vector(7 downto 0);					--speichert zu schreibendes Byte zwischen
+signal byte_buffer, byte_buffer_next	: std_logic_vector(7 downto 0) := x"00";			--speichert zu schreibendes Byte zwischen
 signal ram_buffer, ram_buffer_next	: std_logic_vector(7 downto 0);					--speichert RAM Byte zwischen zum lesen/schreiben
 signal lineBuffer, lineBuffer_next	: RAM_LINE;							--speichert Line zwischen um Byte für Byte rein zu speichern
 signal lineCounter, lineCounter_next	: integer range 0 to LINE_LENGTH;				--speichert beim wievielten Byte er gerade ließt
 signal lineRead, lineRead_next 		: integer range 0 to LINE_NUMB -1;				--Speichert die zu lesende Zeile (linePointer + lineNR)
 signal writeNextState, writeNextState_next	: RINGBUFFER_FSM_STATE_TYPE;
+signal resultLine, resultLine_next	: RESULT_LINE;
 
 begin
 
@@ -68,16 +69,18 @@ begin
 		lineCounter <= lineCounter_next;
 		lineRead <= lineRead_next;
 		writeNextState <= writeNextState_next;
+		resultLine <= resultLine_next;
 	end if;
 
 end process sync;
 
-next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, writeNextState)
+next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine)
 begin
 	ringbuffer_fsm_state_next <= ringbuffer_fsm_state;
 	byte_buffer_next <= byte_buffer;
 	lineRead_next <= lineRead;
 	writeNextState_next <= writeNextState;
+	resultLine_next <= resultLine;
 	
 	case ringbuffer_fsm_state is
 		when INIT =>
@@ -87,8 +90,8 @@ begin
 				byte_buffer_next <= inp_data;
 				ringbuffer_fsm_state_next <= WRITE_RAM;
 			elsif pars_new_data = '1' then
-				--byte_buffer_next <= pars_data;
-				--ringbuffer_fsm_state_next <= WRITE_RAM;
+				resultLine_next <= pars_data;
+				ringbuffer_fsm_state_next <= WRITE_RESULT;
 			elsif rb_read_en = '1' then 
 				ringbuffer_fsm_state_next <= READ_RAM;
 				writeNextState_next <= LINE_REQ;
@@ -128,20 +131,28 @@ begin
 			else
 				ringbuffer_fsm_state_next <= READ_RAM;
 			end if;
+		when WRITE_RESULT =>
+			if lineCounter = 9 then
+				ringbuffer_fsm_state_next <= READY;
+			end if;
 		when others => null;
 	end case;
 end process next_state;
 
-output : process(ringbuffer_fsm_state, charPointer, byte_buffer, linePointer, rb_read_lineNr, lineCounter, lineRead)
+output : process(ringbuffer_fsm_state, charPointer, byte_buffer, linePointer, rb_read_lineNr, lineCounter, lineRead, ram_buffer, lineBuffer, data_out, resultLine)
 begin
 	linePointer_next <= linePointer;
 	charPointer_next <= charPointer;
 	ram_buffer_next <= ram_buffer;
 	lineCounter_next <= lineCounter;
+	lineBuffer_next <= lineBuffer;
 
 	rb_busy <= '1';
 	rb_read_data_rdy <= '0';
 	wr <= '0';
+	data_in <= x"00";
+	address <= 0;
+	rb_pars_data_rdy <= '0';
 
 	for i in 0 to LINE_LENGTH -1 loop
 		rb_read_data(i) <= x"00";
@@ -155,10 +166,11 @@ begin
 			rb_read_data <= (others => (others => '0'));
 			ram_buffer_next <= x"00";
 			lineCounter_next <= 0;
-			byte_Buffer_next <= x"00";
+			--byte_Buffer_next <= x"00";
 		when READY =>
 			rb_busy <= '1';
 			rb_read_data_rdy <= '0';
+			lineCounter_next <= 0;
 		when DELETE_CHAR =>
 			rb_busy <= '0';
 			if charPointer >= 0 then
@@ -210,6 +222,15 @@ begin
 			address <= lineRead*80 + lineCounter;
 			lineBuffer_next(lineCounter) <= data_out;			
 			lineCounter_next <= lineCounter + 1;
+		when WRITE_RESULT =>
+			rb_busy <= '0';
+			if charPointer < LINE_LENGTH - 1 then
+				wr <= '1';
+				data_in <= resultLine(lineCounter);
+				address <= charPointer+linePointer * 80;
+				charPointer_next <= charPointer + 1;
+				lineCounter_next <= lineCounter + 1;
+			end if;
 		when others => null;
 	end case;
 end process output;

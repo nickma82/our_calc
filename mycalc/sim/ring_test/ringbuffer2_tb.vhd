@@ -22,7 +22,7 @@ constant clock_period:time := 30 ns;
 signal sys_clk, sys_res_n: std_logic;
 signal rb_busy		: std_logic := '0';
 signal pars_new_data	: std_logic := '0';
-signal pars_data	: std_logic_vector(7 downto 0) := x"00";
+signal pars_data	: RESULT_LINE;
 signal inp_new_data	: std_logic := '0';
 signal inp_data		: std_logic_vector(7 downto 0) := x"00";
 signal inp_del		: std_logic := '0';
@@ -30,6 +30,9 @@ signal rb_char_newline	: std_logic := '0';
 signal rb_read_en	: std_logic := '0';
 signal rb_read_lineNr	: std_logic_vector(7 downto 0) := x"00";
 signal rb_read_data_rdy	: std_logic := '0';
+signal rb_pars_en	: std_logic := '0';
+signal rb_pars_lineNr	: std_logic_vector(7 downto 0) := x"00";
+signal rb_pars_data_rdy	: std_logic := '0';
 signal rb_read_data	: RAM_LINE;
 signal wr		: std_logic;
 signal address		: integer range 0 to 4090;
@@ -54,6 +57,9 @@ ring : entity work.ringbuffer2_ent
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
 		rb_read_data => rb_read_data,
+		rb_pars_en => rb_pars_en,
+		rb_pars_lineNr => rb_pars_lineNr,
+		rb_pars_data_rdy => rb_pars_data_rdy,
 		wr => wr,
 		address => address,
 		data_in => data_in,
@@ -121,21 +127,25 @@ begin
 	--assert ps2_data(7 downto 0) = "00110000";
 	wait for 30 ns;
 
-	wait for 500 ns;
-	wait for 500 ns;
-	wait for 500 ns;
-	wait for 500 ns;
-	wait for 500 ns;
-	wait for 500 ns;
+	wait for 5 us;
 
-	--testen ob überlauf der Zeilen funktioniert
-	--for i in 0 to 52 loop
-	--	rb_char_newline <= '1';
-	--	wait for 30 ns;
-	--	rb_char_newline <= '0';
-	--	wait for 30 ns;
-	--end loop;
+	wait for 30 ns;
+	rb_char_newline <= '1';
+	wait for 30 ns;
+	rb_char_newline <= '0';
+	wait for 30 ns;
 
+	--Zeile abfragen
+	rb_read_lineNr <= x"00";
+	wait for 30 ns;
+	rb_read_en <= '1';
+	wait for 30 ns;
+	rb_read_en <= '0';
+	wait for 30 ns;
+	--assert ps2_data(7 downto 0) = "00110000";
+	wait for 30 ns;
+
+	wait for 5 us;
 end process;
 
 end architecture behav;
