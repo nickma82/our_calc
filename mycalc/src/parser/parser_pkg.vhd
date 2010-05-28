@@ -16,25 +16,30 @@ package parser_pkg is
 	TYPE calc_buffs_TYPE  	is ARRAY (2 downto 0) of CALCSIGNED;
 	TYPE alu_ops_buff_TYPE 	is ARRAY (2 downto 0) of alu_operator_TYPE;
 	
--- 	component alu_top IS 
--- 	generic
--- 	(
--- 	      RESET_VALUE : std_logic := '0'
--- 	);
--- 	port
--- 	(
--- 	  sys_clk : in std_logic;
--- 	  sys_res_n : in std_logic;
--- 
--- 	      calc_data:	IN CALCSIGNED;
--- 	      calc_data2:	IN CALCSIGNED;
--- 	      calc_operator: IN  alu_operator_TYPE;
--- 	      calc_start:	IN  STD_LOGIC := '0';
--- 	      calc_finished:	OUT STD_LOGIC := '0';
--- 	      calc_result:	OUT CALCSIGNED;
--- 	      calc_status: 	OUT alu_calc_error_TYPE
--- 	);
---     END component alu_top;
 	
+	
+	component parser_top is
+	generic
+	(
+	      RESET_VALUE : std_logic := '0'
+	);  
+	port
+	(	sys_clk, sys_res_n       : in    std_logic;	
+		      
+	      ps_start:		IN STD_LOGIC;
+	      parse_new_data: 	out STD_LOGIC;
+	      
+	      parse_data:	out RESULT_LINE; 	--Der neue ASCII Code.
+	      parse_state:	out parser_status_TYPE;	--
+	      
+	      rb_busy:		in  STD_LOGIC;	--not(rb_busy)
+	      rb_read_en:	out STD_LOGIC;	--Eine neue Zeile wird angefordert.
+	      rb_read_lineNr:	out std_logic_vector(7 downto 0);	--Die neue Zeile die gelesen werden soll.
+	      rb_read_data_rdy:	in STD_LOGIC;	--Die neue Zeile kann gelesen werden.
+	      rb_read_data:	in  RAM_LINE
+	 );
+	 end component parser_top;
+	
+end entity parser_top;
     
 end package parser_pkg;
