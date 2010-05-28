@@ -11,7 +11,7 @@ package serialhandler_pkg is
 		sys_res_n	: in std_logic;
 		inp_sendRS232	: in std_logic;
 		rb_busy		: in std_logic;
-		rb_read_en	: inout std_logic;
+		rb_read_en	: out std_logic;
 		rb_read_lineNr	: out std_logic_vector(7 downto 0);
 		rb_read_data_rdy: in std_logic;
 		rb_read_data	: in RAM_LINE;	

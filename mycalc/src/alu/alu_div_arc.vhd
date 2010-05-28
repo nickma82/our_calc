@@ -15,15 +15,15 @@ ARCHITECTURE alu_div OF alu_div_ent IS
       (RESET, INIT0, CALC_NEXT, HANDLE_OUT);
     signal div_fsm_state, div_fsm_state_next : DIV_FSM_STATE_TYPE;
   
-    signal buf: STD_LOGIC_VECTOR((2 * SIZE - 1) downto 0);
-    signal dbuf: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
-    signal sm: INTEGER range 0 to SIZE;
-    signal rm: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+    signal buf, buf_next: STD_LOGIC_VECTOR((2 * SIZE - 1) downto 0);
+    signal dbuf, dbuf_next: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+    signal sm, sm_next: INTEGER range 0 to SIZE;
+    signal rm, rm_next: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
     
     alias buf1 is buf((2 * SIZE - 1) downto SIZE);
     alias buf2 is buf((SIZE - 1) downto 0);
     
-    signal internal_calc_done: std_logic := '0';
+    signal internal_calc_done, internal_calc_done_next: std_logic := '0';
 
 BEGIN
 
@@ -58,10 +58,12 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
   end process next_state;
   
 
-  
-output : process(div_fsm_state, sys_clk)
+  --result, sm, calc_finished, ternal_calc_done, calc_status, internal_calc_status, buf, dbuf
+output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, buf, dbuf, sm, rm)
  	variable internal_calc_status: alu_calc_error_TYPE;
   begin
+  	
+   	sm_next <= sm;
     case div_fsm_state is
       when RESET =>
       	result <= (others => '0');
@@ -105,6 +107,9 @@ output : process(div_fsm_state, sys_clk)
         end if;
       when HANDLE_OUT =>
         rm <= buf1;
+        if signed(rm) > 0 then
+        	null;
+        end if; 
         result <= buf2;
         if internal_calc_status = RESET then
         	internal_calc_status := GOOD;

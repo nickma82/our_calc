@@ -74,23 +74,21 @@ next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_
 end process next_state;
   
 
-output : process(charunit_fsm_state, charPointer, currentLine, rb_read_en)
+output : process(charunit_fsm_state, charPointer, currentLine)
   begin
 	charUnit_next_valid <= '0';
-	rb_read_en <= 'L';
+	rb_read_en <= '0';
     case charunit_fsm_state is
 	when RESET =>
-		rb_read_en <= 'L'; --weak low
-      		rb_read_lineNr <= "LLLLLLLL";--x"00"; 
+		rb_read_en <= '0'; --weak low
+      		rb_read_lineNr <= x"00"; 
       		charUnit_next_valid <= '0';
       		next_ok <= '0';     
 		charPointer_next <= 0;
 	when LINE_REQ =>			--Zeile 0 anfordern
 		rb_read_lineNr <= x"00"; 
 		--check if RB is busy
-		if rb_read_en/= '1' then
-			rb_read_en <= '1';
-		end if;
+		rb_read_en <= '1';
 	when LINE_READY =>			
 		
 	when CHAR_WAIT =>

@@ -17,7 +17,7 @@ entity Serial_Handler_ent is
 		sys_res_n	: in std_logic;
 		inp_sendRS232	: in std_logic;
 		rb_busy		: in std_logic;
-		rb_read_en	: inout std_logic;
+		rb_read_en	: out std_logic;
 		rb_read_lineNr	: out std_logic_vector(7 downto 0);
 		rb_read_data_rdy: in std_logic;
 		rb_read_data	: in RAM_LINE;	
@@ -60,7 +60,7 @@ begin
 
 end process sync;
 
-next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_en, rb_read_data_rdy, linePointer, charPointer)
+next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_data_rdy, linePointer, charPointer)
 begin
 	Serial_Handler_fsm_state_next <= Serial_Handler_fsm_state;
 	
@@ -76,9 +76,7 @@ begin
 			end if;
 		when SEND_HISTORY =>
 			if rb_busy = '1' then 
-				if rb_read_en /= '1' then				
-					Serial_Handler_fsm_state_next <= REQ_LINE;
-				end if;
+				Serial_Handler_fsm_state_next <= REQ_LINE;
 			end if;
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
@@ -119,8 +117,8 @@ begin
 	currentLine_next <= currentLine;
 	
 	tx_go <= '0';
-	rb_read_en <= 'L';
-	rb_read_lineNr <= "LLLLLLLL";
+	rb_read_en <= '0';
+	rb_read_lineNr <= x"00";
 	tx_data <= x"00";
 	
 	case Serial_Handler_fsm_state is
