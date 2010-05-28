@@ -19,10 +19,11 @@ use work.output_pkg.all;
 use work.ringbuffer_pkg.all;
 use work.serialhandler_pkg.all;
 use work.rs232_pkg.all;
+use work.ringbuffer2_pkg.all;
+use work.ram_pkg.all;
 use work.parser_pkg.all;
 use work.debounce_pkg.all;
 use work.sync_pkg.all;
---use work.pll_pkg.all;
 use work.parser_pkg.all;
 
 
