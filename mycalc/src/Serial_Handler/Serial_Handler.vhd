@@ -18,7 +18,7 @@ entity Serial_Handler_ent is
 		inp_sendRS232	: in std_logic;
 		rb_busy		: in std_logic;
 		rb_read_en	: inout std_logic;
-		rb_read_lineNr	: inout std_logic_vector(7 downto 0);
+		rb_read_lineNr	: out std_logic_vector(7 downto 0);
 		rb_read_data_rdy: in std_logic;
 		rb_read_data	: in RAM_LINE;	
 		tx_rdy		: in std_logic;
@@ -60,7 +60,7 @@ begin
 
 end process sync;
 
-next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_data_rdy, linePointer, charPointer)
+next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_en, rb_read_data_rdy, linePointer, charPointer)
 begin
 	Serial_Handler_fsm_state_next <= Serial_Handler_fsm_state;
 	
@@ -135,6 +135,7 @@ begin
 			rb_read_en <= '1';
 			--linePointer_next <= linePointer - 1;
 		when WAIT_LINE =>
+			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';
 		when READ_LINE =>
 			--NUR ZUM TESTEN
