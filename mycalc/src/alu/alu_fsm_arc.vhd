@@ -20,7 +20,8 @@ ARCHITECTURE alu_fsm OF alu_fsm_ent IS
 	signal calc_status_var, calc_status_var_next: 	alu_calc_error_TYPE;
 	signal calc_finished_var, calc_finished_var_next: STD_LOGIC;
 	
-	signal intern_div_sign_next: SIGNED(1 downto 0);
+	signal intern_div_sign_next, intern_div_sign: SIGNED(1 downto 0);
+	signal div_en_var, div_en_var_next: STD_LOGIC;
 begin
 
 
@@ -66,12 +67,11 @@ begin
   
  output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status)
  	variable tmp_data1, tmp_data2, double_calcsigned: SIGNED((SIZEI*2-1) downto 0);
- 	variable intern_div_sign: SIGNED(1 downto 0);
+ 	
   begin
   	
-  	
-  	--intern_div_sign_next<= intern_div_sign;
-  	--intern_div_sign:= intern_div_sign_next;
+  	div_en_var_next<= div_en_var; 
+  	intern_div_sign_next<= intern_div_sign;
   	intern_calc_finished_next<= intern_calc_finished;
   	calc_status_var_next<= calc_status_var;
   	calc_finished_var_next <= calc_finished_var;
@@ -82,17 +82,17 @@ begin
 		calc_finished_var_next <='0';
 		intern_calc_finished_next <= '0';
 		intern_wait_div_next <= '0';
-		intern_div_sign := to_signed(1, 2);
+		intern_div_sign_next <= to_signed(1, 2);
 		
 		--port resets
-		div_en <= '0';
+		div_en_var_next <= '0';
       when INIT0 =>
 	      null;
       
       when PRE_CALC =>
       		if calc_operator= DIVISION then
 			if calc_data<0 then
-					intern_div_sign := resize( intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
+					intern_div_sign_next <= resize( intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
 			end if;
 		end if;
       
@@ -128,7 +128,7 @@ begin
 				div_number <= std_logic_vector( resize(calc_data*resize(intern_div_sign, calc_data'LENGTH ), calc_data'LENGTH ));
 				
 				if calc_data2<0 then
-					intern_div_sign := resize(intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
+					intern_div_sign_next <= resize(intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
 					div_dividend<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
 				else 
 					div_dividend<= std_logic_vector(calc_data2);
@@ -144,7 +144,7 @@ begin
 		
 		
       when DIV_WAIT =>
-		div_en <= '1';
+		div_en_var_next <= '1';
 		if div_calc_finished = '1' then
 			----------------------------------------
 			-- Restore Vorzeichen, wandeln in signed
@@ -167,6 +167,9 @@ begin
     elsif rising_edge(sys_clk) then
       alu_fsm_state <= alu_fsm_state_next;
       
+      div_en<=  div_en_var_next;
+      div_en_var<=  div_en_var_next;
+      intern_div_sign <= intern_div_sign_next;
       intern_wait_div <= intern_wait_div_next;
       intern_calc_finished <= intern_calc_finished_next;
       calc_finished    <= calc_finished_var_next;
