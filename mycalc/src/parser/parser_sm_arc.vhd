@@ -9,8 +9,8 @@ use work.parser_pkg.all;
 use ieee.numeric_std.all;
 
 ARCHITECTURE parser_sm OF parser_sm_ent IS
-  signal char_firstOne, digit_firstOne: std_logic;
-  signal global_digit_neg:	STD_LOGIC;
+  signal char_firstOne, char_firstOne_next: std_logic;
+  signal global_digit_neg_next, global_digit_neg:	STD_LOGIC;
   signal intern_b2bcd_data_neg: boolean:= false;
   
   type PARSER_FSM_STATE_TYPE is
@@ -26,12 +26,18 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal parser_internal_status: PARSER_INTERNAL_STATE_TYPE;
   
   signal debug_intern_buff_stage_pos, debug_intern_do_calc_stage: STAGE_POS_TYPE;
+  
+  
+  signal charUnit_en_var, charUnit_en_var_next, charUnit_get_next_var, charUnit_get_next_var_next: STD_LOGIC :='0';
+  signal operators_serial, operators_serial_next:	INTEGER := 0;
 BEGIN
 
-next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy)
+next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy, calc_status, charUnit_lastChar_type, charUnit_char_type, char_firstOne, charUnit_op,  global_digit_neg, intern_b2bcd_data_neg)
   -- charUnit_lastChar_type, charUnit_char_type: (RESET, DIGIT, OP, EOL)
   begin
     parse_fsm_state_next <= parse_fsm_state;
+    
+    char_firstOne_next <= char_firstOne;
     case parse_fsm_state is
       when IDLE0 =>
       	if parse_start = '1' then
@@ -39,12 +45,11 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
       	end if;
             
       when PARSE_INIT =>
-		char_firstOne	<= '1';
-		digit_firstOne<= '1';
+		char_firstOne_next	<= '1';
 		if parser_internal_status = RUNNING then
 			parse_fsm_state_next <= DIGIT_GETNEXT;
 		end if;
-			
+		
 		
       when DIGIT =>
 	  if char_state = ANALYZE_NEXT then
@@ -93,10 +98,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			if (charUnit_lastChar_type=OP and charUnit_char_type= EOL) then
 				parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
 			else 	
-				char_firstOne <= '0';
+				char_firstOne_next <= '0';
 				case charUnit_char_type is
 					when DIGIT=>  
-						digit_firstOne	<= '0';
 						parse_fsm_state_next<= DIGIT;
 					when OP =>    parse_fsm_state_next<= OP;
 					when EOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
@@ -109,16 +113,22 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	      --Error Handling
 	      if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
 		      parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
+		      assert false report "OP Error Handling: first char is not digit and no minus" severity warning;
 	      elsif (charUnit_lastChar_type=OP and charUnit_op/= SUBTRAKTION) then
 			parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
+			assert false report "OP Error Handling: Second op in series isn't a minus" severity warning;
 	      elsif parser_internal_status = TOO_MUCH_OPS then
 	      	parse_fsm_state_next   <= PARSE_ERROR;
+	      	assert false report "OP Error Handling: too much ops" severity warning;
 	      elsif parser_internal_status = INVALID_OP_SEQUENCE then
 	      	parse_fsm_state_next   <= PARSE_ERROR;
+	      	assert false report "OP Error Handling: invalid op sequence" severity warning;
 		  
 	      --Process Handling
 	      elsif char_state = ANALYZE_NEXT then
-		    parse_fsm_state_next <= DIGIT_GETNEXT;
+		    if charUnit_next_valid = '0' then --warte bis charUnit disabeled
+		    	parse_fsm_state_next <= DIGIT_GETNEXT;
+		    end if;
 	      elsif char_state = CALC_THIS then
 				if global_digit_neg= '1' then
 					--negative Handling
@@ -216,25 +226,28 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
   
   
   
- output : process(parse_fsm_state)
+ output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, parser_internal_status)
 	variable calc_buff: calc_buffs_TYPE; --Stage BUFFER
 	variable op_buff:		alu_ops_buff_TYPE;
 	
-	variable calc_stage, operators_serial:	INTEGER := 0;
+	variable calc_stage:	INTEGER := 0;
 	variable intern_do_calc_stage, intern_buff_stage_pos: 	STAGE_POS_TYPE;
-	variable intern_alu_op:		alu_operator_TYPE;
   begin
+  	
+  	operators_serial_next<= operators_serial; 
+  	charUnit_get_next_var_next<= charUnit_get_next_var; 
+  	charUnit_en_var_next<= charUnit_en_var; 
+  	global_digit_neg_next<= global_digit_neg;
     case parse_fsm_state is
       when IDLE0 =>
 		-- RESET STATE
-		charUnit_en <='0'; --Disable next digit unit
-		charUnit_get_next <='0';
+		charUnit_en_var_next <='0'; --Disable next digit unit
+		charUnit_get_next_var_next <='0';
 			
 		calc_stage	   	 := 0;
-		operators_serial := 1;
+		operators_serial_next <= 1;
 		intern_buff_stage_pos := 0;
-		global_digit_neg <='0';
-		intern_alu_op 	:= NOP; 
+		global_digit_neg_next <='0';
 		
 		char_state		<= IDLE0;
 		parser_internal_status<= RESET;
@@ -246,7 +259,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
       
       when PARSE_INIT =>
 		-- PARSER INIT
-		charUnit_en	<= '1' ;
+		charUnit_en_var_next	<= '1' ;
 		for i in (STAGES_TOP-1) downto 0 loop
 			calc_buff(i) := to_signed(0, SIZEI);
 			op_buff(i)		:= NOP;
@@ -258,10 +271,10 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	  
 	  
       when DIGIT =>
-		charUnit_get_next <= '0';
+		charUnit_get_next_var_next <= '0';
 		
 		if operators_serial>0 then --reset serial operators
-			operators_serial:=1;
+			operators_serial_next<=1;
 		end if;
 		calc_data <= calc_buff(intern_buff_stage_pos);
 		calc_data2<= to_signed(10, SIZEI);
@@ -290,14 +303,14 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
       when DIGIT_GETNEXT =>
 		-- --Moved to next_state logic
 		--if parse_fsm_state'LAST_ACTIVE /= PARSE_INIT then
-		--	  char_firstOne	<= '0';
+		--	  char_firstOne_next	<= '0';
 		--end if;
-		charUnit_get_next <= '1';
+		charUnit_get_next_var_next <= '1';
 		char_state <= PROCESS_NEXT;
 	  
       when OP =>
 		---calc_buff(intern_buff_stage_pos);
-		charUnit_get_next <= '0'; 
+		charUnit_get_next_var_next <= '0'; 
 		
 		
 		if charUnit_char_type= EOL then
@@ -308,7 +321,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			-- Handling of two or more operators in series
 			----------------------------------------------
 			if charUnit_op=SUBTRAKTION then
-				global_digit_neg<= not(global_digit_neg);	--invert global_digit_neg if it's second op in series
+				global_digit_neg_next<= not(global_digit_neg);	--invert global_digit_neg if it's second op in series
 			else
 				parser_internal_status <= INVALID_OP_SEQUENCE; --second op isn't a minus
 				--double checked in next_state logic @ OP
@@ -349,7 +362,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			end case;
 			
 			op_buff(intern_buff_stage_pos) := charUnit_op;
-			operators_serial:= operators_serial+1;
+			operators_serial_next<= operators_serial+1;
 			intern_buff_stage_pos := intern_buff_stage_pos+1;
 		end if;
 			
@@ -373,7 +386,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		----------------------------------------------
 		intern_buff_stage_pos:= intern_buff_stage_pos-1;
 		calc_start <= '0';
-		global_digit_neg<= '0';
+		global_digit_neg_next<= '0';
 		calc_data<= calc_buff(intern_buff_stage_pos);
 		calc_data2<= to_signed(-1, SIZEI);
 		calc_operator<= MULTIPLIKATION;
@@ -495,6 +508,14 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
       parse_fsm_state <= IDLE0;
     elsif rising_edge(sys_clk) then
       parse_fsm_state <= parse_fsm_state_next;
+      
+      operators_serial<= operators_serial_next;
+      charUnit_get_next<= charUnit_get_next_var_next;
+      charUnit_get_next_var<= charUnit_get_next_var_next;
+      charUnit_en<= charUnit_en_var_next;
+      charUnit_en_var<= charUnit_en_var_next;
+      global_digit_neg<= global_digit_neg_next;
+      char_firstOne<= char_firstOne_next;
     end if;
  end process sync;
 

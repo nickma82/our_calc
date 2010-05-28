@@ -73,6 +73,7 @@ begin
  	
   begin
   	
+  	intern_wait_div_next <= intern_wait_div;
   	div_dividend_var_next<= div_dividend_var; 
   	div_number_var_next<= div_number_var;
   	calc_result_var_next<= calc_result_var; 
