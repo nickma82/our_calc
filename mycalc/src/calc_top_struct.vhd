@@ -24,6 +24,7 @@ use work.rs232_pkg.all;
 use work.debounce_pkg.all;
 use work.sync_pkg.all;
 --use work.pll_pkg.all;
+use work.parser_pkg.all;
 
 
 architecture struct of calc_top is
@@ -51,14 +52,15 @@ architecture struct of calc_top is
 	signal inp_del : std_logic := '0';
 	signal inp_sendRS232 : std_logic := '0';
 	signal pars_start : std_logic := '0';
-	signal inp_data : std_logic_vector(7 downto 0) := x"00";
-	signal ps2_data_intern : std_logic_vector(7 downto 0) := x"00";
+	signal inp_data : std_logic_vector(7 downto 0) := 	x"00";
+	signal ps2_data_intern : std_logic_vector(7 downto 0) :=x"00";
 
 	--Output
 	signal vga_command	: std_logic_vector(7 downto 0) := x"00";
 	signal vga_command_data	: std_logic_vector(31 downto 0) := x"00000000";
 	signal pars_new_data	: std_logic := '0';
-	signal pars_data	: std_logic_vector(7 downto 0) := x"00";
+	signal pars_data	: RESULT_LINE;
+	signal pars_state:	parser_status_TYPE;
 
 	--Ringbuffer
 	signal rb_busy		: std_logic := '0';
@@ -78,6 +80,30 @@ architecture struct of calc_top is
 	
 
 begin
+	
+	generic map
+	(
+	      RESET_VALUE => RES_N_DEFAULT_VALUE
+	)  
+	port map
+	(
+		sys_clk =>	sys_clk,
+		sys_res_n =>	sys_res_n_sync,
+		      
+		ps_start =>	pars_start,
+		parse_new_data =>pars_new_data,
+	      
+		parse_data =>	pars_data,
+		parse_state =>	pars_state,
+		
+		rb_busy 	=>	rb_busy,
+		rb_read_en 	=>	rb_read_en,
+		rb_read_lineNr =>	rb_read_lineNr,
+		rb_read_data_rdy =>	rb_read_data_rdy,
+		rb_read_data 	=>	rb_read_data,
+	 );
+	 
+	
 	sys_res_n_debounce_inst : debounce
 	generic map
 	(
