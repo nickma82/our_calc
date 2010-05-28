@@ -41,7 +41,7 @@ constant clock_period:time := 30 ns;
 	signal vga_command	: std_logic_vector(7 downto 0) := x"00";
 	signal vga_command_data	: std_logic_vector(31 downto 0) := x"00000000";
 	signal pars_new_data	: std_logic := '0';
-	signal pars_data	: std_logic_vector(7 downto 0) := x"00";
+	signal pars_data	: RESULT_LINE;
 
 	--Ringbuffer
 	signal rb_busy		: std_logic := '0';
@@ -57,6 +57,9 @@ constant clock_period:time := 30 ns;
 	signal tx_data		: std_logic_vector(7 downto 0) := x"00";
 	signal rx_recv		: std_logic := '0';
 	signal rx_data		: std_logic_vector(7 downto 0) := x"00";
+
+	--Parser
+	signal pars_state	: parser_status_TYPE;
 
 
 begin --behave
@@ -140,6 +143,23 @@ RS232X : entity work.rs232_ent
 		uart_tx => uart_tx
 	);
 
+PARSERX : entity work.parser_top
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		rb_busy => rb_busy,
+		rb_read_en => rb_read_en,
+		rb_read_lineNr => rb_read_lineNr,
+		rb_read_data_rdy => rb_read_data_rdy,
+		rb_read_data => rb_read_data,
+		ps_start => pars_start,
+		parse_new_data => pars_new_data,
+		parse_data => pars_data,
+		parse_state => pars_state
+	);
+
+
 clkgenerator : process
 begin
 	sys_clk <= '0';
@@ -155,6 +175,9 @@ begin
 	uart_rx <= '1';
 	ps2_data <= x"00";
 	ps2_new_data <= '0';
+	vga_free <= '1';
+	vga_clk <= '0';
+	
 
 	wait for 15 ns;
 	sys_res_n <= '0';
@@ -163,16 +186,6 @@ begin
 	wait for 90 ns;
 
 	-- BEGIN TESTS
-	-- Eingabe '0'
-	ps2_data <= x"70";
-	wait for 30 ns;
-	ps2_new_data <= '1';
-	wait for 30 ns;
-	ps2_new_data <= '0';
-	wait for 30 ns;
-	assert inp_data(7 downto 0) = "00110000";
-	wait for 90 ns;
-
 	-- Eingabe '7'
 	ps2_data <= x"6C";
 	wait for 30 ns;
@@ -193,14 +206,44 @@ begin
 	assert inp_data(7 downto 0) = "00110000";
 	wait for 90 ns;
 
-	-- Eingabe '.' --History
-	ps2_data <= x"2E";
+	-- Eingabe '+'
+	ps2_data <= x"79";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = "00110000";
+	wait for 90 ns;
+
+	-- Eingabe '1'
+	ps2_data <= x"69";
 	wait for 30 ns;
 	ps2_new_data <= '1';
 	wait for 30 ns;
 	ps2_new_data <= '0';
 	wait for 30 ns;
 	assert inp_data(7 downto 0) = x"37";
+	wait for 90 ns;
+
+	-- Eingabe '0'
+	ps2_data <= x"70";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = "00110000";
+	wait for 90 ns;
+
+	-- Eingabe ENTER
+	ps2_data <= x"5A";
+	wait for 30 ns;
+	ps2_new_data <= '1';
+	wait for 30 ns;
+	ps2_new_data <= '0';
+	wait for 30 ns;
+	assert inp_data(7 downto 0) = "00110000";
 	wait for 90 ns;
 
 	wait for 300 us;
