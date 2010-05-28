@@ -22,6 +22,7 @@ ARCHITECTURE alu_fsm OF alu_fsm_ent IS
 	
 	signal intern_div_sign_next, intern_div_sign: SIGNED(1 downto 0);
 	signal div_en_var, div_en_var_next: STD_LOGIC;
+	signal calc_result_var, calc_result_var_next: CALCSIGNED;
 begin
 
 
@@ -70,6 +71,10 @@ begin
  	
   begin
   	
+  	calc_result_var_next<= calc_result_var; 
+  	tmp_data1:= (others=>'0');
+  	tmp_data2:= (others=>'0');
+  	double_calcsigned:= (others=>'0');
   	div_en_var_next<= div_en_var; 
   	intern_div_sign_next<= intern_div_sign;
   	intern_calc_finished_next<= intern_calc_finished;
@@ -77,7 +82,6 @@ begin
   	calc_finished_var_next <= calc_finished_var;
     case alu_fsm_state is
       when RESET =>
-      		--calc_result(0) <= '0';
 		calc_status_var_next <= RESET;
 		calc_finished_var_next <='0';
 		intern_calc_finished_next <= '0';
@@ -110,13 +114,13 @@ begin
 						double_calcsigned := (calc_data * calc_data2);
 					end if;
 					
-					--Checks
+					--Checks ob Range VALID
 					if (double_calcsigned > CALCMAX) or
-						(double_calcsigned < CALCMIN) then  --######################UNTERGRENZE stimmt nicht
+						(double_calcsigned < CALCMIN) then
 						calc_status_var_next <= OVERFLOW;
 						--assert false report "overflow" severity error;
 					else
-						calc_result <= resize(double_calcsigned, calc_result'LENGTH);
+						calc_result_var_next <= resize(double_calcsigned, calc_result'LENGTH);
 						calc_status_var_next <= GOOD;
 					end if;
 					intern_calc_finished_next <= '1';
@@ -150,7 +154,7 @@ begin
 			-- Restore Vorzeichen, wandeln in signed
 			----------------------------------------
 			calc_status_var_next <= div_calc_status;
-			calc_result <= resize( signed(div_result)* resize(intern_div_sign, div_result'LENGTH ), calc_result'LENGTH);
+			calc_result_var_next <= resize( signed(div_result)* resize(intern_div_sign, div_result'LENGTH ), calc_result'LENGTH);
 			intern_calc_finished_next <= '1';
 		end if;
 		
@@ -167,6 +171,9 @@ begin
     elsif rising_edge(sys_clk) then
       alu_fsm_state <= alu_fsm_state_next;
       
+      
+      calc_result<= calc_result_var_next;
+      calc_result_var<= calc_result_var_next;
       div_en<=  div_en_var_next;
       div_en_var<=  div_en_var_next;
       intern_div_sign <= intern_div_sign_next;
