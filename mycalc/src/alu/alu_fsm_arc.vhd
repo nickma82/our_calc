@@ -14,12 +14,11 @@ ARCHITECTURE alu_fsm OF alu_fsm_ent IS
     signal alu_fsm_state, alu_fsm_state_next : alu_fsm_state_TYPE;
     --INTERNE Signale
 -- 	signal internal_out: CALCSIGNED;
-	signal tmp_simulation: SIGNED((SIZEI*2-1) downto 0);
 	signal intern_calc_finished, intern_wait_div: std_logic;
 begin
 
 
-  next_state : process(alu_fsm_state, calc_start, intern_wait_div, intern_calc_finished)
+  next_state : process(alu_fsm_state, calc_start, intern_wait_div, intern_calc_finished, div_calc_finished)
   begin
     alu_fsm_state_next <= alu_fsm_state;
     case alu_fsm_state is
@@ -56,9 +55,8 @@ begin
   
   
   
- output : process(alu_fsm_state, div_calc_finished)
+ output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, calc_operator, calc_operator, div_calc_status)
  	variable tmp_data1, tmp_data2, double_calcsigned: SIGNED((SIZEI*2-1) downto 0);
- 	variable tmp_out_data: CALCSIGNED;
  	variable intern_div_sign: SIGNED(1 downto 0);
   begin
     case alu_fsm_state is
@@ -66,7 +64,6 @@ begin
       		--calc_result(0) <= '0';
 		calc_status <= RESET;
 		calc_finished <='0';
-		tmp_out_data := (others => '0');
 		intern_calc_finished <= '0';
 		intern_wait_div <= '0';
 		intern_div_sign := to_signed(1, 2);
@@ -88,7 +85,6 @@ begin
 					elsif calc_operator = MULTIPLIKATION then
 						double_calcsigned := (calc_data * calc_data2);
 					end if;
-        			tmp_simulation <= double_calcsigned;
 					
 					--Checks
 					if (double_calcsigned > CALCMAX) or
@@ -136,8 +132,6 @@ begin
 		end if;
 		
       when HANDLE_OUT =>
--- 		if calc_result = GOOD then
--- 			calc_result <= tmp_out_data;
 		calc_finished <= '1';
     end case;
   end process output;
