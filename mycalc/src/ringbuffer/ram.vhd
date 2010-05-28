@@ -30,14 +30,15 @@ process(sys_clk, sys_res_n)
 		if(sys_res_n = '0') then
 			data_out <= x"00";
 		elsif(rising_edge(sys_clk)) then
-			data_out <= ram(ram_offset);
+			data_out <= ram(address);
 
 			if wr = '1' then
-				if address = 0 then
-					ram(address) <= data_in;
-				else
-					ram(address-1) <= data_in;
-				end if;
+				ram(address) <= data_in;
+				--if address = 0 then
+				--	ram(address) <= data_in;
+				--else
+				--	ram(address-1) <= data_in;
+				--end if;
 			end if;
 		end if;
 	end process;
