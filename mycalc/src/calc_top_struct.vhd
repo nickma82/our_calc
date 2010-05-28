@@ -79,7 +79,11 @@ architecture struct of calc_top is
 	signal rx_recv		: std_logic := '0';
 	signal rx_data		: std_logic_vector(7 downto 0) := x"00";
 
-	
+	--RAM
+	signal wr		: std_logic;
+	signal address		: integer range 0 to 4090;
+	signal data_in		: std_logic_vector(7 downto 0);
+	signal data_out		: std_logic_vector(7 downto 0);	
 
 begin
 	sys_res_n_debounce_inst : debounce
@@ -199,26 +203,26 @@ begin
 	);
 	
 	--Ringbuffer
-	ringbuffer_inst : ringbuffer_ent
-	port map
-	(
-		sys_clk	=> sys_clk,
-		sys_res_n => sys_res_n,
-		rb_busy => rb_busy,
-		pars_new_data => pars_new_data,
-		pars_data => pars_data,
-		inp_new_data => inp_new_data,
-		inp_data => inp_data,
-		inp_del => inp_del,
-		rb_char_newline => rb_char_newline,
-		rb_read_en => rb_read_en,
-		rb_read_lineNr => rb_read_lineNr,
-		rb_read_data_rdy => rb_read_data_rdy,
-		rb_read_data => rb_read_data,
-		rb_pars_en => rb_pars_en,
-		rb_pars_lineNr => rb_pars_lineNr,
-		rb_pars_data_rdy => rb_pars_data_rdy
-	);
+	--ringbuffer_inst : ringbuffer_ent
+	--port map
+	--(
+	--	sys_clk	=> sys_clk,
+	--	sys_res_n => sys_res_n,
+	--	rb_busy => rb_busy,
+	--	pars_new_data => pars_new_data,
+	--	pars_data => pars_data,
+	--	inp_new_data => inp_new_data,
+	--	inp_data => inp_data,
+	--	inp_del => inp_del,
+	--	rb_char_newline => rb_char_newline,
+	--	rb_read_en => rb_read_en,
+	--	rb_read_lineNr => rb_read_lineNr,
+	--	rb_read_data_rdy => rb_read_data_rdy,
+	--	rb_read_data => rb_read_data,
+	--	rb_pars_en => rb_pars_en,
+	--	rb_pars_lineNr => rb_pars_lineNr,
+	--	rb_pars_data_rdy => rb_pars_data_rdy
+	--);
 
 	--Serial Handler
 	serialhandler_inst : Serial_Handler_ent
@@ -252,6 +256,42 @@ begin
 		rx_data => rx_data,
 		uart_rx => uart_rx,
 		uart_tx => uart_tx
+	);
+
+	ringbuffer_inst : ringbuffer2_ent
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		rb_busy => rb_busy,
+		pars_new_data => pars_new_data,
+		pars_data => pars_data,
+		inp_new_data => inp_new_data,
+		inp_data => inp_data,
+		inp_del => inp_del,
+		rb_char_newline => rb_char_newline,
+		rb_read_en => rb_read_en,
+		rb_read_lineNr => rb_read_lineNr,
+		rb_read_data_rdy => rb_read_data_rdy,
+		rb_read_data => rb_read_data,
+		rb_pars_en => rb_pars_en,
+		rb_pars_lineNr => rb_pars_lineNr,
+		rb_pars_data_rdy => rb_pars_data_rdy,
+		wr => wr,
+		address => address,
+		data_in => data_in,
+		data_out => data_out
+	);
+
+	ram_inst : ram_ent
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		wr => wr,
+		address => address,
+		data_in => data_in,
+		data_out => data_out
 	);
 
 	--Parser
