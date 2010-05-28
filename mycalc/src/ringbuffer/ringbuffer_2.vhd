@@ -17,7 +17,7 @@ entity ringbuffer2_ent is
 		sys_res_n	: in std_logic;
 		rb_busy		: out std_logic;
 		pars_new_data	: in std_logic;
-		pars_data	: in std_logic_vector(7 downto 0);
+		pars_data	: in RESULT_LINE;
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
@@ -87,8 +87,8 @@ begin
 				byte_buffer_next <= inp_data;
 				ringbuffer_fsm_state_next <= WRITE_RAM;
 			elsif pars_new_data = '1' then
-				byte_buffer_next <= pars_data;
-				ringbuffer_fsm_state_next <= WRITE_RAM;
+				--byte_buffer_next <= pars_data;
+				--ringbuffer_fsm_state_next <= WRITE_RAM;
 			elsif rb_read_en = '1' then 
 				ringbuffer_fsm_state_next <= READ_RAM;
 				writeNextState_next <= LINE_REQ;
