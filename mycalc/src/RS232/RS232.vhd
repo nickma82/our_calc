@@ -100,8 +100,8 @@ begin
 			--if tx_rdy = '1' then
 				RS232_fsm_state_next <= READY;
 			--end if;
-		when TEST =>
-			sendBuffer_next <= x"45";
+		when TEST =>						-- send 'Z' "01011010"
+			sendBuffer_next <= x"5A";
 			RS232_fsm_state_next <= SEND_INIT;
 	end case;
 end process next_state;
