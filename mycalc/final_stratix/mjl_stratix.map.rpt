@@ -1,5 +1,5 @@
 Analysis & Synthesis report for mjl_stratix
-Fri May 28 14:16:31 2010
+Fri May 28 14:25:21 2010
 Quartus II Version 9.1 Build 222 10/21/2009 SJ Full Version
 
 
@@ -36,7 +36,7 @@ applicable agreement for further details.
 +------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                           ;
 +-----------------------------+------------------------------------------+
-; Analysis & Synthesis Status ; Failed - Fri May 28 14:16:30 2010        ;
+; Analysis & Synthesis Status ; Failed - Fri May 28 14:25:21 2010        ;
 ; Quartus II Version          ; 9.1 Build 222 10/21/2009 SJ Full Version ;
 ; Revision Name               ; mjl_stratix                              ;
 ; Top-level Entity Name       ; calc_top                                 ;
@@ -152,7 +152,7 @@ applicable agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II Analysis & Synthesis
     Info: Version 9.1 Build 222 10/21/2009 SJ Full Version
-    Info: Processing started: Fri May 28 14:16:27 2010
+    Info: Processing started: Fri May 28 14:25:17 2010
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off mjl_stratix -c mjl_stratix
 Info: Parallel compilation is enabled and will use 2 of the 2 processors detected
 Info: Found 1 design units, including 0 entities, in source file /homes/a0725146/Desktop/Git/our_calc/mycalc/src/alu/alu_top_struct.vhd
@@ -296,10 +296,10 @@ Info: Found 1 design units, including 1 entities, in source file /homes/a0725146
     Info: Found entity 1: calc_top
 Info: Found 1 design units, including 0 entities, in source file /homes/a0725146/Desktop/Git/our_calc/mycalc/src/calc_top_struct.vhd
     Info: Found design unit 1: calc_top-struct
-Error (10476): VHDL error at calc_top_struct.vhd(220): type of identifier "pars_data" does not agree with its usage as "std_logic_vector" type File: /homes/a0725146/Desktop/Git/our_calc/mycalc/src/calc_top_struct.vhd Line: 220
+Error (10482): VHDL error at output_pkg.vhd(17): object "RESULT_LINE" is used but not declared File: /homes/a0725146/Desktop/Git/our_calc/mycalc/src/output/output_pkg.vhd Line: 17
 Error: Quartus II Analysis & Synthesis was unsuccessful. 1 error, 0 warnings
     Error: Peak virtual memory: 205 megabytes
-    Error: Processing ended: Fri May 28 14:16:31 2010
+    Error: Processing ended: Fri May 28 14:25:21 2010
     Error: Elapsed time: 00:00:04
     Error: Total CPU time (on all processors): 00:00:03
 

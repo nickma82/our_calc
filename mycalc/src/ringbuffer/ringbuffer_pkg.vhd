@@ -11,7 +11,7 @@ package ringbuffer_pkg is
 		sys_res_n	: in std_logic;
 		rb_busy		: out std_logic;
 		pars_new_data	: in std_logic;
-		pars_data	: in std_logic_vector(7 downto 0);
+		pars_data	: in RESULT_LINE;
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
