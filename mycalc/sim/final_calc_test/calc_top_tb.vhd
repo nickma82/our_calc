@@ -111,10 +111,10 @@ RingX : entity work.ringbuffer_ent
 		rb_read_en => rb_read_en,
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
-		rb_read_data => rb_read_data
+		rb_read_data => rb_read_data,
 		rb_pars_en => rb_pars_en,
 		rb_pars_lineNr => rb_pars_lineNr,
-		rb_pars_data_rdy => rb_pars_data_rdy,
+		rb_pars_data_rdy => rb_pars_data_rdy
 	);
 
 Serialx : entity work.Serial_Handler_ent

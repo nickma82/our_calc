@@ -36,7 +36,7 @@ type INPUT_FSM_STATE_TYPE is
 --signals
 signal input_fsm_state, input_fsm_state_next : INPUT_FSM_STATE_TYPE;
 signal ascii, ascii_next		: std_logic_vector(7 downto 0);
-
+signal btn_a_sync_last, btn_a_sync_last_next : std_logic := '0';
 
 begin
 
@@ -54,15 +54,17 @@ begin
 	elsif rising_edge(sys_clk) then
 		input_fsm_state <= input_fsm_state_next;
 		ascii <= ascii_next;
+		btn_a_sync_last <= btn_a_sync_last_next;
 	end if;
 
 end process sync;
 
-next_state : process(input_fsm_state, ps2_data, ps2_new_data, ascii)
-	variable btn_a_sync_last: std_logic := '0';
+next_state : process(input_fsm_state, ps2_data, ps2_new_data, ascii, btn_a_sync, btn_a_sync_last)
 begin
 	input_fsm_state_next <= input_fsm_state;
 	ascii_next <= ascii;
+	btn_a_sync_last_next <= btn_a_sync_last;
+	
 	
 	case input_fsm_state is
 		when READY =>
@@ -123,7 +125,7 @@ begin
 			
 			if btn_a_sync_last /= btn_a_sync then
 				-- HANDLE Button a
-				 btn_a_sync_last := btn_a_sync;
+				 btn_a_sync_last_next <= btn_a_sync;
 				 if btn_a_sync_last= '1' then
 					input_fsm_state_next <= HISTORY;
 				 end if;

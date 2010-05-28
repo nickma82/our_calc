@@ -64,10 +64,11 @@ begin
 
 end process sync;
 
-next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer)
+next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, result_buffer, rb_pars_en)
 begin
 	ringbuffer_fsm_state_next <= ringbuffer_fsm_state;
 	byte_buffer_next <= byte_buffer;
+	result_buffer_next <= result_buffer;
 	
 	case ringbuffer_fsm_state is
 		when INIT =>
@@ -106,7 +107,7 @@ begin
 	end case;
 end process next_state;
 
-output : process(ringbuffer_fsm_state, charPointer, byte_buffer, linePointer, rb_read_lineNr, ram)
+output : process(ringbuffer_fsm_state, charPointer, byte_buffer, linePointer, rb_read_lineNr, ram, result_buffer)
 begin
 	linePointer_next <= linePointer;
 	charPointer_next <= charPointer;
@@ -114,6 +115,7 @@ begin
 
 	rb_busy <= '1';
 	rb_read_data_rdy <= '0';
+	rb_pars_data_rdy <= '0';
 
 	for i in 0 to LINE_LENGTH -1 loop
 		rb_read_data(i) <= x"00";
