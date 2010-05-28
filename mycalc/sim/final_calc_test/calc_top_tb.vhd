@@ -49,6 +49,9 @@ constant clock_period:time := 30 ns;
 	signal rb_read_en	: std_logic := '0';
 	signal rb_read_lineNr	: std_logic_vector(7 downto 0) := x"00";
 	signal rb_read_data_rdy	: std_logic := '0';
+	signal rb_pars_en	: std_logic := '0';
+	signal rb_pars_lineNr	: std_logic_vector(7 downto 0) := x"00";
+	signal rb_pars_data_rdy	: std_logic := '0';
 	signal rb_read_data	: RAM_LINE;	
 
 	--SerialHandler und RS232
@@ -109,6 +112,9 @@ RingX : entity work.ringbuffer_ent
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
 		rb_read_data => rb_read_data
+		rb_pars_en => rb_pars_en,
+		rb_pars_lineNr => rb_pars_lineNr,
+		rb_pars_data_rdy => rb_pars_data_rdy,
 	);
 
 Serialx : entity work.Serial_Handler_ent
@@ -149,9 +155,9 @@ PARSERX : entity work.parser_top
 		sys_clk	=> sys_clk,
 		sys_res_n => sys_res_n,
 		rb_busy => rb_busy,
-		rb_read_en => rb_read_en,
-		rb_read_lineNr => rb_read_lineNr,
-		rb_read_data_rdy => rb_read_data_rdy,
+		rb_read_en => rb_pars_en,
+		rb_read_lineNr => rb_pars_lineNr,
+		rb_read_data_rdy => rb_pars_data_rdy,
 		rb_read_data => rb_read_data,
 		ps_start => pars_start,
 		parse_new_data => pars_new_data,

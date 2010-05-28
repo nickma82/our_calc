@@ -25,6 +25,9 @@ entity ringbuffer_ent is
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;
+		rb_pars_en	: in std_logic;
+		rb_pars_lineNr	: in std_logic_vector(7 downto 0);
+		rb_pars_data_rdy: out std_logic;
 		rb_read_data	: out RAM_LINE
 	);
 end entity ringbuffer_ent;
@@ -35,7 +38,7 @@ architecture ringbuffer_arc of ringbuffer_ent is
 --type
 signal ram, ram_next : RAM_ARRAY;-- := (OTHERS => (OTHERS => '0'));
 
-type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE);
+type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE_CHAR, LINE_REQ, LINE_RDY,PARSLINE_REQ, PARSLINE_RDY, NEW_LINE);
 
 --signals
 signal ringbuffer_fsm_state, ringbuffer_fsm_state_next : RINGBUFFER_FSM_STATE_TYPE;
@@ -76,6 +79,7 @@ begin
 			elsif pars_new_data = '1' then 
 				result_buffer_next <= pars_data;
 				ringbuffer_fsm_state_next <= WRITE_RESULT;
+			elsif rb_pars_en = '1' then ringbuffer_fsm_state_next <= PARSLINE_REQ;
 			elsif rb_read_en = '1' then ringbuffer_fsm_state_next <= LINE_REQ;
 			elsif inp_del = '1' then ringbuffer_fsm_state_next <= DELETE_CHAR;
 			elsif rb_char_newline = '1' then ringbuffer_fsm_state_next <= NEW_LINE;
@@ -90,6 +94,11 @@ begin
 			if rb_read_en = '0' then ringbuffer_fsm_state_next <= LINE_RDY;
 			end if;
 		when LINE_RDY =>
+			ringbuffer_fsm_state_next <= READY;
+		when PARSLINE_REQ =>
+			if rb_pars_en = '0' then ringbuffer_fsm_state_next <= PARSLINE_RDY;
+			end if;
+		when PARSLINE_RDY =>
 			ringbuffer_fsm_state_next <= READY;
 		when NEW_LINE =>
 			ringbuffer_fsm_state_next <= READY;
@@ -169,6 +178,14 @@ begin
 		when LINE_RDY =>
 			rb_busy <= '0';
 			--rb_read_data_rdy <= '1';
+		when PARSLINE_REQ =>
+			rb_busy <= '0';
+			for i in 0 to LINE_LENGTH -1 loop
+				rb_read_data(i) <= ram(conv_integer(linePointer), i);
+			end loop;
+			rb_pars_data_rdy <= '1';
+		when PARSLINE_RDY =>
+			rb_busy <= '0';
 		when NEW_LINE =>
 			rb_busy <= '0';
 			--Der Zeiger auf die Zeile wird um eins erhöht und auf Überlauf kontrolliert

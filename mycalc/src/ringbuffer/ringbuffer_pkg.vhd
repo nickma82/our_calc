@@ -19,6 +19,9 @@ package ringbuffer_pkg is
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;
+		rb_pars_en	: in std_logic;
+		rb_pars_lineNr	: in std_logic_vector(7 downto 0);
+		rb_pars_data_rdy: out std_logic;
 		rb_read_data	: out RAM_LINE
 	);
     END component ringbuffer_ent;
