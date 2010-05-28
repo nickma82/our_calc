@@ -40,7 +40,7 @@ architecture ringbuffer_top_struct of ringbuffer_top is
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;
-		rb_read_data	: out RAM_LINE,
+		rb_read_data	: out RAM_LINE;
 		wr		: out std_logic;
 		address		: out integer range 0 to 4090;
 		data_in		: out std_logic_vector(7 downto 0);
