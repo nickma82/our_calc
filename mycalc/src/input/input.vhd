@@ -19,7 +19,8 @@ entity input_ent is
 		inp_data	: out std_logic_vector(7 downto 0);
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
-		pars_start	: out std_logic
+		pars_start	: out std_logic;
+		btn_a_sync	: in std_logic;
 	);
 end entity input_ent;
 
@@ -58,6 +59,7 @@ begin
 end process sync;
 
 next_state : process(input_fsm_state, ps2_data, ps2_new_data, ascii)
+	variable btn_a_sync_last: std_logic := '0';
 begin
 	input_fsm_state_next <= input_fsm_state;
 	ascii_next <= ascii;
@@ -118,6 +120,13 @@ begin
 					input_fsm_state_next <= HISTORY;
 				when others => null;
 			end case;
+			
+			if btn_a_sync_last /= btn_a_sync then
+				-- HANDLE Button a
+				 btn_a_sync_last := btn_a_sync;
+				 if btn_a_sync_last then
+					input_fsm_state_next <= HISTORY;
+				 end if;
 			end if;
       		when VALID =>
 			input_fsm_state_next <= READY;
