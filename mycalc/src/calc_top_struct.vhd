@@ -200,7 +200,8 @@ begin
 		inp_data => inp_data,
 		inp_del => inp_del,
 		inp_sendRS232 => inp_sendRS232,
-		pars_start => pars_start
+		pars_start => pars_start,
+		btn_a_sync => btn_a_sync
 	);
 
 	--Output
