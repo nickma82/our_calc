@@ -23,6 +23,8 @@ ARCHITECTURE alu_fsm OF alu_fsm_ent IS
 	signal intern_div_sign_next, intern_div_sign: SIGNED(1 downto 0);
 	signal div_en_var, div_en_var_next: STD_LOGIC;
 	signal calc_result_var, calc_result_var_next: CALCSIGNED;
+	signal div_number_var, div_number_var_next:	STD_LOGIC_VECTOR((SIZE - 1) downto 0);
+	signal div_dividend_var, div_dividend_var_next: STD_LOGIC_VECTOR((SIZE - 1) downto 0);
 begin
 
 
@@ -71,6 +73,8 @@ begin
  	
   begin
   	
+  	div_dividend_var_next<= div_dividend_var; 
+  	div_number_var_next<= div_number_var;
   	calc_result_var_next<= calc_result_var; 
   	tmp_data1:= (others=>'0');
   	tmp_data2:= (others=>'0');
@@ -129,13 +133,13 @@ begin
 				--------------------------------------------------------------------------------------------
 				-- Speichert Vorzeichen, wandelt in positive Zahlen und wandelt danach in std_logic_vector's
 				--------------------------------------------------------------------------------------------
-				div_number <= std_logic_vector( resize(calc_data*resize(intern_div_sign, calc_data'LENGTH ), calc_data'LENGTH ));
+				div_number_var_next <= std_logic_vector( resize(calc_data*resize(intern_div_sign, calc_data'LENGTH ), calc_data'LENGTH ));
 				
 				if calc_data2<0 then
 					intern_div_sign_next <= resize(intern_div_sign*to_signed(-1, 2), intern_div_sign'LENGTH );
-					div_dividend<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
+					div_dividend_var_next<= std_logic_vector( resize(calc_data2*to_signed(-1, calc_data2'LENGTH ), calc_data2'LENGTH ));
 				else 
-					div_dividend<= std_logic_vector(calc_data2);
+					div_dividend_var_next<= std_logic_vector(calc_data2);
 				end if;
 				intern_wait_div_next <= '1';
 			-- coverage off
@@ -171,7 +175,10 @@ begin
     elsif rising_edge(sys_clk) then
       alu_fsm_state <= alu_fsm_state_next;
       
-      
+      div_dividend<= div_dividend_var_next;
+      div_dividend_var<= div_dividend_var_next;
+      div_number<= div_number_var_next;
+      div_number_var<= div_number_var_next;
       calc_result<= calc_result_var_next;
       calc_result_var<= calc_result_var_next;
       div_en<=  div_en_var_next;
