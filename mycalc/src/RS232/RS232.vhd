@@ -25,7 +25,7 @@ architecture RS232_arc of RS232_ent is
 
 --type
 type RS232_FSM_STATE_TYPE is
-    (READY, SEND_INIT, SEND_BIT, SEND_DONE, RECV_INIT, RECV_WAIT, RECV_BIT, RECV_DONE, SEND_BYTE, TEST);
+    (READY, SEND_INIT, SEND_BIT, SEND_DONE, RECV_INIT, RECV_WAIT, RECV_BIT, RECV_DONE, SEND_BYTE, RECV_CHECK);
 
 --constants
 constant baudValue : integer := 290;
@@ -63,7 +63,6 @@ begin
 	
 	case RS232_fsm_state is
 		when READY =>
-			--RS232_fsm_state_next <= TEST;
 			if tx_go = '1' then
 				RS232_fsm_state_next <= SEND_INIT;
 				sendBuffer_next <= tx_data;
@@ -79,21 +78,31 @@ begin
 				RS232_fsm_state_next <= SEND_DONE;
 			end if;
 		when SEND_DONE =>
-			if countBaud >= 435 then			--1 mal die Bitzeit TODO sollte gelöscht werden können
+			if countBaud >= 434 then			--1,5 mal die Bitzeit
 				RS232_fsm_state_next <= READY;
 			end if;
 		when RECV_INIT =>
-			if countBaud >= 435 then			-- 1,5 mal die Bitzeit
+			if countBaud >= 434 then			-- 1,5 mal die Bitzeit
 				RS232_fsm_state_next <= RECV_BIT;
 			end if;
 		when RECV_WAIT =>
-
+			if countBaud >= 289 then
+				RS232_fsm_state_next <= READY;
+			end if;
 		when RECV_BIT =>
 			if countBit >= 8 then
-				RS232_fsm_state_next <= RECV_DONE;
+				RS232_fsm_state_next <= RECV_CHECK;
+			end if;
+		when RECV_CHECK =>
+			if countBaud >= 289 then
+				if uart_rx = '0' then			--Stoppbit ist fehlerhaft
+					RS232_fsm_state_next <= RECV_WAIT;
+				else					--Daten sind gültig
+					RS232_fsm_state_next <= RECV_DONE;
+				end if;
 			end if;
 		when RECV_DONE =>
-			if countBaud >= 580 then			-- 1,5 mal die Bitzeit
+			if countBaud >= 289 then			-- 1 mal die Bitzeit
 				RS232_fsm_state_next <= SEND_BYTE;
 				--sendBuffer_next <= x"36";
 				--RS232_fsm_state_next <= SEND_INIT;
@@ -102,9 +111,6 @@ begin
 			--if tx_rdy = '1' then
 				RS232_fsm_state_next <= READY;
 			--end if;
-		when TEST =>						-- send 'Z' "01011010"
-			sendBuffer_next <= x"36";--x"5A";
-			RS232_fsm_state_next <= SEND_INIT;
 	end case;
 end process next_state;
 
@@ -154,13 +160,23 @@ begin
 			else
 				countBaud_next <= countBaud + 1;
 			end if;
+		when RECV_CHECK =>
+			if countBaud >= 289 then
+				countBaud_next <= 0;
+			else
+				countBaud_next <= countBaud + 1;
+			end if;
 		when RECV_DONE =>
 			countBaud_next <= countBaud + 1;
 		when SEND_BYTE =>
 			rx_recv <= '1';
-			rx_data <= x"53";--recvBuffer;
-		when TEST =>
-			
+			rx_data <= x"68";--recvBuffer;
+		when RECV_WAIT =>
+			if countBaud >= 289 then
+				countBaud_next <= 0;
+			else
+				countBaud_next <= countBaud + 1;
+			end if;
 		when others => null;
 	end case;
 end process output;

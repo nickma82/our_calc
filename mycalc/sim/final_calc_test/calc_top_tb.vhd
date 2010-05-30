@@ -29,13 +29,14 @@ constant clock_period:time := 30 ns;
 	signal vga_clk:std_logic;
 
 	--Input
-	signal ps2_new_data : std_logic := '0';
-	signal inp_new_data : std_logic := '0';
-	signal inp_del : std_logic := '0';
-	signal inp_sendRS232 : std_logic := '0';
-	signal pars_start : std_logic := '0';
-	signal inp_data : std_logic_vector(7 downto 0) := x"00";
-	signal ps2_data : std_logic_vector(7 downto 0) := x"00";
+	signal ps2_new_data 	: std_logic := '0';
+	signal inp_new_data 	: std_logic := '0';
+	signal inp_del 		: std_logic := '0';
+	signal inp_sendRS232 	: std_logic := '0';
+	signal pars_start 	: std_logic := '0';
+	signal inp_data 	: std_logic_vector(7 downto 0) := x"00";
+	signal ps2_data		: std_logic_vector(7 downto 0) := x"00";
+	signal btn_a_sync	: std_logic := '0';
 
 	--Output
 	signal vga_command	: std_logic_vector(7 downto 0) := x"00";
@@ -78,7 +79,8 @@ InputX : entity work.input_ent
 		inp_data => inp_data,
 		inp_del => inp_del,
 		inp_sendRS232 => inp_sendRS232,
-		pars_start => pars_start
+		pars_start => pars_start,
+		btn_a_sync => btn_a_sync
 	);
 
 OutputX : entity work.output_ent

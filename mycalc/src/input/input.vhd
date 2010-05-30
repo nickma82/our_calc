@@ -35,7 +35,7 @@ type INPUT_FSM_STATE_TYPE is
 
 --signals
 signal input_fsm_state, input_fsm_state_next : INPUT_FSM_STATE_TYPE;
-signal ascii, ascii_next		: std_logic_vector(7 downto 0);
+signal ascii, ascii_next		: std_logic_vector(7 downto 0):= x"00";
 signal btn_a_sync_last, btn_a_sync_last_next : std_logic := '0';
 
 begin
@@ -44,13 +44,6 @@ sync : process(sys_clk, sys_res_n)
 begin
 	if sys_res_n = '0' then
 		input_fsm_state <= READY;
-		--inp_sendRS232 <= '0';
-		--inp_new_data <= '0';
-		--inp_data <= x"00";
-		--ps2_new_data <= '0';
-		--ps2_data <= x"00";
-		--inp_del <= '0';
-		--pars_start <= '0';
 	elsif rising_edge(sys_clk) then
 		input_fsm_state <= input_fsm_state_next;
 		ascii <= ascii_next;
@@ -122,14 +115,8 @@ begin
 					input_fsm_state_next <= HISTORY;
 				when others => null;
 			end case;
-			
-			if btn_a_sync_last /= btn_a_sync then
-				-- HANDLE Button a
-				 btn_a_sync_last_next <= btn_a_sync;
-				 if btn_a_sync_last= '1' then
-					input_fsm_state_next <= HISTORY;
-				 end if;
-			end if;
+			elsif btn_a_sync = '1' then
+				input_fsm_state_next <= HISTORY;
 			end if;
       		when VALID =>
 			input_fsm_state_next <= READY;
@@ -153,7 +140,10 @@ begin
 		when BACKSPACE =>
 			input_fsm_state_next <= READY;
 		when HISTORY =>
-			input_fsm_state_next <= READY;
+			if btn_a_sync = '0' then
+				input_fsm_state_next <= READY;
+			end if;
+			
 	end case;
 end process next_state;
 
@@ -163,7 +153,7 @@ begin
 	pars_start <= '0';
 	inp_del <= '0';
 	inp_sendRS232 <= '0';
-	inp_data <= ascii; --oder  x"00"
+	inp_data <= ascii;
 	
 	case input_fsm_state is
 		when READY =>

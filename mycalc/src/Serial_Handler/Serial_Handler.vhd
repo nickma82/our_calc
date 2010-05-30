@@ -70,26 +70,28 @@ begin
 			elsif inp_sendRS232 = '1' then Serial_Handler_fsm_state_next <= SEND_HISTORY;
 			end if;
       		when CHECK_BYTE =>
-			--TODO richtiges Byte checken, derzeit 'S' für send
-			--if rx_data = x"53" then Serial_Handler_fsm_state_next <= SEND_HISTORY;
-			--else Serial_Handler_fsm_state_next <= READY;
-			--end if;
+			--TODO richtiges Byte checken, derzeit 'h' für history
+			if rx_data = x"68" then Serial_Handler_fsm_state_next <= SEND_HISTORY;
+			else Serial_Handler_fsm_state_next <= READY;
+			end if;
 			Serial_Handler_fsm_state_next <= SEND_HISTORY;
 		when SEND_HISTORY =>
-			--if rb_busy = '1' then 
-			--	Serial_Handler_fsm_state_next <= REQ_LINE;
-			--end if;
+			if rb_busy = '1' then 
+				Serial_Handler_fsm_state_next <= REQ_LINE;
+			end if;
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
-			Serial_Handler_fsm_state_next <= REQ_LINE;
+			--Serial_Handler_fsm_state_next <= REQ_LINE;
 		when REQ_LINE =>
-			Serial_Handler_fsm_state_next <= WAIT_LINE;
-		when WAIT_LINE =>
-			--if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
+			--if rb_busy = '0' then 
+				Serial_Handler_fsm_state_next <= WAIT_LINE;
 			--end if;
+		when WAIT_LINE =>
+			if rb_read_data_rdy = '1' then Serial_Handler_fsm_state_next <= READ_LINE;
+			end if;
 			--NUR ZUM TESTEN
 			--TODO LÖSCHEN
-			Serial_Handler_fsm_state_next <= READ_LINE;
+			--Serial_Handler_fsm_state_next <= READ_LINE;
 		when READ_LINE =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WRITE_CHAR =>
@@ -125,7 +127,6 @@ begin
 	case Serial_Handler_fsm_state is
 		when SEND_HISTORY =>
 			--Werte zurück setzen
-			--rb_read_lineNr <= x"50";
 			--TODO wieder einfügen	linePointer_next <= 50;
 			linePointer_next <= 0;
 			charPointer_next <= 0;
@@ -137,16 +138,6 @@ begin
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';
 		when READ_LINE =>
-			--NUR ZUM TESTEN
-			--TODO LÖSCHEN
-			--currentLine_next(0) <= x"31";
-			--currentLine_next(1) <= x"32";
-			--currentLine_next(2) <= x"2B";
-			--currentLine_next(3) <= x"39";
-			--currentLine_next(4) <= x"30";
-			--currentLine_next(5) <= x"31";
-			--currentLine_next(6) <= x"00";
-
 			rb_read_en <= '1';
 			currentLine_next <= rb_read_data;
 			charPointer_next <= 0;

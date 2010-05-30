@@ -82,17 +82,18 @@ end process clkgenerator;
 process
 begin
 	-- INIT
+	uart_rx <= '1';
 	for i in 0 to 80 loop	
 		rb_read_data(i) <= x"00";
 	end loop;
 	--	12+901
-	--rb_read_data(0) <= x"31";
-	--rb_read_data(1) <= x"32";
-	--rb_read_data(2) <= x"2B";
-	--rb_read_data(3) <= x"39";
-	--rb_read_data(4) <= x"30";
-	--rb_read_data(5) <= x"31";
-	--rb_read_data(6) <= x"00";
+	rb_read_data(0) <= x"31";
+	rb_read_data(1) <= x"32";
+	rb_read_data(2) <= x"2B";
+	rb_read_data(3) <= x"39";
+	rb_read_data(4) <= x"30";
+	rb_read_data(5) <= x"31";
+	rb_read_data(6) <= x"00";
 	
 	inp_sendRS232 <= '0';
 	rb_read_data_rdy <= '0';
@@ -105,13 +106,7 @@ begin
 	wait for 90 ns;
 
 	-- BEGIN TESTS
-	--Histroy anfordern
-	--inp_sendRS232 <= '1';
-	--wait for 30 ns;
-	--inp_sendRS232 <= '0';
-	--wait for 60 ns;
-	--Ringbuffer hat line rdy
-	--Receive Byte
+	--fehlerhaftes Byte empfangen
 	wait for 10 us;
 	uart_rx <= '0';
 	wait for 8.68 us;
@@ -131,15 +126,39 @@ begin
 	wait for 8.68 us;
 	uart_rx <= '0';			--8 Bit
 	wait for 8.68 us;
-	uart_rx <= '1';			--Stoppbit
-	wait for 300 us;
+	uart_rx <= '0';			--Stoppbit
+	wait for 8.68 us;
+	uart_rx <= '1';			
+	wait for 20 us;
 
-	--wait until rb_read_en <= '1';
-	--wait for 30 ns;
-	--rb_read_data_rdy <= '1';
-	--wait for 30 ns;
-	--rb_read_data_rdy <= '0';
-	--wait for 30 ns;	
+	--History anfordern
+	uart_rx <= '0';
+	wait for 8.68 us;
+	uart_rx <= '0';			--1 Bit
+	wait for 8.68 us;
+	uart_rx <= '0';			--2 Bit
+	wait for 8.68 us;
+	uart_rx <= '0';			--3 Bit
+	wait for 8.68 us;
+	uart_rx <= '1';			--4 Bit
+	wait for 8.68 us;
+	uart_rx <= '0';			--5 Bit
+	wait for 8.68 us;
+	uart_rx <= '1';			--6 Bit
+	wait for 8.68 us;
+	uart_rx <= '1';			--7 Bit
+	wait for 8.68 us;
+	uart_rx <= '0';			--8 Bit
+	wait for 8.68 us;
+	uart_rx <= '1';			--Stoppbit
+	--wait for 300 us;
+
+	wait until rb_read_en <= '1';
+	wait for 30 ns;
+	rb_read_data_rdy <= '1';
+	wait for 30 ns;
+	rb_read_data_rdy <= '0';
+	wait for 30 ns;	
 
 	--nächste Zeile anfordern
 	--Ringbuffer hat line rdy
@@ -148,7 +167,9 @@ begin
 	--rb_read_data_rdy <= '1';
 	--wait for 30 ns;
 	--rb_read_data_rdy <= '0';
-	--wait for 30 ns;	
+	--wait for 30 ns;
+
+	wait for 800 us;	
 
 end process;
 

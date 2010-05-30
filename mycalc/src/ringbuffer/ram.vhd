@@ -34,11 +34,6 @@ process(sys_clk, sys_res_n)
 
 			if wr = '1' then
 				ram(address) <= data_in;
-				--if address = 0 then
-				--	ram(address) <= data_in;
-				--else
-				--	ram(address-1) <= data_in;
-				--end if;
 			end if;
 		end if;
 	end process;

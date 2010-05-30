@@ -19,8 +19,8 @@ entity output_ent is
 	port(
 		sys_clk			: in std_logic;	
 		sys_res_n		: in std_logic;
-		vga_command		: out std_logic_vector(7 downto 0);
-		vga_command_data	: out std_logic_vector(31 downto 0);
+		vga_command		: out std_logic_vector(7 downto 0) := (others => '0');
+		vga_command_data	: out std_logic_vector(31 downto 0):= (others => '0');
 		vga_free		: in std_logic;
 		inp_new_data		: in std_logic;
 		inp_data		: in std_logic_vector(7 downto 0);
@@ -36,7 +36,7 @@ architecture output_arc of output_ent is
 
 --type
 type OUTPUT_FSM_STATE_TYPE is
-    (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE, WAIT_STATE, PREPARE_RESULT);
+    (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE, WAIT_STATE, PREPARE_RESULT, NEW_LINE, NEW_POSITION);
 
 --constants
 constant RED : std_logic_vector(23 downto 0) := x"0000FF";
@@ -46,10 +46,12 @@ constant BLUE : std_logic_vector(23 downto 0) := x"FF0000";
 --signals
 signal output_fsm_state, output_fsm_state_next, state_after_wait, state_after_wait_next : OUTPUT_FSM_STATE_TYPE;
 signal position, position_next		: std_logic_vector(6 downto 0);
+signal lineNr, lineNr_next		: std_logic_vector(4 downto 0);
 signal vga_command_next			: std_logic_vector(7 downto 0);
 signal vga_command_data_next		: std_logic_vector(31 downto 0);
-signal resultLine, resultLine_next	: RESULT_LINE;
+signal resultLine, resultLine_next	: RESULT_LINE :=(others => (others => '0'));
 signal resultCounter, resultCounter_next : integer range 0 to 11;
+signal result_rdy, result_rdy_next	: std_logic := '0';
 
 begin
 
@@ -59,6 +61,8 @@ begin
 		output_fsm_state <= WAIT_STATE;
 		state_after_wait <= INIT;
 		position <= "0000000";
+		result_rdy <= '0';
+		lineNr <= "00000";
 	elsif rising_edge(sys_clk) then
 		output_fsm_state <= output_fsm_state_next;
 		vga_command <= vga_command_next;
@@ -67,19 +71,25 @@ begin
 		position <= position_next;
 		resultCounter <= resultCounter_next;
 		resultLine <= resultLine_next;
+		lineNr <= lineNr_next;
+		result_rdy <= result_rdy_next;
 	end if;
 
 end process sync;
 
-next_state : process(output_fsm_state, inp_new_data, pars_new_data, inp_del, vga_free, state_after_wait, resultLine, resultCounter)
+next_state : process(output_fsm_state, inp_new_data, pars_new_data, inp_del, vga_free, state_after_wait, resultLine, resultCounter, position, result_rdy, lineNr)
 begin
 	output_fsm_state_next <= output_fsm_state;
 	state_after_wait_next <= state_after_wait;
 	resultCounter_next <= resultCounter;
+	position_next <= position;
+	result_rdy_next <= result_rdy;
+	lineNr_next <= lineNr;
 	
 	case output_fsm_state is
 		when INIT => 
 			if vga_free = '0' then
+				position_next <= "0000000";
 				output_fsm_state_next <= READY;
 			end if;
 		when READY =>
@@ -88,7 +98,9 @@ begin
 				state_after_wait_next <= WRITE_CHAR;
 			elsif pars_new_data = '1' then 
 				output_fsm_state_next <= WAIT_STATE;
-				state_after_wait_next <= PREPARE_RESULT;
+				state_after_wait_next <= NEW_LINE;
+				resultCounter_next <= 0;
+				position_next <= "0000000";
 			elsif inp_del = '1' then 
 				output_fsm_state_next <= WAIT_STATE;
 				state_after_wait_next <= DELETE;
@@ -98,11 +110,12 @@ begin
 				output_fsm_state_next <= READY;
 			end if;
 		when PREPARE_RESULT =>
-			resultCounter_next <= 0;
 			output_fsm_state_next <= WRITE_RESULT;
 		when WRITE_RESULT =>
 			if resultLine(resultCounter) = x"00" or resultCounter >= 10 then
-				output_fsm_state_next <= READY;
+				result_rdy_next <= '1';
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait_next <= NEW_LINE;
 			else
 				if vga_free = '0' then
 					resultCounter_next <= resultCounter + 1;
@@ -116,18 +129,39 @@ begin
 			end if;
 		when WAIT_STATE =>
 			if vga_free = '1' then
+				if state_after_wait = WRITE_CHAR then
+					position_next <= position + 1;
+				elsif state_after_wait = DELETE then
+					position_next <= position - 1;
+				end if;
 				output_fsm_state_next <= state_after_wait;
 			end if;
-			
+		when NEW_LINE =>
+			if vga_free = '0' then
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait_next <= NEW_POSITION;
+			end if;
+		when NEW_POSITION =>
+			if vga_free = '0' then
+				if lineNr < 29 then lineNr_next <= lineNr + 1;
+				end if;
+				if result_rdy = '0' then
+					output_fsm_state_next <= WAIT_STATE;
+					state_after_wait_next <= PREPARE_RESULT;
+				else
+					output_fsm_state_next <= READY;
+					result_rdy_next <= '0';
+				end if;
+			end if;
 		when others => null;
 	end case;
 end process next_state;
 
-output : process(output_fsm_state, vga_free, position, inp_data, pars_data, resultLine, resultCounter)
+output : process(output_fsm_state, vga_free, inp_data, pars_data, resultLine, resultCounter, position, lineNr)
 begin
 	vga_command_next <= COMMAND_NOP;
 	vga_command_data_next <= (others => '0');
-	position_next <= position;
+	
 	resultLine_next <= resultLine;
 
 	if vga_free = '1' then
@@ -135,21 +169,29 @@ begin
 			when INIT =>
 				vga_command_next <= COMMAND_SET_BACKGROUND;
 				vga_command_data_next <= x"008B8878";
-				position_next <= "0000000";
 			when WRITE_CHAR =>
 				vga_command_next <= COMMAND_SET_CHAR;
 				vga_command_data_next <= WHITE & inp_data;
-				position_next <= position + 1;
 			when WRITE_RESULT =>
-				vga_command_next <= COMMAND_SET_CHAR;
-				vga_command_data_next <= WHITE & resultLine(resultCounter);
-				position_next <= "0000000";
+				if resultLine(resultCounter) = x"00" then
+					--vga_command_next <= COMMAND_SET_CHAR;
+					--vga_command_data_next <= WHITE & resultLine(resultCounter);
+				else
+					vga_command_next <= COMMAND_SET_CHAR;
+					vga_command_data_next <= WHITE & resultLine(resultCounter);
+				end if;
 			when PREPARE_RESULT =>
 				resultLine_next <= pars_data;
 			when DELETE =>
 				vga_command_next <= COMMAND_SET_CURSOR_COLUMN;
-				vga_command_data_next <= x"000000"&'0'&(position - 1);
-				position_next <= position - 1;
+				vga_command_data_next <= x"000000"&'0'&(position);
+			when NEW_LINE =>
+				vga_command_next <= COMMAND_SET_CURSOR_LINE;
+				vga_command_data_next <= x"000000"&"000"&(lineNr+1);
+				
+			when NEW_POSITION =>
+				vga_command_next <= COMMAND_SET_CURSOR_COLUMN;
+				vga_command_data_next <= (others => '0');
 			when others => null;
 		end case;
 	end if;

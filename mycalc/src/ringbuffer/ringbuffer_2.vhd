@@ -175,7 +175,7 @@ begin
 			rb_busy <= '0';
 			if charPointer >= 0 then
 				wr <= '1';
-				data_in <= byte_buffer;
+				data_in <= x"00";
 				address <= charPointer-1+linePointer * 80;
 				charPointer_next <= charPointer - 1;
 			end if;

@@ -24,6 +24,7 @@ signal inp_del : std_logic := '0';
 signal inp_sendRS232 : std_logic := '0';
 signal pars_start : std_logic := '0';
 signal ps2_data, inp_data : std_logic_vector(7 downto 0) := x"00";
+signal btn_a_sync : std_logic;
 
 
 begin --behave
@@ -40,7 +41,8 @@ port map
 		inp_data => inp_data,
 		inp_del => inp_del,
 		inp_sendRS232 => inp_sendRS232,
-		pars_start => pars_start
+		pars_start => pars_start,
+		btn_a_sync => btn_a_sync
 	);
 
 clkgenerator : process
@@ -54,6 +56,9 @@ end process clkgenerator;
 
 process
 begin
+	btn_a_sync <= '0';	
+	--inp_data <= x"00";	
+
 	sys_res_n <= '0';
 	wait for 90 ns;
 	sys_res_n <= '1';
@@ -142,6 +147,12 @@ begin
 	ps2_new_data <= '0';
 	wait for 30 ns;
 	assert inp_new_data = '0';
+	wait for 90 ns;
+
+	--Button a
+	btn_a_sync <= '1';
+	wait for 90 ns;
+	btn_a_sync <= '0';
 	wait for 90 ns;
 
 end process;
