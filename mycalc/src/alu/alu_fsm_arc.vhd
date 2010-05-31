@@ -68,7 +68,7 @@ begin
   
   
   
- output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status,div_dividend_var, div_number_var, calc_result_var, div_en_var, intern_div_neg_sig, intern_calc_finished, calc_status_var, calc_finished_var, div_result)
+ output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status,div_dividend_var, div_number_var, calc_result_var, div_en_var, intern_div_neg_sig, intern_calc_finished, calc_status_var, calc_finished_var, div_result, intern_wait_div, intern_div_neg_sig_next)
  	variable tmp_data1, tmp_data2, double_calcsigned: SIGNED((SIZEI*2-1) downto 0);
  	
   begin
@@ -144,7 +144,7 @@ begin
 					
 					--Checks ob Range VALID
 					if (double_calcsigned > CALCMAX) or
-						(double_calcsigned < CALCMIN) then
+						(double_calcsigned < CALCMIN ) then
 						calc_status_var_next <= OVERFLOW;
 						--assert false report "overflow" severity error;
 					else

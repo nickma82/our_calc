@@ -77,6 +77,10 @@ set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name VHDL_FILE ../src/ringbuffer/ram.vhd
+set_global_assignment -name VHDL_FILE ../src/ringbuffer/ram_pkg.vhd
+set_global_assignment -name VHDL_FILE ../src/ringbuffer/ringbuffer_2.vhd
+set_global_assignment -name VHDL_FILE ../src/ringbuffer/ringbuffer2_pkg.vhd
 set_global_assignment -name VHDL_FILE ../src/alu/alu_top_struct.vhd
 set_global_assignment -name VHDL_FILE ../src/alu/alu_div_ent.vhd
 set_global_assignment -name VHDL_FILE ../src/alu/alu_fsm_arc.vhd
@@ -135,8 +139,6 @@ set_global_assignment -name VHDL_FILE ../src/ip/ps2/src/ps2_transceiver_beh.vhd
 set_global_assignment -name VHDL_FILE ../src/ip/ps2/src/ps2_keyboard_controller.vhd
 set_global_assignment -name VHDL_FILE ../src/ip/pll/pll.vhd
 set_global_assignment -name SOURCE_FILE ../src/ip/pll/pll.cmp
-set_global_assignment -name VHDL_FILE ../src/ringbuffer/ringbuffer_pkg.vhd
-set_global_assignment -name VHDL_FILE ../src/ringbuffer/ringbuffer.vhd
 set_global_assignment -name VHDL_FILE ../src/output/output_pkg.vhd
 set_global_assignment -name VHDL_FILE ../src/output/output.vhd
 set_global_assignment -name VHDL_FILE ../src/input/input_pkg.vhd

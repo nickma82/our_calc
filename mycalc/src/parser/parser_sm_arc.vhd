@@ -14,7 +14,7 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   signal intern_b2bcd_data_neg: boolean:= false;
   
   type PARSER_FSM_STATE_TYPE is
-    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
+    (IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, OP_JMP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
   signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
   type PARSER_CHAR_STATE_TYPE is
@@ -24,8 +24,6 @@ ARCHITECTURE parser_sm OF parser_sm_ent IS
   type PARSER_INTERNAL_STATE_TYPE is 
 	  (RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
   signal parser_internal_status: PARSER_INTERNAL_STATE_TYPE;
-  
-  signal debug_intern_buff_stage_pos, debug_intern_do_calc_stage: STAGE_POS_TYPE;
   
   
   signal charUnit_en_var, charUnit_en_var_next, charUnit_get_next_var, charUnit_get_next_var_next: STD_LOGIC :='0';
@@ -105,44 +103,48 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 						parse_fsm_state_next<= DIGIT;
 					when OP =>    parse_fsm_state_next<= OP;
 					when EOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
-					when others => assert false report "NEXTDIGIT State not supported" severity error;
+					when others => assert false report "NEXTDIGIT TYPE not supported" severity error;
 				end case;
 			end if; --Error if end
 		end if;
       
       when OP =>		
 	      --Error Handling
-	      if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
-		      parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
-		      assert false report "OP Error Handling: first char is not digit and no minus" severity warning;
-	      elsif (charUnit_lastChar_type=OP and charUnit_op/= SUBTRAKTION) then
+		if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
+			parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
+			assert false report "OP Error Handling: first char is not digit and no minus" severity warning;
+		elsif (charUnit_lastChar_type=OP and charUnit_op/= SUBTRAKTION) then
 			parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
 			assert false report "OP Error Handling: Second op in series isn't a minus" severity warning;
-	      elsif parser_internal_status = TOO_MUCH_OPS then
-	      	parse_fsm_state_next   <= PARSE_ERROR;
-	      	assert false report "OP Error Handling: too much ops" severity warning;
-	      elsif parser_internal_status = INVALID_OP_SEQUENCE then
-	      	parse_fsm_state_next   <= PARSE_ERROR;
-	      	assert false report "OP Error Handling: invalid op sequence" severity warning;
-		  
-	      --Process Handling
-	      elsif char_state = ANALYZE_NEXT then
-		    if charUnit_next_valid = '0' then --warte bis charUnit disabeled
-		    	parse_fsm_state_next <= DIGIT_GETNEXT;
-		    end if;
-	      elsif char_state = CALC_THIS then
-				if global_digit_neg= '1' then
-					--negative Handling
-					parse_fsm_state_next <= PRE_INVERT_SECOND_DATA;
-				else
-					parse_fsm_state_next <= CALC;
-				end if;
-	      end if;
+		elsif parser_internal_status = TOO_MUCH_OPS then
+			parse_fsm_state_next   <= PARSE_ERROR;
+			assert false report "OP Error Handling: too much ops" severity warning;
+		elsif parser_internal_status = INVALID_OP_SEQUENCE then
+			parse_fsm_state_next   <= PARSE_ERROR;
+			assert false report "OP Error Handling: invalid op sequence" severity warning;
+		else
+			parse_fsm_state_next<= OP_JMP;
+		end if;
     	
-    	when PRE_INVERT_SECOND_DATA=>
+    	when OP_JMP =>
+		--Process Handling
+		if char_state = ANALYZE_NEXT then
+			if charUnit_next_valid = '0' then --warte bis charUnit disabeled
+			parse_fsm_state_next <= DIGIT_GETNEXT;
+			end if;
+		elsif char_state = CALC_THIS then
+			if global_digit_neg= '1' then
+				--negative Handling
+				parse_fsm_state_next <= PRE_INVERT_SECOND_DATA;
+			else
+				parse_fsm_state_next <= CALC;
+			end if;
+		end if;
+    	
+	when PRE_INVERT_SECOND_DATA=>
     		parse_fsm_state_next <= INVERT_SECOND_DATA;
     	
-      when INVERT_SECOND_DATA=>
+	when INVERT_SECOND_DATA=>
 		if calc_finished = '0' then 
 			parse_fsm_state_next <= WAIT_INVERTATION_SECOND_DATA;
 		end if;
@@ -230,7 +232,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
   
   
   
- output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, parser_internal_status)
+ output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, parser_internal_status, operators_serial, charUnit_get_next_var, charUnit_en_var, intern_buff_stage_pos, calc_status)
 	variable calc_buff: calc_buffs_TYPE; --Stage BUFFER
 	variable op_buff:		alu_ops_buff_TYPE;
 	
@@ -238,6 +240,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	variable intern_do_calc_stage: STAGE_POS_TYPE;
   begin
   	
+  	intern_do_calc_stage:= (STAGES_TOP-1);
   	intern_buff_stage_pos_next<= intern_buff_stage_pos; 
   	operators_serial_next<= operators_serial; 
   	charUnit_get_next_var_next<= charUnit_get_next_var; 
@@ -305,15 +308,16 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		calc_start <= '0';
 	  	calc_buff(intern_buff_stage_pos):= calc_result;
       
-      when DIGIT_GETNEXT =>
+	when DIGIT_GETNEXT =>
 		-- --Moved to next_state logic
 		--if parse_fsm_state'LAST_ACTIVE /= PARSE_INIT then
 		--	  char_firstOne_next	<= '0';
 		--end if;
 		charUnit_get_next_var_next <= '1';
 		char_state <= PROCESS_NEXT;
-	  
-      when OP =>
+		
+
+	when OP =>
 		---calc_buff(intern_buff_stage_pos);
 		charUnit_get_next_var_next <= '0'; 
 		
@@ -365,7 +369,6 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 					assert false report "intern_buff_stage_pos- State not supported" severity error;
 					--coverage on
 			end case;
-			
 			op_buff(intern_buff_stage_pos) := charUnit_op;
 			operators_serial_next<= operators_serial+1;
 			intern_buff_stage_pos_next <= intern_buff_stage_pos+1;
@@ -384,10 +387,13 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 -- 	  				1 WHEN intern_buff_stage_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
 -- 	  				(STAGES_TOP-1);
 	  
-	  when PRE_INVERT_SECOND_DATA=>
+	when OP_JMP =>
+	  	null;
+	  
+	when PRE_INVERT_SECOND_DATA=>
 	  	intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
 	  
-	  when INVERT_SECOND_DATA=>
+	when INVERT_SECOND_DATA=>
 		----------------------------------------------
 		-- Inverting of the second SIGNED
 		----------------------------------------------
@@ -398,16 +404,16 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		calc_data2<= to_signed(-1, SIZEI);
 		calc_operator<= MULTIPLIKATION;
 		
-	  when WAIT_INVERTATION_SECOND_DATA =>
+	when WAIT_INVERTATION_SECOND_DATA =>
 		calc_start <= '1';
 	  
-	  when HANDLE_INVERTATION =>
+	when HANDLE_INVERTATION =>
 		calc_start <='0';
 		calc_buff(intern_buff_stage_pos):= calc_result;
 		intern_buff_stage_pos_next<= intern_buff_stage_pos+1;
 			
 	  
-      when CALC =>
+	when CALC =>
 		if intern_buff_stage_pos >1 then --EOL Handling
 			intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
 			-- give data to ALU
@@ -431,10 +437,10 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			--coverage on
 	  
 	  
-      when WAIT_CALC_RESULT =>
+	when WAIT_CALC_RESULT =>
 		calc_start <= '1';
       
-	  when SAVE_CALC_RESULT =>
+	when SAVE_CALC_RESULT =>
 		calc_start <= '0';
 		
 		---Move results back, move op back, clean buffer
@@ -507,9 +513,6 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	
 	
     end case;
-	
-	debug_intern_buff_stage_pos <= intern_buff_stage_pos;
-	debug_intern_do_calc_stage <= intern_do_calc_stage;
   end process output;
   
 	

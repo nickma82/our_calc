@@ -1,12 +1,12 @@
-Analysis & Synthesis Status : Failed - Fri May 28 15:25:35 2010
+Analysis & Synthesis Status : Successful - Mon May 31 15:29:55 2010
 Quartus II Version : 9.1 Build 222 10/21/2009 SJ Full Version
 Revision Name : mjl_stratix
 Top-level Entity Name : calc_top
 Family : Stratix
-Total logic elements : N/A until Partition Merge
-Total pins : N/A until Partition Merge
-Total virtual pins : N/A until Partition Merge
-Total memory bits : N/A until Partition Merge
-DSP block 9-bit elements : N/A until Partition Merge
-Total PLLs : N/A until Partition Merge
-Total DLLs : N/A until Partition Merge
+Total logic elements : 5,479
+Total pins : 18
+Total virtual pins : 0
+Total memory bits : 131,072
+DSP block 9-bit elements : 8
+Total PLLs : 1
+Total DLLs : 0
