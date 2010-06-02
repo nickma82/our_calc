@@ -98,7 +98,7 @@ OutputX : entity work.output_ent
 		pars_data => pars_data
 	);
 
-RingX : entity work.ringbuffer_ent
+RingX : entity work.ringbuffer2_ent
 	port map
 	(
 		sys_clk	=> sys_clk,
@@ -151,21 +151,21 @@ RS232X : entity work.rs232_ent
 		uart_tx => uart_tx
 	);
 
-PARSERX : entity work.parser_top
-	port map
-	(
-		sys_clk	=> sys_clk,
-		sys_res_n => sys_res_n,
-		rb_busy => rb_busy,
-		rb_read_en => rb_pars_en,
-		rb_read_lineNr => rb_pars_lineNr,
-		rb_read_data_rdy => rb_pars_data_rdy,
-		rb_read_data => rb_read_data,
-		ps_start => pars_start,
-		parse_new_data => pars_new_data,
-		parse_data => pars_data,
-		parse_state => pars_state
-	);
+--PARSERX : entity work.parser_top
+--	port map
+--	(
+--		sys_clk	=> sys_clk,
+--		sys_res_n => sys_res_n,
+--		rb_busy => rb_busy,
+--		rb_read_en => rb_pars_en,
+--		rb_read_lineNr => rb_pars_lineNr,
+--		rb_read_data_rdy => rb_pars_data_rdy,
+--		rb_read_data => rb_read_data,
+--		ps_start => pars_start,
+--		parse_new_data => pars_new_data,
+--		parse_data => pars_data,
+--		parse_state => pars_state
+--	);
 
 
 clkgenerator : process

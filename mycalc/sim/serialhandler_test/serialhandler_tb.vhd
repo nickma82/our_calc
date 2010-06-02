@@ -65,7 +65,7 @@ end process clkgenerator;
 process
 begin
 	-- INIT
-	for i in 0 to 80 loop	
+	for i in 0 to 81 loop	
 		rb_read_data(i) <= x"00";
 	end loop;
 	--	12+901
