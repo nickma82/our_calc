@@ -18,6 +18,7 @@ entity ringbuffer2_ent is
 		rb_busy		: out std_logic;
 		pars_new_data	: in std_logic;
 		pars_data	: in RESULT_LINE;
+		pars_state	: in parser_status_TYPE;
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
@@ -52,6 +53,7 @@ signal lineCounter, lineCounter_next	: integer range 0 to LINE_LENGTH;				--spei
 signal lineRead, lineRead_next 		: integer range 0 to LINE_NUMB -1;				--Speichert die zu lesende Zeile (linePointer + lineNR)
 signal writeNextState, writeNextState_next	: RINGBUFFER_FSM_STATE_TYPE;
 signal resultLine, resultLine_next	: RESULT_LINE;
+signal resultCounter, resultCounter_next	: integer range 0 to LINE_LENGTH;
 
 begin
 
@@ -70,11 +72,12 @@ begin
 		lineRead <= lineRead_next;
 		writeNextState <= writeNextState_next;
 		resultLine <= resultLine_next;
+		resultCounter <= resultCounter_next;
 	end if;
 
 end process sync;
 
-next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine)
+next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine, pars_state, resultCounter)
 begin
 	ringbuffer_fsm_state_next <= ringbuffer_fsm_state;
 	byte_buffer_next <= byte_buffer;
@@ -90,8 +93,24 @@ begin
 				byte_buffer_next <= inp_data;
 				ringbuffer_fsm_state_next <= WRITE_RAM;
 			elsif pars_new_data = '1' then
-				resultLine_next <= pars_data;
-				ringbuffer_fsm_state_next <= WRITE_RESULT;
+				case pars_state is
+					when PGOOD =>
+						resultLine_next <= pars_data;
+						ringbuffer_fsm_state_next <= WRITE_RESULT;
+					when PDIV_ZERO =>
+						resultLine_next <= MSG_ZERO;
+						ringbuffer_fsm_state_next <= WRITE_RESULT;
+					when POVERFLOW =>
+						resultLine_next <= MSG_OVERFLOW;
+						ringbuffer_fsm_state_next <= WRITE_RESULT;
+					when PTOO_MUCH_OPS =>
+						resultLine_next <= MSG_SYNTAX;
+						ringbuffer_fsm_state_next <= WRITE_RESULT;
+					when PINVALID_OP_SEQUENCE =>
+						resultLine_next <= MSG_SYNTAX;
+						ringbuffer_fsm_state_next <= WRITE_RESULT;
+					when others => null;
+				end case;
 			elsif rb_read_en = '1' then 
 				ringbuffer_fsm_state_next <= READ_RAM;
 				writeNextState_next <= LINE_REQ;
@@ -126,26 +145,27 @@ begin
 		when READ_RAM =>
 			ringbuffer_fsm_state_next <= WAIT_RAM;
 		when WAIT_RAM =>
-			if lineCounter >= 80 then
+			if lineCounter >= LINE_LENGTH then
 				ringbuffer_fsm_state_next <= LINE_REQ;
 			else
 				ringbuffer_fsm_state_next <= READ_RAM;
 			end if;
 		when WRITE_RESULT =>
-			if lineCounter = 9 then
-				ringbuffer_fsm_state_next <= READY;
+			if resultCounter = 0 then
+				ringbuffer_fsm_state_next <= NEW_LINE;
 			end if;
 		when others => null;
 	end case;
 end process next_state;
 
-output : process(ringbuffer_fsm_state, charPointer, byte_buffer, linePointer, rb_read_lineNr, lineCounter, lineRead, ram_buffer, lineBuffer, data_out, resultLine)
+output : process(ringbuffer_fsm_state, charPointer, byte_buffer, linePointer, rb_read_lineNr, lineCounter, lineRead, ram_buffer, lineBuffer, data_out, resultLine, resultCounter)
 begin
 	linePointer_next <= linePointer;
 	charPointer_next <= charPointer;
 	ram_buffer_next <= ram_buffer;
 	lineCounter_next <= lineCounter;
 	lineBuffer_next <= lineBuffer;
+	resultCounter_next <= resultCounter;
 
 	rb_busy <= '1';
 	rb_read_data_rdy <= '0';
@@ -171,12 +191,13 @@ begin
 			rb_busy <= '1';
 			rb_read_data_rdy <= '0';
 			lineCounter_next <= 0;
+			resultCounter_next <= 11;
 		when DELETE_CHAR =>
 			rb_busy <= '0';
 			if charPointer >= 0 then
 				wr <= '1';
 				data_in <= x"00";
-				address <= charPointer-1+linePointer * 80;
+				address <= charPointer-1+linePointer * LINE_LENGTH;
 				charPointer_next <= charPointer - 1;
 			end if;
 		when LINE_REQ =>
@@ -211,25 +232,31 @@ begin
 			if charPointer < LINE_LENGTH - 1 then
 				wr <= '1';
 				data_in <= byte_buffer;
-				address <= charPointer+linePointer * 80;
+				address <= charPointer+linePointer * LINE_LENGTH;
 				charPointer_next <= charPointer + 1;
 			end if;
 		when READ_RAM =>
 			rb_busy <= '0';
-			address <= lineRead*80 + lineCounter;
+			address <= lineRead*LINE_LENGTH + lineCounter;
 		when WAIT_RAM =>
 			rb_busy <= '0';
-			address <= lineRead*80 + lineCounter;
+			address <= lineRead*LINE_LENGTH + lineCounter;
 			lineBuffer_next(lineCounter) <= data_out;			
 			lineCounter_next <= lineCounter + 1;
 		when WRITE_RESULT =>
 			rb_busy <= '0';
-			if charPointer < LINE_LENGTH - 1 then
+			if resultCounter = 11 then
 				wr <= '1';
-				data_in <= resultLine(lineCounter);
-				address <= charPointer+linePointer * 80;
+				data_in <= x"3D";
+				address <= charPointer+linePointer * LINE_LENGTH;
 				charPointer_next <= charPointer + 1;
-				lineCounter_next <= lineCounter + 1;
+				resultCounter_next <= resultCounter - 1;
+			elsif resultCounter >= 0 then
+				wr <= '1';
+				data_in <= resultLine(resultCounter);
+				address <= charPointer+linePointer * LINE_LENGTH;
+				charPointer_next <= charPointer + 1;
+				resultCounter_next <= resultCounter - 1;	
 			end if;
 		when others => null;
 	end case;

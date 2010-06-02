@@ -34,14 +34,14 @@ architecture Serial_Handler_arc of Serial_Handler_ent is
 
 --type
 type Serial_Handler_FSM_STATE_TYPE is
-    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, WAIT_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, DONE);
+    (READY, CHECK_BYTE, SEND_HISTORY, REQ_LINE, WAIT_LINE, READ_LINE, WRITE_CHAR, WAIT_CHAR, PRE_DONE, DONE);
 
 --constants
 
 --signals
 signal Serial_Handler_fsm_state, Serial_Handler_fsm_state_next : Serial_Handler_FSM_STATE_TYPE;
 signal linePointer, linePointer_next : integer range 0 to LINE_NUMB - 1;				
-signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH - 1;
+signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH;
 signal currentLine, currentLine_next : RAM_LINE;
 
 
@@ -97,16 +97,19 @@ begin
 		when WRITE_CHAR =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WAIT_CHAR =>
-			if charPointer >= 79 then
-				Serial_Handler_fsm_state_next <= DONE;
-			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
-			end if;
-			--if linePointer <= 0 and charPointer >= 79 then
+			--if charPointer >= 80 then
 			--	Serial_Handler_fsm_state_next <= DONE;
-			--elsif charPointer >= 79 then
-			--	Serial_Handler_fsm_state_next <= REQ_LINE;
 			--elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
 			--end if;
+			if linePointer <= 0 and charPointer >= 79 then
+				Serial_Handler_fsm_state_next <= DONE;
+			elsif charPointer >= 80 then
+				Serial_Handler_fsm_state_next <= REQ_LINE;
+			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
+			end if;
+		when PRE_DONE =>
+			if tx_rdy = '1' then Serial_Handler_fsm_state_next <= DONE;
+			end if;
 		when DONE =>
 			Serial_Handler_fsm_state_next <= READY;
 			
@@ -128,7 +131,7 @@ begin
 		when SEND_HISTORY =>
 			--Werte zurück setzen
 			--TODO wieder einfügen	linePointer_next <= 50;
-			linePointer_next <= 0;
+			linePointer_next <= 50;
 			charPointer_next <= 0;
 		when REQ_LINE =>
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
@@ -141,16 +144,23 @@ begin
 			rb_read_en <= '1';
 			currentLine_next <= rb_read_data;
 			charPointer_next <= 0;
+			linePointer_next <= linePointer - 1;
 		when WRITE_CHAR =>
-			if currentLine(charPointer) = x"00" then
-				tx_data <= x"2D";
+			if charPointer = 80 then
+				tx_data <= x"0D";
 				tx_go <= '1';
-				charPointer_next <= 79;
+			elsif charPointer = 79 or currentLine(charPointer) = x"00" then
+				tx_data <= x"0A";
+				tx_go <= '1';
+				charPointer_next <= 80; --79
 			elsif rb_busy = '1' then
 				tx_data <= currentLine(charPointer);
 				tx_go <= '1';
 				charPointer_next <= charPointer + 1;
 			end if;
+		when PRE_DONE =>
+			tx_data <= x"0D";
+			tx_go <= '1';
 		when others => null;
 	end case;
 end process output;

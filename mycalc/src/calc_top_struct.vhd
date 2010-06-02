@@ -61,7 +61,7 @@ architecture struct of calc_top is
 	signal vga_command_data	: std_logic_vector(31 downto 0) := x"00000000";
 	signal pars_new_data	: std_logic := '0';
 	signal pars_data	: RESULT_LINE;
-	signal pars_state:	parser_status_TYPE;
+	signal pars_state	: parser_status_TYPE;
 
 	--Ringbuffer
 	signal rb_busy		: std_logic := '0';
@@ -185,7 +185,10 @@ begin
 		inp_del => inp_del,
 		inp_sendRS232 => inp_sendRS232,
 		pars_start => pars_start,
-		btn_a_sync => btn_a_sync
+		btn_a_sync => btn_a_sync,
+		pars_new_data => pars_new_data,
+		pars_data => pars_data,
+		pars_state => pars_state
 	);
 
 	--Output
@@ -201,7 +204,8 @@ begin
 		inp_data => inp_data,
 		inp_del => inp_del,
 		pars_new_data => pars_new_data,
-		pars_data => pars_data
+		pars_data => pars_data,
+		pars_state => pars_state
 	);
 
 	--Serial Handler
@@ -247,6 +251,7 @@ begin
 		rb_busy => rb_busy,
 		pars_new_data => pars_new_data,
 		pars_data => pars_data,
+		pars_state => pars_state,
 		inp_new_data => inp_new_data,
 		inp_data => inp_data,
 		inp_del => inp_del,
@@ -276,23 +281,23 @@ begin
 	);
 
 	--Parser
-	parser_top_inst : parser_top
-	generic map
-	(
-	      RESET_VALUE => RES_N_DEFAULT_VALUE
-	) 
-	port map
-	(
-		sys_clk	=> sys_clk,
-		sys_res_n => sys_res_n,
-		rb_busy => rb_busy,
-		rb_read_en => rb_pars_en,
-		rb_read_lineNr => rb_pars_lineNr,
-		rb_read_data_rdy => rb_pars_data_rdy,
-		rb_read_data => rb_read_data,
-		ps_start => pars_start,
-		parse_new_data => pars_new_data,
-		parse_data => pars_data,
-		parse_state => pars_state
-	);
+	--parser_top_inst : parser_top
+	--generic map
+	--(
+	--      RESET_VALUE => RES_N_DEFAULT_VALUE
+	--) 
+	--port map
+	--(
+	--	sys_clk	=> sys_clk,
+	--	sys_res_n => sys_res_n,
+	--	rb_busy => rb_busy,
+	--	rb_read_en => rb_pars_en,
+	--	rb_read_lineNr => rb_pars_lineNr,
+	--	rb_read_data_rdy => rb_pars_data_rdy,
+	--	rb_read_data => rb_read_data,
+	--	ps_start => pars_start,
+	--	parse_new_data => pars_new_data,
+	--	parse_data => pars_data,
+	--	parse_state => pars_state
+	--);
 end architecture struct;

@@ -2,6 +2,8 @@ LIBRARY ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.big_pkg.all;
+
 package input_pkg is
     component input_ent IS
 	port(
@@ -14,7 +16,10 @@ package input_pkg is
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
 		pars_start	: out std_logic;
-		btn_a_sync	: in std_logic
+		btn_a_sync	: in std_logic;
+		pars_new_data	: out std_logic;
+		pars_data	: out RESULT_LINE;
+		pars_state	: out parser_status_TYPE
 	);
     END component input_ent;
 end package input_pkg;

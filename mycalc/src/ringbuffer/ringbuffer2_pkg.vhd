@@ -12,6 +12,7 @@ package ringbuffer2_pkg is
 		rb_busy		: out std_logic;
 		pars_new_data	: in std_logic;
 		pars_data	: RESULT_LINE;
+		pars_state	: in parser_status_TYPE;
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;

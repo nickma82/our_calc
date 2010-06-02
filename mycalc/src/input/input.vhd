@@ -5,6 +5,8 @@ use IEEE.std_logic_arith.all;
 
 use ieee.numeric_std.all;
 
+use work.big_pkg.all;
+
 -- ENTITY
 entity input_ent is
 	--generic(
@@ -20,7 +22,10 @@ entity input_ent is
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
 		pars_start	: out std_logic;
-		btn_a_sync	: in std_logic
+		btn_a_sync	: in std_logic;
+		pars_new_data	: out std_logic;
+		pars_data	: out RESULT_LINE;
+		pars_state	: out parser_status_TYPE
 	);
 end entity input_ent;
 
@@ -29,7 +34,7 @@ architecture input_arc of input_ent is
 
 --type
 type INPUT_FSM_STATE_TYPE is
-    (READY, VALID, SPECIAL, RELEASE, ENTER, BACKSPACE, HISTORY);
+    (READY, VALID, SPECIAL, RELEASE, ENTER, BACKSPACE, HISTORY, WAIT_BUTTON, TEST);
 
 --constants
 
@@ -111,11 +116,13 @@ begin
 					input_fsm_state_next <= VALID;
 				when x"F0" => input_fsm_state_next <= RELEASE;
 				when x"E0" => input_fsm_state_next <= SPECIAL;
-				when x"2E" =>	-- '.' zum RS232 senden
+				when x"49" =>	-- '.' zum RS232 senden
 					input_fsm_state_next <= HISTORY;
+				when x"41" => -- ',' zum Pars Test
+					input_fsm_state_next <= TEST;
 				when others => null;
 			end case;
-			elsif btn_a_sync = '1' then
+			elsif btn_a_sync = '0' then
 				input_fsm_state_next <= HISTORY;
 			end if;
       		when VALID =>
@@ -140,10 +147,13 @@ begin
 		when BACKSPACE =>
 			input_fsm_state_next <= READY;
 		when HISTORY =>
-			if btn_a_sync = '0' then
+			input_fsm_state_next <= WAIT_BUTTON;
+		when WAIT_BUTTON =>
+			if btn_a_sync = '1' then
 				input_fsm_state_next <= READY;
 			end if;
-			
+		when TEST =>
+			input_fsm_state_next <= READY;
 	end case;
 end process next_state;
 
@@ -154,6 +164,10 @@ begin
 	inp_del <= '0';
 	inp_sendRS232 <= '0';
 	inp_data <= ascii;
+
+	pars_new_data <= '0';
+	pars_data <= (others => (others => '0'));
+	pars_state <= PRESET;
 	
 	case input_fsm_state is
 		when READY =>
@@ -170,6 +184,12 @@ begin
 			inp_del <= '1';
 		when HISTORY =>
 			inp_sendRS232 <= '1';
+		when WAIT_BUTTON =>
+			inp_sendRS232 <= '0';
+		when TEST =>
+			pars_new_data <= '1';
+			pars_data <= (10 => x"2B", 9 => x"31", 8 => x"32", 7 => x"33", 6 => x"34", 5 => x"35", 4 => x"00", 3 => x"00", 2 => x"00", 1 => x"00", 0 => x"00");
+			pars_state <= PGOOD;
 		when others => null;
 	end case;
 end process output;
