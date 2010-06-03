@@ -60,7 +60,7 @@ begin
 
 end process sync;
 
-next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_data_rdy, rb_read_data, linePointer, charPointer)
+next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_data_rdy, rb_read_data, linePointer, charPointer, currentLine)
 begin
 	Serial_Handler_fsm_state_next <= Serial_Handler_fsm_state;
 	

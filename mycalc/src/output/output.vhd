@@ -170,7 +170,7 @@ begin
 	end case;
 end process next_state;
 
-output : process(output_fsm_state, vga_free, inp_data, pars_data, resultLine, resultCounter, position, lineNr)
+output : process(output_fsm_state, vga_free, inp_data, pars_data, pars_state, resultLine, resultCounter, position, lineNr)
 begin
 	vga_command_next <= COMMAND_NOP;
 	vga_command_data_next <= (others => '0');
@@ -183,7 +183,20 @@ begin
 				vga_command_next <= COMMAND_SET_BACKGROUND;
 				vga_command_data_next <= x"008B8878";
 			when READY => 
-				resultLine_next <= pars_data;
+				--resultLine_next <= pars_data;
+				case pars_state is
+					when PGOOD =>
+						resultLine_next <= pars_data;
+					when PDIV_ZERO =>
+						resultLine_next <= MSG_ZERO;
+					when POVERFLOW =>
+						resultLine_next <= MSG_OVERFLOW;
+					when PTOO_MUCH_OPS =>
+						resultLine_next <= MSG_SYNTAX;
+					when PINVALID_OP_SEQUENCE =>
+						resultLine_next <= MSG_SYNTAX;
+					when others => null;
+				end case;
 			when WRITE_CHAR =>
 				vga_command_next <= COMMAND_SET_CHAR;
 				vga_command_data_next <= WHITE & inp_data;

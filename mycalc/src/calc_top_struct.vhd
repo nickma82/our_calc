@@ -83,7 +83,7 @@ architecture struct of calc_top is
 
 	--RAM
 	signal wr		: std_logic;
-	signal address		: integer range 0 to 4090;
+	signal address		: integer range 0 to 4200;
 	signal data_in		: std_logic_vector(7 downto 0);
 	signal data_out		: std_logic_vector(7 downto 0);	
 

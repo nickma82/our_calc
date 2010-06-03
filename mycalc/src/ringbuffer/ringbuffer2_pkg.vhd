@@ -25,7 +25,7 @@ package ringbuffer2_pkg is
 		rb_pars_data_rdy: out std_logic;
 		rb_read_data	: out RAM_LINE;
 		wr		: out std_logic;
-		address		: out integer range 0 to 4090;
+		address		: out integer range 0 to 4200;
 		data_in		: out std_logic_vector(7 downto 0);
 		data_out	: in std_logic_vector(7 downto 0)
 	);
