@@ -60,7 +60,7 @@ begin
 
 end process sync;
 
-next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_data_rdy, linePointer, charPointer)
+next_state : process(Serial_Handler_fsm_state, rx_recv, rx_data, tx_rdy, inp_sendRS232, rb_busy, rb_read_data_rdy, rb_read_data, linePointer, charPointer)
 begin
 	Serial_Handler_fsm_state_next <= Serial_Handler_fsm_state;
 	
@@ -90,15 +90,19 @@ begin
 			--TODO LÖSCHEN
 			--Serial_Handler_fsm_state_next <= READ_LINE;
 		when READ_LINE =>
-			Serial_Handler_fsm_state_next <= WAIT_CHAR;
+			--if linePointer <= 0 then
+			--	Serial_Handler_fsm_state_next <= DONE;
+			--elsif rb_read_data(0) = x"00" then
+			--	Serial_Handler_fsm_state_next <= REQ_LINE;
+			--else
+				Serial_Handler_fsm_state_next <= WAIT_CHAR;
+			--end if;
 		when WRITE_CHAR =>
 			Serial_Handler_fsm_state_next <= WAIT_CHAR;
 		when WAIT_CHAR =>
-			--if charPointer >= 80 then
-			--	Serial_Handler_fsm_state_next <= DONE;
-			--elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
-			--end if;
-			if linePointer <= 0 and charPointer >= 81 then
+			if currentLine(0) = x"00" then
+				Serial_Handler_fsm_state_next <= DONE;
+			elsif linePointer <= 0 and charPointer >= 81 then
 				Serial_Handler_fsm_state_next <= DONE;
 			elsif charPointer >= 81 then
 				Serial_Handler_fsm_state_next <= REQ_LINE;
@@ -133,7 +137,6 @@ begin
 		when REQ_LINE =>
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';
-			--linePointer_next <= linePointer - 1;
 		when WAIT_LINE =>
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);
 			rb_read_en <= '1';

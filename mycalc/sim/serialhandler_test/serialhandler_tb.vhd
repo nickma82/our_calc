@@ -123,6 +123,22 @@ begin
 		tx_rdy <= '0';
 		wait for 120 ns;
 	end loop;
+
+	rb_read_data <= (others => x"00");
+	rb_read_data_rdy <= '1';
+	wait for 30 ns;
+	rb_read_data_rdy <= '0';
+	wait for 30 ns;	
+
+	for i in 0 to 7 loop	
+		tx_rdy <= '1';
+		wait for 30 ns;
+		tx_rdy <= '0';
+		wait for 120 ns;
+	end loop;
+
+	wait for 300 ns;
+
 end process;
 
 end architecture behav;
