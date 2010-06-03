@@ -103,7 +103,7 @@ begin
 	wait for 30 ns;	
 
 	--Byte können geschickt werden
-	for i in 0 to 6 loop	
+	for i in 0 to 7 loop	
 		tx_rdy <= '1';
 		wait for 30 ns;
 		tx_rdy <= '0';
@@ -117,7 +117,7 @@ begin
 	rb_read_data_rdy <= '0';
 	wait for 30 ns;	
 
-	for i in 0 to 6 loop	
+	for i in 0 to 7 loop	
 		tx_rdy <= '1';
 		wait for 30 ns;
 		tx_rdy <= '0';

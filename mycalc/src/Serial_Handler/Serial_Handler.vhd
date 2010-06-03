@@ -128,7 +128,7 @@ begin
 		when SEND_HISTORY =>
 			--Werte zurück setzen
 			--TODO wieder einfügen	linePointer_next <= 50;
-			linePointer_next <= 0;
+			linePointer_next <= 50;
 			charPointer_next <= 0;
 		when REQ_LINE =>
 			rb_read_lineNr <= conv_std_logic_vector(linePointer, 8);

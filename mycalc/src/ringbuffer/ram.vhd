@@ -13,14 +13,14 @@ entity ram_ent is
 		sys_clk		: in std_logic;	
 		sys_res_n	: in std_logic;
 		wr		: in std_logic;
-		address		: in integer range 0 to 4090;
+		address		: in integer range 0 to 4200;
 		data_in		: in std_logic_vector(7 downto 0);
 		data_out	: out std_logic_vector(7 downto 0)
 	);
 end entity ram_ent;
 
 architecture ram_arc of ram_ent is
-type RAM_ARRAY is array (0 to (2 ** 12) - 1) of RAM_CELL; -- 4096
+type RAM_ARRAY is array (0 to (2 ** 13) - 1) of RAM_CELL; -- 4096
 signal ram : RAM_ARRAY := (others => (others => '0'));
 
 begin

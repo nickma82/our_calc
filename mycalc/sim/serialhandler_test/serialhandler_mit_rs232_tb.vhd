@@ -153,21 +153,14 @@ begin
 	uart_rx <= '1';			--Stoppbit
 	--wait for 300 us;
 
-	wait until rb_read_en <= '1';
-	wait for 30 ns;
+	--wait until rb_read_en <= '1';
+	wait for 90 ns;
 	rb_read_data_rdy <= '1';
 	wait for 30 ns;
 	rb_read_data_rdy <= '0';
 	wait for 30 ns;	
 
-	--nächste Zeile anfordern
-	--Ringbuffer hat line rdy
-	--wait until rb_read_en <= '1';
-	--wait for 30 ns;
-	--rb_read_data_rdy <= '1';
-	--wait for 30 ns;
-	--rb_read_data_rdy <= '0';
-	--wait for 30 ns;
+
 
 	wait for 800 us;	
 

@@ -31,7 +31,7 @@ entity ringbuffer2_ent is
 		rb_pars_data_rdy: out std_logic;
 		rb_read_data	: out RAM_LINE;
 		wr		: out std_logic;
-		address		: out integer range 0 to 4090;
+		address		: out integer range 0 to 4200;
 		data_in		: out std_logic_vector(7 downto 0);
 		data_out	: in std_logic_vector(7 downto 0)
 	);
@@ -53,7 +53,7 @@ signal lineCounter, lineCounter_next	: integer range 0 to LINE_LENGTH;				--spei
 signal lineRead, lineRead_next 		: integer range 0 to LINE_NUMB -1;				--Speichert die zu lesende Zeile (linePointer + lineNR)
 signal writeNextState, writeNextState_next	: RINGBUFFER_FSM_STATE_TYPE;
 signal resultLine, resultLine_next	: RESULT_LINE;
-signal resultCounter, resultCounter_next	: integer range 0 to LINE_LENGTH;
+signal resultCounter, resultCounter_next	: integer range -1 to LINE_LENGTH;
 
 begin
 
@@ -114,7 +114,7 @@ begin
 			elsif rb_read_en = '1' then 
 				ringbuffer_fsm_state_next <= READ_RAM;
 				writeNextState_next <= LINE_REQ;
-				if linePointer + rb_read_lineNr >  LINE_NUMB then
+				if linePointer + rb_read_lineNr >= LINE_NUMB then
 					lineRead_next <= conv_integer((rb_read_lineNr+linePointer)) - LINE_NUMB;
 				else
 					lineRead_next <= conv_integer((rb_read_lineNr+linePointer));
@@ -145,7 +145,7 @@ begin
 		when READ_RAM =>
 			ringbuffer_fsm_state_next <= WAIT_RAM;
 		when WAIT_RAM =>
-			if lineCounter >= LINE_LENGTH then
+			if lineCounter >= LINE_LENGTH - 1 then
 				ringbuffer_fsm_state_next <= LINE_REQ;
 			else
 				ringbuffer_fsm_state_next <= READ_RAM;

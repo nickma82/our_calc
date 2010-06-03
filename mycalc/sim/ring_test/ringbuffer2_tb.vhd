@@ -23,6 +23,7 @@ signal sys_clk, sys_res_n: std_logic;
 signal rb_busy		: std_logic := '0';
 signal pars_new_data	: std_logic := '0';
 signal pars_data	: RESULT_LINE;
+signal pars_state	: parser_status_TYPE;
 signal inp_new_data	: std_logic := '0';
 signal inp_data		: std_logic_vector(7 downto 0) := x"00";
 signal inp_del		: std_logic := '0';
@@ -35,7 +36,7 @@ signal rb_pars_lineNr	: std_logic_vector(7 downto 0) := x"00";
 signal rb_pars_data_rdy	: std_logic := '0';
 signal rb_read_data	: RAM_LINE;
 signal wr		: std_logic;
-signal address		: integer range 0 to 4090;
+signal address		: integer range 0 to 4200;
 signal data_in		: std_logic_vector(7 downto 0);
 signal data_out		: std_logic_vector(7 downto 0);		
 
@@ -49,6 +50,7 @@ ring : entity work.ringbuffer2_ent
 		rb_busy => rb_busy,
 		pars_new_data => pars_new_data,
 		pars_data => pars_data,
+		pars_state => pars_state,
 		inp_new_data => inp_new_data,
 		inp_data => inp_data,
 		inp_del => inp_del,
@@ -88,34 +90,59 @@ end process clkgenerator;
 
 process
 begin
+	pars_data <= MSG_OVERFLOW;
+	pars_state <= PGOOD;	
+
 	sys_res_n <= '0';
 	wait for 45 ns;
 	sys_res_n <= '1';
 	wait for 30 ns;
 	
-	inp_data <= x"20";
+	inp_data <= x"32";
 	wait for 30 ns;
 	inp_new_data <= '1';
 	wait for 30 ns;
 	inp_new_data <= '0';
-	wait for 30 ns;
-	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 30 ns;
+	wait for 60 ns;
 	
-	inp_data <= x"01";
+	inp_data <= x"31";
 	wait for 30 ns;
 	inp_new_data <= '1';
 	wait for 30 ns;
 	inp_new_data <= '0';
+	wait for 60 ns;
+	
+	inp_data <= x"2B";
 	wait for 30 ns;
-	--assert ps2_data(7 downto 0) = "00110000";
+	inp_new_data <= '1';
 	wait for 30 ns;
+	inp_new_data <= '0';
+	wait for 60 ns;
+
+	inp_data <= x"39";
+	wait for 30 ns;
+	inp_new_data <= '1';
+	wait for 30 ns;
+	inp_new_data <= '0';
+	wait for 60 ns;
+	
+	inp_data <= x"34";
+	wait for 30 ns;
+	inp_new_data <= '1';
+	wait for 30 ns;
+	inp_new_data <= '0';
+	wait for 60 ns;
 	
 	--Zeichen löschen
 	inp_del <= '1';
 	wait for 30 ns;
 	inp_del <= '0';
+	wait for 60 ns;
+
+	pars_new_data <= '1';
 	wait for 30 ns;
+	pars_new_data <= '0';
+	wait for 500 ns;
 
 	--Zeile abfragen
 	rb_read_lineNr <= x"00";
@@ -123,29 +150,29 @@ begin
 	rb_read_en <= '1';
 	wait for 30 ns;
 	rb_read_en <= '0';
-	wait for 30 ns;
-	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 30 ns;
+	wait for 60 ns;
 
 	wait for 5 us;
+
+	
+
+	--Zeile abfragen
+	rb_read_lineNr <= x"31";
+	wait for 30 ns;
+	rb_read_en <= '1';
+	wait for 30 ns;
+	rb_read_en <= '0';
+	wait for 60 ns;
+
+	wait for 5 us;
+
 
 	wait for 30 ns;
 	rb_char_newline <= '1';
 	wait for 30 ns;
 	rb_char_newline <= '0';
 	wait for 30 ns;
-
-	--Zeile abfragen
-	rb_read_lineNr <= x"00";
-	wait for 30 ns;
-	rb_read_en <= '1';
-	wait for 30 ns;
-	rb_read_en <= '0';
-	wait for 30 ns;
-	--assert ps2_data(7 downto 0) = "00110000";
-	wait for 30 ns;
-
-	wait for 5 us;
+	
 end process;
 
 end architecture behav;
