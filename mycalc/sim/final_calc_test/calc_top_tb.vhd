@@ -65,6 +65,12 @@ constant clock_period:time := 30 ns;
 	--Parser
 	signal pars_state	: parser_status_TYPE;
 
+	--RAM
+	signal wr		: std_logic;
+	signal address		: integer range 0 to 4200;
+	signal data_in		: std_logic_vector(7 downto 0);
+	signal data_out		: std_logic_vector(7 downto 0);	
+
 
 begin --behave
 
@@ -95,7 +101,19 @@ OutputX : entity work.output_ent
 		inp_data => inp_data,
 		inp_del => inp_del,
 		pars_new_data => pars_new_data,
-		pars_data => pars_data
+		pars_data => pars_data,
+		pars_state => pars_state
+	);
+
+RamX : entity work.ram_ent
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		wr => wr,
+		address => address,
+		data_in => data_in,
+		data_out => data_out
 	);
 
 RingX : entity work.ringbuffer2_ent
@@ -106,17 +124,21 @@ RingX : entity work.ringbuffer2_ent
 		rb_busy => rb_busy,
 		pars_new_data => pars_new_data,
 		pars_data => pars_data,
+		pars_state => pars_state,
 		inp_new_data => inp_new_data,
 		inp_data => inp_data,
 		inp_del => inp_del,
-		rb_char_newline => rb_char_newline,
 		rb_read_en => rb_read_en,
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
 		rb_read_data => rb_read_data,
 		rb_pars_en => rb_pars_en,
 		rb_pars_lineNr => rb_pars_lineNr,
-		rb_pars_data_rdy => rb_pars_data_rdy
+		rb_pars_data_rdy => rb_pars_data_rdy,
+		wr => wr,
+		address => address,
+		data_in => data_in,
+		data_out => data_out
 	);
 
 Serialx : entity work.Serial_Handler_ent
@@ -151,21 +173,21 @@ RS232X : entity work.rs232_ent
 		uart_tx => uart_tx
 	);
 
---PARSERX : entity work.parser_top
---	port map
---	(
---		sys_clk	=> sys_clk,
---		sys_res_n => sys_res_n,
---		rb_busy => rb_busy,
---		rb_read_en => rb_pars_en,
---		rb_read_lineNr => rb_pars_lineNr,
---		rb_read_data_rdy => rb_pars_data_rdy,
---		rb_read_data => rb_read_data,
---		ps_start => pars_start,
---		parse_new_data => pars_new_data,
---		parse_data => pars_data,
---		parse_state => pars_state
---	);
+PARSERX : entity work.parser_top
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		rb_busy => rb_busy,
+		rb_read_en => rb_pars_en,
+		rb_read_lineNr => rb_pars_lineNr,
+		rb_read_data_rdy => rb_pars_data_rdy,
+		rb_read_data => rb_read_data,
+		ps_start => pars_start,
+		parse_new_data => pars_new_data,
+		parse_data => pars_data,
+		parse_state => pars_state
+	);
 
 
 clkgenerator : process
@@ -185,11 +207,12 @@ begin
 	ps2_new_data <= '0';
 	vga_free <= '1';
 	vga_clk <= '0';
+	inp_sendRS232 <= '0';
+	btn_a_sync <= '1';
+	--wr <= '0';
 	
-
-	wait for 15 ns;
 	sys_res_n <= '0';
-	wait for 90 ns;
+	wait for 45 ns;
 	sys_res_n <= '1';
 	wait for 90 ns;
 
@@ -254,7 +277,7 @@ begin
 	assert inp_data(7 downto 0) = "00110000";
 	wait for 90 ns;
 
-	wait for 300 us;
+	wait for 900 us;
 end process;
 
 end architecture behav;
