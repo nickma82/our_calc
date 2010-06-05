@@ -158,7 +158,7 @@ begin
 	--Zeile abfragen
 	rb_read_lineNr <= x"31";
 	wait for 30 ns;
-	rb_read_en <= '1';
+	--rb_read_en <= '1';
 	wait for 30 ns;
 	rb_read_en <= '0';
 	wait for 60 ns;
