@@ -1,14 +1,12 @@
-
-
 -- @module : alu_div_arc
 -- @author : s0726179
 -- @date   : Apr 26, 2010
- LIBRARY ieee;
- USE ieee.std_logic_1164.all;
- use ieee.numeric_std.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
 use work.big_pkg.all;
 use work.parser_pkg.all;
-
 
 
 ARCHITECTURE b2bcd OF b2bcd_ent IS
@@ -60,80 +58,75 @@ ARCHITECTURE b2bcd OF b2bcd_ent IS
 
 
 
-  type B2BCD_FSM_STATE_TYPE is
-    (IDLE0, WAIT_RB, INIT, DOIT, SAVE_RESULT, DONE);
-  signal b2bcd_fsm_state, b2bcd_fsm_state_next : B2BCD_FSM_STATE_TYPE;
-  	signal count, count_next:	INTEGER range 0 to 35 := 0;
-  	
-	signal sign_next : std_logic := '0';
-	signal enable : std_logic := '0';
-	signal enable_next : std_logic := '0';
-	signal start : std_logic := '0';
-	signal start_next : std_logic := '0';
-	signal scratch, scratch_next : std_logic_vector(75 downto 0) := (others =>'0');
-BEGIN
-	
+type B2BCD_FSM_STATE_TYPE is (IDLE0, WAIT_RB, INIT, DOIT, SAVE_RESULT, DONE);
+signal b2bcd_fsm_state, b2bcd_fsm_state_next : B2BCD_FSM_STATE_TYPE;
+signal count, count_next:	INTEGER range 0 to 35 := 0; 	
+signal sign_next : std_logic := '0';
+--signal enable : std_logic := '0';
+--signal enable_next : std_logic := '0';
+--signal start : std_logic := '0';
+--signal start_next : std_logic := '0';
+signal scratch, scratch_next : std_logic_vector(75 downto 0) := (others =>'0');
 
-  
- next_state : process(b2bcd_fsm_state, b2bcd_en, rb_busy, count)
-  begin
-  	b2bcd_fsm_state_next <= b2bcd_fsm_state;
-  case b2bcd_fsm_state is
-	when IDLE0 =>
-		if b2bcd_en = '1' then
-			b2bcd_fsm_state_next<= WAIT_RB;
-		end if;
-	
-	when WAIT_RB =>
-		if rb_busy = '1' then
-			b2bcd_fsm_state_next<= INIT;
-		end if;
+begin
+
+next_state : process(b2bcd_fsm_state, b2bcd_en, rb_busy, count)
+	begin
+  		b2bcd_fsm_state_next <= b2bcd_fsm_state;
+	case b2bcd_fsm_state is
+		when IDLE0 =>
+			if b2bcd_en = '1' then
+				b2bcd_fsm_state_next<= WAIT_RB;
+			end if;
+		when WAIT_RB =>
+			if rb_busy = '1' then
+				b2bcd_fsm_state_next<= INIT;
+			end if;
 			
-	when INIT=>
-		b2bcd_fsm_state_next<= DOIT;
--- 		null;
-	
-	when DOIT=>
-		if count = 31 then
-			b2bcd_fsm_state_next<= SAVE_RESULT;
-		end if;
-	
-	when SAVE_RESULT=>
-		b2bcd_fsm_state_next<= DONE;
-		
-	when DONE =>
-		if b2bcd_en = '0' then
-			b2bcd_fsm_state_next<=IDLE0;
-		end if;
-	
-	
-  end case;
-  end process next_state;
+		when INIT=>
+			b2bcd_fsm_state_next<= DOIT;
+		when DOIT=>
+			if count = 31 then
+				b2bcd_fsm_state_next<= SAVE_RESULT;
+			end if;
+		when SAVE_RESULT=>
+			b2bcd_fsm_state_next<= DONE;
+		when DONE =>
+			if b2bcd_en = '0' then
+				b2bcd_fsm_state_next<=IDLE0;
+			end if;
+	end case;
+end process next_state;
 
 
-
-
-
-
-
-
-  calc : process(b2bcd_fsm_state, count)
-  	variable scratch_tmp	: std_logic_vector(75 downto 0) := (others =>'0');
-  	variable move_reg	: integer range 0 to SIZEI_BCD_CHARS := 0;
-  	variable move_lock	: boolean:= false;
-  begin	
+calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg)
+	variable scratch_tmp	: std_logic_vector(75 downto 0) := (others =>'0');
+	variable move_reg	: integer range 0 to SIZEI_BCD_CHARS := 0;
+	variable move_lock	: boolean:= false;
+	begin	
 	b2bcd_data_rdy <= '0';
 	--start_next <= start_decode;
 	count_next <= count;
 	scratch_tmp := scratch;
-	enable_next <= enable;
--- 	sign_next <= sign;
+	--enable_next <= enable;
+	--sign_next <= sign;
+
+	parse_data(0) <= X"00";
+	parse_data(1) <= X"00";
+	parse_data(2) <= X"00";
+	parse_data(3) <= X"00";
+	parse_data(4) <= X"00";
+	parse_data(5) <= X"00";
+	parse_data(6) <= X"00";
+	parse_data(7) <= X"00";
+	parse_data(8) <= X"00";
+	parse_data(9) <= X"00";
+	parse_data(10) <= X"00";
+
+	scratch_next <= scratch;
+
 	
-	
-	
-	
-	
-    case b2bcd_fsm_state is
+	case b2bcd_fsm_state is
 	when IDLE0 =>
 		parse_data(0) <= X"00";
 		parse_data(1) <= X"00";
@@ -146,11 +139,8 @@ BEGIN
 		parse_data(8) <= X"00";
 		parse_data(9) <= X"00";
 		parse_data(10) <= X"00";
-	
 	when WAIT_RB =>
 		null;
-		
-		
 	when INIT =>
 		scratch_tmp(31 downto 0) := std_logic_vector(b2bcd_data);
 		scratch_tmp(75 downto 32) := "00000000000000000000000000000000000000000000";
@@ -309,10 +299,10 @@ BEGIN
     if sys_res_n = '0' then
 	b2bcd_fsm_state <= IDLE0;
 	count<= 0;
-	enable <= '0';
+	--enable <= '0';
     elsif rising_edge(sys_clk) then
 	b2bcd_fsm_state <= b2bcd_fsm_state_next;
-	start <= start_next;
+	--start <= start_next;
 	count <= count_next;
 	scratch <= scratch_next;
     end if;
