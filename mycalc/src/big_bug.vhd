@@ -18,6 +18,7 @@ package big_pkg is
 	
 	
 	--- PARSER
+	type PARSER_CHAR_TYPE is (CRESET, CDIGIT, COP, CEOL);--(RESET, DIGIT, OP, EOL);
 	type parser_status_TYPE is
 		(PRESET, PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
 	--@TODO alu_operator_TYPE  ---- WARNING

@@ -94,15 +94,15 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
       when DIGIT_GETNEXT =>
 		if charUnit_next_valid = '1' then 
 				--Error handling beginnt
-			if (charUnit_lastChar_type=OP and charUnit_char_type= EOL) then
+			if (charUnit_lastChar_type=COP and charUnit_char_type= CEOL) then
 				parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
 			else 	
 				char_firstOne_next <= '0';
 				case charUnit_char_type is
-					when DIGIT=>  
+					when CDIGIT=>  
 						parse_fsm_state_next<= DIGIT;
-					when OP =>    parse_fsm_state_next<= OP;
-					when EOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
+					when COP =>    parse_fsm_state_next<= OP;
+					when CEOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
 					when others => assert false report "NEXTDIGIT TYPE not supported" severity error;
 				end case;
 			end if; --Error if end
@@ -113,7 +113,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
 			parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
 			assert false report "OP Error Handling: first char is not digit and no minus" severity warning;
-		elsif (charUnit_lastChar_type=OP and charUnit_op/= SUBTRAKTION) then
+		elsif (charUnit_lastChar_type=COP and charUnit_op/= SUBTRAKTION) then
 			parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
 			assert false report "OP Error Handling: Second op in series isn't a minus" severity warning;
 		elsif parser_internal_status = TOO_MUCH_OPS then
@@ -182,7 +182,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 	  when SAVE_CALC_RESULT =>
 		if char_state = CALC_THIS then 		--order essential
 			parse_fsm_state_next <= CALC;	--order essential
-		elsif charUnit_char_type= EOL then
+		elsif charUnit_char_type= CEOL then
 			parse_fsm_state_next <= PRE_PREPARE_RESULT;
 		elsif char_state = ANALYZE_NEXT then
 			parse_fsm_state_next <= DIGIT_GETNEXT;
@@ -322,7 +322,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		charUnit_get_next_var_next <= '0'; 
 		
 		
-		if charUnit_char_type= EOL then
+		if charUnit_char_type= CEOL then
 			intern_do_calc_stage:= 	0;
 			char_state <= 	CALC_THIS;
 		elsif (operators_serial>=2) then
@@ -425,7 +425,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			calc_data<=  	calc_buff(intern_buff_stage_pos-1);
 			calc_data2<= 	calc_buff(intern_buff_stage_pos);
 			calc_operator<=	op_buff(intern_buff_stage_pos-1);
-			assert charUnit_char_type= EOL
+			assert charUnit_char_type= CEOL
 				report "buff stage invalid" severity error;
 		end if;
 		

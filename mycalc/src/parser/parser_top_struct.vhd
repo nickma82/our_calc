@@ -87,8 +87,8 @@ architecture struct of parser_top is
 		charUnit_next_valid:	OUT STD_LOGIC := '0';
 		charUnit_digit: 		OUT ONEDIGIT;
 		charUnit_op:		OUT alu_operator_TYPE := NOP;
-		charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := RESET;
-		charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := RESET
+		charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := CRESET;
+		charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := CRESET
 		
 	);
 	end component char_unit_ent;

@@ -16,10 +16,10 @@ package input_pkg is
 		inp_del		: out std_logic;
 		inp_sendRS232	: out std_logic;
 		pars_start	: out std_logic;
-		btn_a_sync	: in std_logic;
-		pars_new_data	: out std_logic;
-		pars_data	: out RESULT_LINE;
-		pars_state	: out parser_status_TYPE
+		btn_a_sync	: in std_logic
+		--pars_new_data	: out std_logic;
+		--pars_data	: out RESULT_LINE;
+		--pars_state	: out parser_status_TYPE
 	);
     END component input_ent;
 end package input_pkg;

@@ -185,10 +185,10 @@ begin
 		inp_del => inp_del,
 		inp_sendRS232 => inp_sendRS232,
 		pars_start => pars_start,
-		btn_a_sync => btn_a_sync,
-		pars_new_data => pars_new_data,
-		pars_data => pars_data,
-		pars_state => pars_state
+		btn_a_sync => btn_a_sync
+		--pars_new_data => pars_new_data,
+		--pars_data => pars_data,
+		--pars_state => pars_state
 	);
 
 	--Output
@@ -255,7 +255,7 @@ begin
 		inp_new_data => inp_new_data,
 		inp_data => inp_data,
 		inp_del => inp_del,
-		rb_char_newline => rb_char_newline,
+		--rb_char_newline => rb_char_newline,
 		rb_read_en => rb_read_en,
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
@@ -281,23 +281,23 @@ begin
 	);
 
 	--Parser
-	--parser_top_inst : parser_top
-	--generic map
-	--(
-	--      RESET_VALUE => RES_N_DEFAULT_VALUE
-	--) 
-	--port map
-	--(
-	--	sys_clk	=> sys_clk,
-	--	sys_res_n => sys_res_n,
-	--	rb_busy => rb_busy,
-	--	rb_read_en => rb_pars_en,
-	--	rb_read_lineNr => rb_pars_lineNr,
-	--	rb_read_data_rdy => rb_pars_data_rdy,
-	--	rb_read_data => rb_read_data,
-	--	ps_start => pars_start,
-	--	parse_new_data => pars_new_data,
-	--	parse_data => pars_data,
-	--	parse_state => pars_state
-	--);
+	parser_top_inst : parser_top
+	generic map
+	(
+	      RESET_VALUE => RES_N_DEFAULT_VALUE
+	) 
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		rb_busy => rb_busy,
+		rb_read_en => rb_pars_en,
+		rb_read_lineNr => rb_pars_lineNr,
+		rb_read_data_rdy => rb_pars_data_rdy,
+		rb_read_data => rb_read_data,
+		ps_start => pars_start,
+		parse_new_data => pars_new_data,
+		parse_data => pars_data,
+		parse_state => pars_state
+	);
 end architecture struct;

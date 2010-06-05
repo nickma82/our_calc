@@ -22,7 +22,7 @@ entity ringbuffer2_ent is
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
-		rb_char_newline	: in std_logic;
+		--rb_char_newline	: in std_logic;
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;
@@ -77,7 +77,7 @@ begin
 
 end process sync;
 
-next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine, pars_state, resultCounter)
+next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine, pars_state, resultCounter)
 begin
 	ringbuffer_fsm_state_next <= ringbuffer_fsm_state;
 	byte_buffer_next <= byte_buffer;
@@ -124,7 +124,7 @@ begin
 				writeNextState_next <= PARS_REQ;
 				lineRead_next <= conv_integer((linePointer));
 			elsif inp_del = '1' then ringbuffer_fsm_state_next <= DELETE_CHAR;
-			elsif rb_char_newline = '1' then ringbuffer_fsm_state_next <= NEW_LINE;
+			--elsif rb_char_newline = '1' then ringbuffer_fsm_state_next <= NEW_LINE;
 			end if;
 		when DELETE_CHAR =>
 			ringbuffer_fsm_state_next <= READY;
