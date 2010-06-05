@@ -12,22 +12,26 @@ use work.parser_pkg.all;
 use ieee.numeric_std.all;
 
 ARCHITECTURE char_unit OF char_unit_ent IS
-	
-	signal next_ok: STD_LOGIC := '0';
-	
-  type CHAR_UNIT_STATE_TYPE is
-    (RESET, LINE_WAIT, LINE_REQ, LINE_READY, CHAR_WAIT, CHAR_SEND, CHAR_VALID, CHAR_EOL);
-  signal charunit_fsm_state, charunit_fsm_state_next : CHAR_UNIT_STATE_TYPE;
+type CHAR_UNIT_STATE_TYPE is (RESET, LINE_WAIT, LINE_REQ, LINE_READY, CHAR_WAIT, CHAR_SEND, CHAR_VALID, CHAR_EOL);
+signal charunit_fsm_state, charunit_fsm_state_next : CHAR_UNIT_STATE_TYPE;
 
 signal currentLine, currentLine_next : RAM_LINE;
 signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH - 1;
 
-BEGIN
+signal digit, digit_next 		: ONEDIGIT := 0;
+signal op, op_next			: alu_operator_TYPE := NOP;
+signal lastChar, lastChar_next		: PARSER_CHAR_TYPE  := RESET;
+signal char, char_next			: PARSER_CHAR_TYPE  := RESET;
 
-next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_data, rb_busy, charUnit_get_next, next_ok)
-  begin
-    charunit_fsm_state_next <= charunit_fsm_state;
-    case charunit_fsm_state is
+
+begin
+
+next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_data, rb_busy, charUnit_get_next, charPointer, currentLine)
+begin
+	charunit_fsm_state_next <= charunit_fsm_state;
+	currentLine_next <= currentLine;
+
+	case charunit_fsm_state is
 	when RESET =>		--Warten bis Zeile angefordert wird
 		if charUnit_en= '1' then
 			charunit_fsm_state_next <= LINE_WAIT;
@@ -70,18 +74,21 @@ next_state : process(charunit_fsm_state, charUnit_en, rb_read_data_rdy, rb_read_
 			charunit_fsm_state_next <= CHAR_WAIT;
 		end if;
 			
-    end case;
+	end case;
 end process next_state;
   
 
 output : process(charunit_fsm_state, charPointer, currentLine)
-  begin
+begin
 	charUnit_next_valid <= '0';
 	rb_read_en <= '0';
-    case charunit_fsm_state is
+	rb_read_lineNr <= x"00";
+
+	charPointer_next <= charPointer;
+	case charunit_fsm_state is
 	when RESET =>
 		rb_read_en <= '0'; --weak low
-      		rb_read_lineNr <= x"00"; 
+	 	rb_read_lineNr <= x"00"; 
       		charUnit_next_valid <= '0';
       		next_ok <= '0';     
 		charPointer_next <= 0;
@@ -165,8 +172,8 @@ output : process(charunit_fsm_state, charPointer, currentLine)
 		charUnit_next_valid <= '1';
 		charUnit_lastChar_type <= EOL;
 	when others => null;
-    end case;
-  end process output;
+	end case;
+end process output;
 
 
 sync : process(sys_clk, sys_res_n)
@@ -177,7 +184,11 @@ sync : process(sys_clk, sys_res_n)
 			charunit_fsm_state <= charunit_fsm_state_next;
 			currentLine <= currentLine_next;
 			charPointer <= charPointer_next;
+
+			op <= op_next;
+			char <= char_next;
+			
  		end if;
 end process sync;
 
-END architecture char_unit;
+end architecture char_unit;
