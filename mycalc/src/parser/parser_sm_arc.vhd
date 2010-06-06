@@ -42,33 +42,29 @@ BEGIN
 
 next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy, calc_status, charUnit_lastChar_type, charUnit_char_type, char_firstOne, charUnit_op,  global_digit_neg, intern_b2bcd_data_neg)
   -- charUnit_lastChar_type, charUnit_char_type: (RESET, DIGIT, OP, EOL)
-  begin
-    parse_fsm_state_next <= parse_fsm_state;
+
+begin
+	parse_fsm_state_next <= parse_fsm_state;
     
-    char_firstOne_next <= char_firstOne;
-    case parse_fsm_state is
-      when IDLE0 =>
-      	if parse_start = '1' then
+	char_firstOne_next <= char_firstOne;
+	case parse_fsm_state is
+	when IDLE0 =>
+		if parse_start = '1' then
 			parse_fsm_state_next <= PARSE_INIT;
-      	end if;
-            
-      when PARSE_INIT =>
+		end if;
+	when PARSE_INIT =>
 		char_firstOne_next	<= '1';
 		if parser_internal_status = RUNNING then
 			parse_fsm_state_next <= DIGIT_GETNEXT;
 		end if;
-		
-		
-      when DIGIT =>
-	  if char_state = ANALYZE_NEXT then
-		parse_fsm_state_next <= DIGIT_GETNEXT;
-	  elsif char_state = CALC_DIGIT then
-		if calc_finished = '0' then 
-			parse_fsm_state_next <= DIGIT_CALC_STAGE1;
+	when DIGIT =>
+		if char_state = ANALYZE_NEXT then
+			parse_fsm_state_next <= DIGIT_GETNEXT;
+		elsif char_state = CALC_DIGIT then
+			if calc_finished = '0' then 
+				parse_fsm_state_next <= DIGIT_CALC_STAGE1;
+			end if;
 		end if;
-	  end if;
-	  
-	  
 	when DIGIT_CALC_STAGE1 =>
 		if calc_finished = '1' then
 			-- Error Handling
@@ -78,14 +74,11 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 				parse_fsm_state_next <= DIGIT_PREPARE_STAGE2;
 			end if;
 		end if;
-      
-      when DIGIT_PREPARE_STAGE2 =>
-      	  if calc_finished = '0' then 
-      	  	parse_fsm_state_next <= DIGIT_CALC_STAGE2;
-      	  end if;
-      
-
-      when DIGIT_CALC_STAGE2 =>
+	when DIGIT_PREPARE_STAGE2 =>
+		if calc_finished = '0' then 
+			parse_fsm_state_next <= DIGIT_CALC_STAGE2;
+		end if;
+	when DIGIT_CALC_STAGE2 =>
 		if calc_finished = '1' then
 			-- Error Handling
 			if calc_status /= GOOD then
@@ -94,13 +87,9 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 				parse_fsm_state_next <= DIGIT_SAVE_CALCED;
 			end if;
 		end if;
-		
-		
-      when DIGIT_SAVE_CALCED =>
-	  parse_fsm_state_next <= DIGIT_GETNEXT;
-	 
-	 
-      when DIGIT_GETNEXT =>
+	when DIGIT_SAVE_CALCED =>
+		parse_fsm_state_next <= DIGIT_GETNEXT;
+	when DIGIT_GETNEXT =>
 		if charUnit_next_valid = '1' then 
 				--Error handling beginnt
 			if (charUnit_lastChar_type=COP and charUnit_char_type= CEOL) then
@@ -116,8 +105,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 				end case;
 			end if; --Error if end
 		end if;
-      
-      when OP =>		
+	when OP =>		
 	      --Error Handling
 		if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
 			parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
@@ -158,7 +146,7 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 			parse_fsm_state_next <= WAIT_INVERTATION_SECOND_DATA;
 		end if;
 	
-	  when WAIT_INVERTATION_SECOND_DATA =>
+	when WAIT_INVERTATION_SECOND_DATA =>
 		if calc_finished = '1' then
 			-- Error Handling
 			if calc_status /= GOOD then
@@ -167,17 +155,13 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 				parse_fsm_state_next <= HANDLE_INVERTATION;
 			end if;
 		end if;
-		
-	  when HANDLE_INVERTATION =>
+	when HANDLE_INVERTATION =>
 			parse_fsm_state_next <= CALC;
-		
-      when CALC =>
+	when CALC =>
 		if calc_finished = '0' then 
 			parse_fsm_state_next <= WAIT_CALC_RESULT;
 		end if;
-	
-	  
-	  when WAIT_CALC_RESULT =>
+	when WAIT_CALC_RESULT =>
 		if calc_finished = '1' then
 			-- Error Handling
 			if calc_status /= GOOD then
@@ -186,9 +170,11 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 				parse_fsm_state_next <= SAVE_CALC_RESULT;
 			end if;
 		end if;
-	  
-	  
-	  when SAVE_CALC_RESULT =>
+		--TODO checken
+		--if calc_operator = NOP then
+		--	parse_fsm_state_next <= PRE_PREPARE_RESULT;
+		--end if;
+	when SAVE_CALC_RESULT =>
 		if char_state = CALC_THIS then 		--order essential
 			parse_fsm_state_next <= CALC;	--order essential
 		elsif charUnit_char_type= CEOL then
@@ -196,11 +182,8 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		elsif char_state = ANALYZE_NEXT then
 			parse_fsm_state_next <= DIGIT_GETNEXT;
 		end if;
-	
 	when PRE_PREPARE_RESULT =>
 		parse_fsm_state_next<= PREPARE_RESULT;
-		
-	
 	when PREPARE_RESULT =>
 		if intern_b2bcd_data_neg then
 			if calc_finished = '0' then 
@@ -209,34 +192,28 @@ next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_sta
 		else 
 			parse_fsm_state_next<= WAIT_RESULT;
 		end if;
-	
 	when WAITFOR_INVERTED_RESULT =>
 		if calc_finished = '1' then
 			parse_fsm_state_next<= PUSH_INVERTED_RESULT;
 		end if;
-		
 	when PUSH_INVERTED_RESULT =>
 		parse_fsm_state_next<= WAIT_RESULT;
-	
 	when WAIT_RESULT =>
 		if b2bcd_data_rdy='1' then
 			parse_fsm_state_next<= RESULT_STABLE;
 		end if;
-	
 	when PARSE_ERROR =>
 		parse_fsm_state_next<= RESULT_STABLE;
-
 	when RESULT_STABLE =>
 		if parse_start= '0' then
 			parse_fsm_state_next <= IDLE0;
 		end if;
-	
 	when others => 
 		--coverage off
 		assert false report "NEXT State logic- State not supported" severity error;
 		--coverage on
-    end case;
-  end process next_state;
+	end case;
+end process next_state;
   
   
   

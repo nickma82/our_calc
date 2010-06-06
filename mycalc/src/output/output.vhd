@@ -51,7 +51,7 @@ signal lineNr, lineNr_next		: std_logic_vector(4 downto 0);
 signal vga_command_next			: std_logic_vector(7 downto 0);
 signal vga_command_data_next		: std_logic_vector(31 downto 0);
 signal resultLine, resultLine_next	: RESULT_LINE :=(others => (others => '0'));
-signal resultCounter, resultCounter_next : integer range 0 to 11;
+signal resultCounter, resultCounter_next : integer range -1 to 11;
 signal result_rdy, result_rdy_next	: std_logic := '0';
 
 begin
@@ -102,7 +102,7 @@ begin
 			elsif pars_new_data = '1' then 
 				output_fsm_state_next <= WAIT_STATE;
 				state_after_wait_next <= NEW_LINE;
-				resultCounter_next <= 10;
+				resultCounter_next <= 10;	
 				position_next <= "0000000";
 			elsif inp_del = '1' then 
 				output_fsm_state_next <= WAIT_STATE;
@@ -115,7 +115,11 @@ begin
 		when PREPARE_RESULT =>
 			output_fsm_state_next <= WRITE_RESULT;
 		when WRITE_RESULT =>
-			if resultLine(resultCounter) = x"00" or resultCounter = 0 then
+			if  resultCounter = -1 then --resultCounter = 0 --resultLine(resultCounter) = x"00" or
+				result_rdy_next <= '1';
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait_next <= NEW_LINE;
+			elsif resultLine(resultCounter) = x"00" then
 				result_rdy_next <= '1';
 				output_fsm_state_next <= WAIT_STATE;
 				state_after_wait_next <= NEW_LINE;
@@ -201,12 +205,14 @@ begin
 				vga_command_next <= COMMAND_SET_CHAR;
 				vga_command_data_next <= WHITE & inp_data;
 			when WRITE_RESULT =>
-				if resultLine(resultCounter) = x"00" then
+				if resultCounter >= 0 and resultLine(resultCounter) /= x"00" then
+				--if resultLine(resultCounter) = x"00" then
 					--vga_command_next <= COMMAND_SET_CHAR;
-					--vga_command_data_next <= WHITE & resultLine(resultCounter);
-				else
+					--vga_command_data_next <= WHITE & x"2E";
+				--else
 					vga_command_next <= COMMAND_SET_CHAR;
 					vga_command_data_next <= BLACK & resultLine(resultCounter);
+				--end if;
 				end if;
 			when PREPARE_RESULT =>
 				--resultLine_next <= pars_data;

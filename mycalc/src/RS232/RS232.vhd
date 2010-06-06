@@ -170,7 +170,7 @@ begin
 			countBaud_next <= countBaud + 1;
 		when SEND_BYTE =>
 			rx_recv <= '1';
-			rx_data <= x"68";--recvBuffer;
+			rx_data <= recvBuffer;--x"68";
 		when RECV_WAIT =>
 			if countBaud >= 289 then
 				countBaud_next <= 0;

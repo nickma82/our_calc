@@ -165,6 +165,10 @@ begin
 -- 				end if;
 				intern_wait_div_next <= '1';
 			-- coverage off
+			when NOP =>
+				double_calcsigned := tmp_data1;
+				calc_status_var_next <= GOOD;
+				intern_calc_finished_next <= '1';
 			when others =>
 				assert false report
     					"Case not supported" severity error;

@@ -67,6 +67,7 @@ signal sign_next : std_logic := '0';
 --signal start : std_logic := '0';
 --signal start_next : std_logic := '0';
 signal scratch, scratch_next : std_logic_vector(75 downto 0) := (others =>'0');
+signal parsBuff, parsBuff_next	: RESULT_LINE;
 
 begin
 
@@ -99,7 +100,7 @@ next_state : process(b2bcd_fsm_state, b2bcd_en, rb_busy, count)
 end process next_state;
 
 
-calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg)
+calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg, parsBuff)
 	variable scratch_tmp	: std_logic_vector(75 downto 0) := (others =>'0');
 	variable move_reg	: integer range 0 to SIZEI_BCD_CHARS := 0;
 	variable move_lock	: boolean:= false;
@@ -111,34 +112,38 @@ calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg)
 	--enable_next <= enable;
 	--sign_next <= sign;
 
-	parse_data(0) <= X"00";
-	parse_data(1) <= X"00";
-	parse_data(2) <= X"00";
-	parse_data(3) <= X"00";
-	parse_data(4) <= X"00";
-	parse_data(5) <= X"00";
-	parse_data(6) <= X"00";
-	parse_data(7) <= X"00";
-	parse_data(8) <= X"00";
-	parse_data(9) <= X"00";
-	parse_data(10) <= X"00";
+	--parse_data(0) <= X"00";
+	--parse_data(1) <= X"00";
+	--parse_data(2) <= X"00";
+	--parse_data(3) <= X"00";
+	--parse_data(4) <= X"00";
+	--parse_data(5) <= X"00";
+	--parse_data(6) <= X"00";
+	--parse_data(7) <= X"00";
+	--parse_data(8) <= X"00";
+	--parse_data(9) <= X"00";
+	--parse_data(10) <= X"00";
+
+	parse_data <= parsBuff;
+	parsBuff_next <= parsBuff;
 
 	scratch_next <= scratch;
 
 	
 	case b2bcd_fsm_state is
 	when IDLE0 =>
-		parse_data(0) <= X"00";
-		parse_data(1) <= X"00";
-		parse_data(2) <= X"00";
-		parse_data(3) <= X"00";
-		parse_data(4) <= X"00";
-		parse_data(5) <= X"00";
-		parse_data(6) <= X"00";
-		parse_data(7) <= X"00";
-		parse_data(8) <= X"00";
-		parse_data(9) <= X"00";
-		parse_data(10) <= X"00";
+		--parse_data(0) <= X"00";
+		--parse_data(1) <= X"00";
+		--parse_data(2) <= X"00";
+		--parse_data(3) <= X"00";
+		--parse_data(4) <= X"00";
+		--parse_data(5) <= X"00";
+		--parse_data(6) <= X"00";
+		--parse_data(7) <= X"00";
+		--parse_data(8) <= X"00";
+		--parse_data(9) <= X"00";
+		--parse_data(10) <= X"00";
+		parsBuff_next <= (others => x"00");
 	when WAIT_RB =>
 		null;
 	when INIT =>
@@ -208,77 +213,99 @@ calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg)
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(9+move_reg)(3 downto 0) <= scratch_tmp(71 downto 68);
-			parse_data(9+move_reg)(5 downto 4) <= "11"; 
+			parse_data(9+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(9+move_reg)(3 downto 0) <= scratch_tmp(71 downto 68);
+			parsBuff_next(9+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(67 downto 64))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(8+move_reg)(3 downto 0) <= scratch_tmp(67 downto 64);	
-			parse_data(8+move_reg)(5 downto 4) <= "11"; 
+			parse_data(8+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(8+move_reg)(3 downto 0) <= scratch_tmp(67 downto 64);	
+			parsBuff_next(8+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(63 downto 60))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(7+move_reg)(3 downto 0) <= scratch_tmp(63 downto 60);
-			parse_data(7+move_reg)(5 downto 4) <= "11"; 
+			parse_data(7+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(7+move_reg)(3 downto 0) <= scratch_tmp(63 downto 60);
+			parsBuff_next(7+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(59 downto 56))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(6+move_reg)(3 downto 0) <= scratch_tmp(59 downto 56);
-			parse_data(6+move_reg)(5 downto 4) <= "11"; 
+			parse_data(6+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(6+move_reg)(3 downto 0) <= scratch_tmp(59 downto 56);
+			parsBuff_next(6+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(55 downto 52))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(5+move_reg)(3 downto 0) <= scratch_tmp(55 downto 52);
-			parse_data(5+move_reg)(5 downto 4) <= "11"; 
+			parse_data(5+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(5+move_reg)(3 downto 0) <= scratch_tmp(55 downto 52);
+			parsBuff_next(5+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(51 downto 48))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(4+move_reg)(3 downto 0) <= scratch_tmp(51 downto 48);
-			parse_data(4+move_reg)(5 downto 4) <= "11"; 
+			parse_data(4+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(4+move_reg)(3 downto 0) <= scratch_tmp(51 downto 48);
+			parsBuff_next(4+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(47 downto 44))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(3+move_reg)(3 downto 0) <= scratch_tmp(47 downto 44);
-			parse_data(3+move_reg)(5 downto 4) <= "11"; 
+			parse_data(3+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(3+move_reg)(3 downto 0) <= scratch_tmp(47 downto 44);
+			parsBuff_next(3+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(43 downto 40))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(2+move_reg)(3 downto 0) <= scratch_tmp(43 downto 40);
-			parse_data(2+move_reg)(5 downto 4) <= "11"; 
+			parse_data(2+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(2+move_reg)(3 downto 0) <= scratch_tmp(43 downto 40);
+			parsBuff_next(2+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(39 downto 36))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(1+move_reg)(3 downto 0) <= scratch_tmp(39 downto 36);
-			parse_data(1+move_reg)(5 downto 4) <= "11"; 
+			parse_data(1+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(1+move_reg)(3 downto 0) <= scratch_tmp(39 downto 36);
+			parsBuff_next(1+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		if unsigned(scratch_tmp(35 downto 32))/=0 then move_lock:= true;
 			elsif not(move_lock) then move_reg:=move_reg+1; end if; 
 		if move_lock then 
 			parse_data(0+move_reg)(3 downto 0) <= scratch_tmp(35 downto 32);
-			parse_data(0+move_reg)(5 downto 4) <= "11"; 
+			parse_data(0+move_reg)(5 downto 4) <= "11";
+			parsBuff_next(0+move_reg)(3 downto 0) <= scratch_tmp(35 downto 32);
+			parsBuff_next(0+move_reg)(5 downto 4) <= "11"; 
 		end if;
 		
 		-- insert negative
 		if b2bcd_data_neg = '1' then
 			parse_data(10)<= X"2D";
+			parsBuff_next(10)<= X"2D";
 		else
 			parse_data(10)<= X"2B";
+			parsBuff_next(10)<= X"2B";
 		end if;
 	
 	when DONE=>
@@ -305,6 +332,7 @@ calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg)
 	--start <= start_next;
 	count <= count_next;
 	scratch <= scratch_next;
+	parsBuff <= parsBuff_next;
     end if;
  end process sync;
 
