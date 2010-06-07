@@ -230,6 +230,13 @@ begin
 				op_next <= DIVISION;
 				charUnit_char_type <= COP;
 				char_next <= COP;
+			when x"20" =>		-- Space
+				charUnit_digit <= 0;
+				digit_next <= 0;
+				charUnit_op <= NOP;
+				op_next <= NOP;
+				charUnit_char_type <= CSPACE;
+				char_next <= CSPACE;
 			when others => null;
 		end case;
 		charPointer_next <= charPointer + 1;

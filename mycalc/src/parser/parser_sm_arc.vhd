@@ -14,7 +14,7 @@ signal global_digit_neg_next, global_digit_neg:	STD_LOGIC;
 signal intern_b2bcd_data_neg, intern_b2bcd_data_neg_next: boolean:= false;
   
 type PARSER_FSM_STATE_TYPE is
-	(IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, CHAR_GETNEXT, PARSE_ERROR, OP, OP_JMP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, PRE_SAVE_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
+	(IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, CHAR_GETNEXT, EXT_CHAR, PARSE_ERROR, OP, OP_JMP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, PRE_SAVE_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
 signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
 type PARSER_CHAR_STATE_TYPE is
@@ -23,13 +23,12 @@ signal char_state, char_state_next: PARSER_CHAR_STATE_TYPE;
   
 type PARSER_INTERNAL_STATE_TYPE is 
 	(RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
-signal parser_internal_status, parser_internal_status_next: PARSER_INTERNAL_STATE_TYPE;
-  
+signal output_internal_status, output_internal_status_next: PARSER_INTERNAL_STATE_TYPE;
+signal parse_state_var, parse_state_var_next			: parser_status_TYPE := PRESET;
   
 signal charUnit_en_var, charUnit_en_var_next, charUnit_get_next_var, charUnit_get_next_var_next: STD_LOGIC :='0';
 signal operators_serial, operators_serial_next		: INTEGER := 0;
 signal intern_buff_stage_pos, intern_buff_stage_pos_next: STAGE_POS_TYPE;
-signal pars_state, pars_state_next			: parser_status_TYPE := PRESET;
 signal calc_buff, calc_buff_next			: calc_buffs_TYPE;
 signal op_buff, op_buff_next				: alu_ops_buff_TYPE;
 signal operator, operator_next				: alu_operator_TYPE;
@@ -37,10 +36,11 @@ signal data_neg, data_neg_next				: std_logic;
 signal b2_data, b2_data_next				: CALCSIGNED;
 signal calc_data_var, calc_data_var_next, calc_data2_var, calc_data2_var_next: CALCSIGNED;
 signal intern_do_calc_stage, intern_do_calc_stage_next	: STAGE_POS_TYPE;
+signal space_after_digit, space_after_digit_next	: BOOLEAN;
 
 BEGIN
 
-next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy, calc_status, charUnit_lastChar_type, charUnit_char_type, char_firstOne, charUnit_op,  global_digit_neg, intern_b2bcd_data_neg)
+next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, output_internal_status, b2bcd_data_rdy, calc_status, charUnit_lastChar_type, charUnit_char_type, char_firstOne, charUnit_op,  global_digit_neg, intern_b2bcd_data_neg)
 begin
 	parse_fsm_state_next <= parse_fsm_state;
     
@@ -52,10 +52,11 @@ begin
 		end if;
 	when PARSE_INIT =>
 		char_firstOne_next	<= '1';
-		if parser_internal_status = RUNNING then
+		if output_internal_status = RUNNING then
 			parse_fsm_state_next <= CHAR_GETNEXT;
 		end if;
 	when DIGIT =>
+		char_firstOne_next <= '0';
 		if char_state = ANALYZE_NEXT then
 			parse_fsm_state_next <= CHAR_GETNEXT;
 		elsif char_state = CALC_DIGIT then
@@ -64,7 +65,9 @@ begin
 			end if;
 		end if;
 	when DIGIT_CALC_STAGE1 =>
-		if calc_finished = '1' then
+		if output_internal_status = INVALID_OP_SEQUENCE then
+			parse_fsm_state_next   <= PARSE_ERROR;  --E: Digit after SPACE
+		elsif calc_finished = '1' then
 			-- Error Handling
 			if calc_status /= GOOD then
 				parse_fsm_state_next <= PARSE_ERROR;
@@ -89,40 +92,31 @@ begin
 		parse_fsm_state_next <= CHAR_GETNEXT;
 	when CHAR_GETNEXT =>
 		if charUnit_next_valid = '1' then 
-				--Error handling beginnt
-			if (charUnit_lastChar_type=COP and charUnit_char_type= CEOL) then
-				parse_fsm_state_next <= PARSE_ERROR; --E: EOL after operator
-			else 	
-				char_firstOne_next <= '0';
-				case charUnit_char_type is
-					when CDIGIT=>  
-						parse_fsm_state_next<= DIGIT;
-					when COP =>    parse_fsm_state_next<= OP;
-					when CEOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
-					when others => assert false report "NEXTDIGIT TYPE not supported" severity error;
-				end case;
-			end if; --Error if end
+			case charUnit_char_type is
+				when CDIGIT=>  
+					parse_fsm_state_next<= DIGIT;
+				when COP =>    parse_fsm_state_next<= OP;
+				when CEOL =>   parse_fsm_state_next<= OP;  --STATE that processes EOL handling
+				when CSPACE => parse_fsm_state_next<= EXT_CHAR;
+				when others => assert false report "NEXTDIGIT TYPE not supported" severity error;
+			end case;
 		end if;
+	when EXT_CHAR =>
+		parse_fsm_state_next<= OP_JMP;
 	when OP =>		
-	      --Error Handling
-		if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
-			parse_fsm_state_next <= PARSE_ERROR; --E: first char is not digit and no minus
-			assert false report "OP Error Handling: first char is not digit and no minus" severity warning;
-		elsif (charUnit_lastChar_type=COP and charUnit_op/= SUBTRAKTION) then
-			parse_fsm_state_next   <= PARSE_ERROR; --E: Second op in series isn't a minus
-			assert false report "OP Error Handling: Second op in series isn't a minus" severity warning;
-		elsif parser_internal_status = TOO_MUCH_OPS then
-			parse_fsm_state_next   <= PARSE_ERROR;
-			assert false report "OP Error Handling: too much ops" severity warning;
-		elsif parser_internal_status = INVALID_OP_SEQUENCE then
-			parse_fsm_state_next   <= PARSE_ERROR;
-			assert false report "OP Error Handling: invalid op sequence" severity warning;
-		else
-			parse_fsm_state_next<= OP_JMP;
-		end if;
+		char_firstOne_next <= '0'; --DONT MOVE THIS to char_getnext it's needed in the OP descision logic
+		parse_fsm_state_next<= OP_JMP;
     	when OP_JMP =>
-		--Process Handling
-		if char_state = ANALYZE_NEXT then
+    		if output_internal_status = TOO_MUCH_OPS then
+			parse_fsm_state_next   <= PARSE_ERROR;
+			assert false report "OP Error Handling: too much ops" severity note;
+		elsif output_internal_status = INVALID_OP_SEQUENCE then
+			parse_fsm_state_next   <= PARSE_ERROR;
+			assert false report "OP Error Handling: invalid op sequence" severity note;
+-- 		else
+-- 			parse_fsm_state_next<= OP_JMP;
+ 		--Process Handling
+		elsif char_state = ANALYZE_NEXT then
 			if charUnit_next_valid = '0' then --warte bis charUnit disabeled
 				parse_fsm_state_next <= CHAR_GETNEXT;
 			end if;
@@ -216,13 +210,14 @@ end process next_state;
   
   
   
- output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, parser_internal_status, operators_serial, charUnit_get_next_var, charUnit_en_var, intern_buff_stage_pos, calc_status, char_state, pars_state, calc_buff, op_buff, operator, data_neg, intern_b2bcd_data_neg, b2_data, calc_data_var, calc_data2_var, intern_do_calc_stage)
+ output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, output_internal_status, operators_serial, charUnit_get_next_var, charUnit_en_var, intern_buff_stage_pos, calc_status, char_state, parse_state_var, calc_buff, op_buff, operator, data_neg, intern_b2bcd_data_neg, b2_data, calc_data_var, calc_data2_var, intern_do_calc_stage, char_firstOne, space_after_digit, charUnit_lastChar_type)
 	--variable calc_buff: calc_buffs_TYPE; --Stage BUFFER
 	--variable op_buff:		alu_ops_buff_TYPE;
 	
-	variable calc_stage:	INTEGER := 0;
+	variable calc_stage:	INTEGER := 0; --deprecated
   begin
   	
+  	space_after_digit_next <= space_after_digit;
   	intern_do_calc_stage_next<=  intern_do_calc_stage;
   	intern_buff_stage_pos_next<= intern_buff_stage_pos; 
   	operators_serial_next<= operators_serial; 
@@ -233,8 +228,8 @@ end process next_state;
 	calc_data_var_next<= calc_data_var;
 	calc_data2_var_next<=calc_data2_var;
 	char_state_next <= char_state;
-	pars_state_next <= pars_state;
-	parser_internal_status_next <= parser_internal_status;
+	parse_state_var_next <= parse_state_var;
+	output_internal_status_next <= output_internal_status;
 	calc_buff_next <= calc_buff;
 	op_buff_next <= op_buff;
 	operator_next <= operator;
@@ -247,12 +242,11 @@ end process next_state;
 	calc_start <= '0';
 	parse_new_data <= '0';
 	b2bcd_en<= '0';
-	parse_state <= pars_state;
 	calc_operator <= operator;
 	b2bcd_data_neg <= data_neg;
 	b2bcd_data <= b2_data;
     case parse_fsm_state is
-      when IDLE0 =>
+	when IDLE0 =>
 		-- RESET STATE
 		charUnit_en_var_next <='0'; --Disable next digit unit
 		charUnit_get_next_var_next <='0';
@@ -263,13 +257,13 @@ end process next_state;
 		global_digit_neg_next <='0';
 		
 		char_state_next		<= IDLE0;
-		parser_internal_status_next <= RESET;
-		pars_state_next <= PRESET;
-		parse_state <= PRESET;
+		output_internal_status_next <= RESET;
+		parse_state_var_next <= PRESET;
 		parse_new_data <= '0';
 		
 		b2bcd_en<= '0';
-      when PARSE_INIT =>
+		space_after_digit_next <= false;
+	when PARSE_INIT =>
 		-- PARSER INIT
 		charUnit_en_var_next	<= '1' ;
 		for i in (STAGES_TOP-1) downto 0 loop
@@ -278,10 +272,13 @@ end process next_state;
 		end loop;
 		
 		
-		parser_internal_status_next <= RUNNING;
+		output_internal_status_next <= RUNNING;
 		char_state_next		<= ANALYZE_NEXT;
-      when DIGIT =>
+	when DIGIT =>
 		charUnit_get_next_var_next <= '0';
+		if space_after_digit then
+			output_internal_status_next <= INVALID_OP_SEQUENCE; --E: first OP isn't a minus
+		end if;
 		
 		if operators_serial>0 then --reset serial operators
 			operators_serial_next<=1;
@@ -306,39 +303,59 @@ end process next_state;
 		calc_start <= '0';
 	  	calc_buff_next(intern_buff_stage_pos) <= calc_result;
 	when CHAR_GETNEXT =>
-		-- --Moved to next_state logic
-		--if parse_fsm_state'LAST_ACTIVE /= PARSE_INIT then
-		--	  char_firstOne_next	<= '0';
-		--end if;
 		charUnit_get_next_var_next <= '1';
 		char_state_next <= PROCESS_NEXT;
+		
+ 	when EXT_CHAR =>
+ 		charUnit_get_next_var_next <= '0';
+ 		
+ 		char_state_next <= ANALYZE_NEXT;
+ 		if (char_firstOne='0' and charUnit_lastChar_type= CDIGIT) then
+			space_after_digit_next<= True;
+		end if;
 	when OP =>
 		-----------------------------------------------------------------
-		----- When to calc decision logic
+		----- WHEN TO CALC DECISION LOGIC
 		-- increment buff_stage whenever next stage will be a CALC stage
 		-----------------------------------------------------------------
-		charUnit_get_next_var_next <= '0'; 
+		charUnit_get_next_var_next <= '0';
+		space_after_digit_next<= False;
 		
-		
-		if charUnit_char_type= CEOL then
-			intern_do_calc_stage_next	<= 1;
+		if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
+			output_internal_status_next <= INVALID_OP_SEQUENCE; --E: first OP isn't a minus
+		elsif charUnit_char_type= CEOL then
+			if charUnit_lastChar_type= COP then
+				output_internal_status_next <= INVALID_OP_SEQUENCE; --E: EOL after an operator
+			end if;
+			
 			char_state_next 		<= CALC_THIS;
+			
+			intern_do_calc_stage_next	<= 1;
 			intern_buff_stage_pos_next	<= intern_buff_stage_pos+1;
 		elsif (operators_serial>=2) then
 			----------------------------------------------
 			-- Handling of two or more operators in series
 			----------------------------------------------
+			char_state_next <= ANALYZE_NEXT;
+			
 			if charUnit_op=SUBTRAKTION then
-				global_digit_neg_next<= not(global_digit_neg);	--invert global_digit_neg if it's second op in series
+				global_digit_neg_next<= not(global_digit_neg);	--E: invert global_digit_neg if it's second op in series
 			else
-				parser_internal_status_next <= INVALID_OP_SEQUENCE; --second op isn't a minus
+				output_internal_status_next <= INVALID_OP_SEQUENCE; --E: second op in series isn't a minus
 				--double checked in next_state logic @ OP
 			end if;
 			if operators_serial>2 then
-				parser_internal_status_next <= TOO_MUCH_OPS; -- More than two ops in a row
+				output_internal_status_next <= TOO_MUCH_OPS; -- E: More than two ops in a row
 			end if;
-			char_state_next <= ANALYZE_NEXT;
+			
 		else
+			----------------------------------------------
+			-- NORMAL calculation handling
+			----------------------------------------------
+			operators_serial_next<= operators_serial+1;
+			op_buff_next(intern_buff_stage_pos) <= charUnit_op;
+			intern_buff_stage_pos_next <= intern_buff_stage_pos+1;
+			
 			case intern_buff_stage_pos is
 				when 0=> 
 					char_state_next <= ANALYZE_NEXT;
@@ -366,10 +383,6 @@ end process next_state;
 					assert false report "intern_buff_stage_pos- State not supported" severity error;
 					--coverage on
 			end case;
-			op_buff_next(intern_buff_stage_pos) <= charUnit_op;
-			operators_serial_next<= operators_serial+1;
-			intern_buff_stage_pos_next <= intern_buff_stage_pos+1;
-			
 		end if;
 	when OP_JMP =>
 	  	if char_state = CALC_THIS then
@@ -393,21 +406,21 @@ end process next_state;
 		calc_start <='0';
 		calc_buff_next(intern_buff_stage_pos) <= calc_result;
 	when CALC =>
-		if intern_buff_stage_pos >=1 then --EOL Handling
-			--intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
+		if intern_buff_stage_pos >=1 then
 			-- give data to ALU
 			calc_data_var_next <=  calc_buff(intern_buff_stage_pos-1);
 			calc_data2_var_next <= calc_buff(intern_buff_stage_pos);
 			calc_operator <= op_buff(intern_buff_stage_pos-1);
 			operator_next <= op_buff(intern_buff_stage_pos-1);
 		else
-			-- give data to ALU
-			calc_data_var_next <=  	calc_buff(intern_buff_stage_pos-1);
-			calc_data2_var_next <= 	calc_buff(intern_buff_stage_pos);
-			calc_operator <= op_buff(intern_buff_stage_pos-1);
-			operator_next <= op_buff(intern_buff_stage_pos-1);
-			assert charUnit_char_type= CEOL
-				report "BUFF stage invalid" severity error;
+			--------------------------------
+			-- digits entered without any op
+			--------------------------------
+			intern_buff_stage_pos_next <= 1;
+			calc_data_var_next <=  	calc_buff(intern_buff_stage_pos);
+			calc_operator <= NOP;
+			operator_next <= NOP;
+			assert charUnit_char_type= CEOL report "BUFF stage invalid" severity error;
 		end if;
 
 		assert calc_stage<2
@@ -435,8 +448,7 @@ end process next_state;
 			intern_buff_stage_pos_next <= intern_buff_stage_pos-1;
 		end if;		
 	when PRE_PREPARE_RESULT =>
-		pars_state_next <= PGOOD;
-		parse_state <= PGOOD;
+		parse_state_var_next <= PGOOD;
 		if calc_buff(intern_buff_stage_pos-1)< to_signed(0, SIZEI) then
 			--set Flag and Prepare inverted Result if result negative
 			b2bcd_data_neg<= '1';
@@ -467,27 +479,26 @@ end process next_state;
 		b2bcd_en<= '1';
 	
 	when PARSE_ERROR =>
-		--convert to
+		-----------------------------------------------------------------------------
+		--Error convertion to
 		--(PRESET, PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
-		if calc_status/=GOOD then --(GOOD, RESET, DIV_ZERO, OVERFLOW)
+		-----------------------------------------------------------------------------
+		calc_start <= '0';
+		if (calc_status/=GOOD and calc_status/=RESET) then --(GOOD, RESET, DIV_ZERO, OVERFLOW)
 			case calc_status is
 				when DIV_ZERO=>
-					pars_state_next <= PDIV_ZERO;
-					parse_state <= PDIV_ZERO;
+					parse_state_var_next <= PDIV_ZERO;
 				when OVERFLOW=>
-					pars_state_next <= POVERFLOW;
-					parse_state <= POVERFLOW;
-				when others=> assert false report "calc_status error state- not supported" severity error;
+					parse_state_var_next <= POVERFLOW;
+				when others=> report "calc_status error state- not supported" severity error;
 			end case;
-		elsif parser_internal_status/=GOOD then --(RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
-			case parser_internal_status is
+		elsif (output_internal_status/=GOOD and output_internal_status/=RUNNING) then --(RESET, RUNNING, GOOD, TOO_MUCH_OPS, INVALID_OP_SEQUENCE);
+			case output_internal_status is
 				when TOO_MUCH_OPS =>
-					pars_state_next <= PTOO_MUCH_OPS;
-					parse_state <= PTOO_MUCH_OPS;
+					parse_state_var_next <= PTOO_MUCH_OPS;
 				when INVALID_OP_SEQUENCE =>
-					pars_state_next <= PINVALID_OP_SEQUENCE;
-					parse_state <= PINVALID_OP_SEQUENCE;
-				when others=> assert false report "parser_internal_status error state- not supported" severity error;
+					parse_state_var_next <= PINVALID_OP_SEQUENCE;
+				when others=> report "output_internal_status error state- not supported" severity error;
 			end case;
 		else
 			assert false report "PARSE Error CASE - not supported" severity error;
@@ -508,7 +519,6 @@ end process next_state;
     elsif rising_edge(sys_clk) then
       parse_fsm_state <= parse_fsm_state_next;
       
-      
 	intern_buff_stage_pos<= intern_buff_stage_pos_next;
 	operators_serial<= operators_serial_next;
 	charUnit_get_next<= charUnit_get_next_var_next;
@@ -518,14 +528,16 @@ end process next_state;
 	global_digit_neg<= global_digit_neg_next;
 	char_firstOne<= char_firstOne_next;
 	
+	space_after_digit <= space_after_digit_next;
 	intern_do_calc_stage <= intern_do_calc_stage_next;
 	calc_data 	<= calc_data_var_next;
 	calc_data_var	<= calc_data_var_next;
 	calc_data2 	<= calc_data2_var_next;
 	calc_data2_var	<= calc_data2_var_next;
 	char_state <= char_state_next;
-	pars_state <= pars_state_next;
-	parser_internal_status <= parser_internal_status_next;
+	parse_state 	<= parse_state_var_next;
+	parse_state_var	<= parse_state_var_next;
+	output_internal_status <= output_internal_status_next;
 	calc_buff <= calc_buff_next;
 	op_buff <= op_buff_next;
 	operator <= operator_next;

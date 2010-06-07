@@ -127,6 +127,7 @@ begin --behave
 	rb_read_data(13) <= x"31";
 	rb_read_data(14) <= x"31";
 	rb_read_data(15) <= x"00"; --EOF
+	
 	--test input digitUnit
 	--##END RESET##
 	wait for 100 ns;
@@ -134,24 +135,38 @@ begin --behave
     -- BEGIN TESTS
     	
     	rb_busy<= '1';
-	wait for 10 us;
-	
+	wait for 500 ns;
 	rb_read_data_rdy<='1';
-	wait for 5 us;
 	
---     wait for 500 ns;
---     calc_data <=  to_signed(-13, SIZEI); --Integer to Signed
---     calc_data2 <= to_signed(11, SIZEI);
---     calc_operator <= MULTIPLIKATION;
---     wait for 10 ns;
---     calc_start <= '1';
---     wait for 2 us;
---     -- coverage off
---     assert calc_result= to_signed(-143, SIZEI)
--- 		report "result failed" 	severity failure;
---     -- coverage on
---     calc_start <= '0';
-
+	
+	
+	wait for 100 us;
+	ps_start<='0'; 
+	rb_read_data(0) <= x"2B"; --+
+	rb_read_data(1) <= x"31";
+	rb_read_data(4) <= x"00"; --EOL
+	wait for 500 ns;
+	ps_start <= '1';
+	
+	wait for 100 us;
+	ps_start<='0'; 
+	rb_read_data(0) <= x"31";
+	rb_read_data(1) <= x"33";
+	rb_read_data(2) <= x"00";
+	wait for 500 ns;
+	ps_start <= '1';
+	
+	---space test
+	wait for 100 us;
+	ps_start<='0'; 
+	rb_read_data(0) <= x"20"; --Space
+	rb_read_data(1) <= x"33";
+	rb_read_data(2) <= x"2B"; --+
+	rb_read_data(3) <= x"20"; --Space
+	rb_read_data(4) <= x"35";
+	rb_read_data(5) <= x"00"; --EOL
+	wait for 500 ns;
+	ps_start <= '1';
 	
 	
     wait for 200 us;
