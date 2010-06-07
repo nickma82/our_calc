@@ -14,7 +14,7 @@ signal global_digit_neg_next, global_digit_neg:	STD_LOGIC;
 signal intern_b2bcd_data_neg, intern_b2bcd_data_neg_next: boolean:= false;
   
 type PARSER_FSM_STATE_TYPE is
-	(IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, DIGIT_GETNEXT, PARSE_ERROR, OP, OP_JMP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
+	(IDLE0, PARSE_INIT, DIGIT, DIGIT_CALC_STAGE1, DIGIT_PREPARE_STAGE2, DIGIT_CALC_STAGE2, DIGIT_SAVE_CALCED, CHAR_GETNEXT, PARSE_ERROR, OP, OP_JMP, PRE_INVERT_SECOND_DATA, INVERT_SECOND_DATA, WAIT_INVERTATION_SECOND_DATA, HANDLE_INVERTATION, CALC, WAIT_CALC_RESULT, PRE_SAVE_CALC_RESULT, SAVE_CALC_RESULT, PRE_PREPARE_RESULT, PREPARE_RESULT, WAITFOR_INVERTED_RESULT, PUSH_INVERTED_RESULT, WAIT_RESULT, RESULT_STABLE);
 signal parse_fsm_state, parse_fsm_state_next : PARSER_FSM_STATE_TYPE;
   
 type PARSER_CHAR_STATE_TYPE is
@@ -32,21 +32,19 @@ signal intern_buff_stage_pos, intern_buff_stage_pos_next: STAGE_POS_TYPE;
 signal pars_state, pars_state_next			: parser_status_TYPE := PRESET;
 signal calc_buff, calc_buff_next			: calc_buffs_TYPE;
 signal op_buff, op_buff_next				: alu_ops_buff_TYPE;
-signal data1, data1_next				: CALCSIGNED;
-signal data2, data2_next				: CALCSIGNED;
 signal operator, operator_next				: alu_operator_TYPE;
 signal data_neg, data_neg_next				: std_logic;
 signal b2_data, b2_data_next				: CALCSIGNED;
+signal calc_data_var, calc_data_var_next, calc_data2_var, calc_data2_var_next: CALCSIGNED;
+signal intern_do_calc_stage, intern_do_calc_stage_next	: STAGE_POS_TYPE;
 
 BEGIN
 
 next_state : process(parse_fsm_state, parse_start, charUnit_next_valid, char_state, calc_finished, parser_internal_status, b2bcd_data_rdy, calc_status, charUnit_lastChar_type, charUnit_char_type, char_firstOne, charUnit_op,  global_digit_neg, intern_b2bcd_data_neg)
-  -- charUnit_lastChar_type, charUnit_char_type: (RESET, DIGIT, OP, EOL)
-
 begin
 	parse_fsm_state_next <= parse_fsm_state;
     
-	char_firstOne_next <= char_firstOne;
+	char_firstOne_next <= char_firstOne;	
 	case parse_fsm_state is
 	when IDLE0 =>
 		if parse_start = '1' then
@@ -55,11 +53,11 @@ begin
 	when PARSE_INIT =>
 		char_firstOne_next	<= '1';
 		if parser_internal_status = RUNNING then
-			parse_fsm_state_next <= DIGIT_GETNEXT;
+			parse_fsm_state_next <= CHAR_GETNEXT;
 		end if;
 	when DIGIT =>
 		if char_state = ANALYZE_NEXT then
-			parse_fsm_state_next <= DIGIT_GETNEXT;
+			parse_fsm_state_next <= CHAR_GETNEXT;
 		elsif char_state = CALC_DIGIT then
 			if calc_finished = '0' then 
 				parse_fsm_state_next <= DIGIT_CALC_STAGE1;
@@ -88,8 +86,8 @@ begin
 			end if;
 		end if;
 	when DIGIT_SAVE_CALCED =>
-		parse_fsm_state_next <= DIGIT_GETNEXT;
-	when DIGIT_GETNEXT =>
+		parse_fsm_state_next <= CHAR_GETNEXT;
+	when CHAR_GETNEXT =>
 		if charUnit_next_valid = '1' then 
 				--Error handling beginnt
 			if (charUnit_lastChar_type=COP and charUnit_char_type= CEOL) then
@@ -122,12 +120,11 @@ begin
 		else
 			parse_fsm_state_next<= OP_JMP;
 		end if;
-    	
     	when OP_JMP =>
 		--Process Handling
 		if char_state = ANALYZE_NEXT then
 			if charUnit_next_valid = '0' then --warte bis charUnit disabeled
-			parse_fsm_state_next <= DIGIT_GETNEXT;
+				parse_fsm_state_next <= CHAR_GETNEXT;
 			end if;
 		elsif char_state = CALC_THIS then
 			if global_digit_neg= '1' then
@@ -137,7 +134,6 @@ begin
 				parse_fsm_state_next <= CALC;
 			end if;
 		end if;
-    	
 	when PRE_INVERT_SECOND_DATA=>
     		parse_fsm_state_next <= INVERT_SECOND_DATA;
     	
@@ -167,20 +163,22 @@ begin
 			if calc_status /= GOOD then
 				parse_fsm_state_next <= PARSE_ERROR;
 			else
-				parse_fsm_state_next <= SAVE_CALC_RESULT;
+				parse_fsm_state_next <= PRE_SAVE_CALC_RESULT;
 			end if;
 		end if;
 		--TODO checken
 		--if calc_operator = NOP then
 		--	parse_fsm_state_next <= PRE_PREPARE_RESULT;
 		--end if;
+	when PRE_SAVE_CALC_RESULT =>
+		parse_fsm_state_next <= SAVE_CALC_RESULT;
 	when SAVE_CALC_RESULT =>
 		if char_state = CALC_THIS then 		--order essential
 			parse_fsm_state_next <= CALC;	--order essential
 		elsif charUnit_char_type= CEOL then
 			parse_fsm_state_next <= PRE_PREPARE_RESULT;
 		elsif char_state = ANALYZE_NEXT then
-			parse_fsm_state_next <= DIGIT_GETNEXT;
+			parse_fsm_state_next <= CHAR_GETNEXT;
 		end if;
 	when PRE_PREPARE_RESULT =>
 		parse_fsm_state_next<= PREPARE_RESULT;
@@ -218,53 +216,50 @@ end process next_state;
   
   
   
- output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, parser_internal_status, operators_serial, charUnit_get_next_var, charUnit_en_var, intern_buff_stage_pos, calc_status, char_state, pars_state, calc_buff, op_buff, data1, data2, operator, data_neg, intern_b2bcd_data_neg, b2_data)
+ output : process(parse_fsm_state, calc_result, charUnit_digit, charUnit_char_type, charUnit_op, global_digit_neg, parser_internal_status, operators_serial, charUnit_get_next_var, charUnit_en_var, intern_buff_stage_pos, calc_status, char_state, pars_state, calc_buff, op_buff, operator, data_neg, intern_b2bcd_data_neg, b2_data, calc_data_var, calc_data2_var, intern_do_calc_stage)
 	--variable calc_buff: calc_buffs_TYPE; --Stage BUFFER
 	--variable op_buff:		alu_ops_buff_TYPE;
 	
 	variable calc_stage:	INTEGER := 0;
-	variable intern_do_calc_stage: STAGE_POS_TYPE;
   begin
   	
-  	intern_do_calc_stage:= (STAGES_TOP-1);
+  	intern_do_calc_stage_next<=  intern_do_calc_stage;
   	intern_buff_stage_pos_next<= intern_buff_stage_pos; 
   	operators_serial_next<= operators_serial; 
   	charUnit_get_next_var_next<= charUnit_get_next_var; 
   	charUnit_en_var_next<= charUnit_en_var; 
   	global_digit_neg_next<= global_digit_neg;
-
+	
+	calc_data_var_next<= calc_data_var;
+	calc_data2_var_next<=calc_data2_var;
 	char_state_next <= char_state;
 	pars_state_next <= pars_state;
 	parser_internal_status_next <= parser_internal_status;
 	calc_buff_next <= calc_buff;
 	op_buff_next <= op_buff;
-	data1_next <= data1;
-	data2_next <= data2;
 	operator_next <= operator;
 	data_neg_next <= data_neg;
 	intern_b2bcd_data_neg_next <= intern_b2bcd_data_neg;
 	b2_data_next <= b2_data;
+	
 	
 	--Signale der Entity setzen
 	calc_start <= '0';
 	parse_new_data <= '0';
 	b2bcd_en<= '0';
 	parse_state <= pars_state;
-	calc_data <= data1;
-	calc_data2 <= data2;
 	calc_operator <= operator;
 	b2bcd_data_neg <= data_neg;
 	b2bcd_data <= b2_data;
-
     case parse_fsm_state is
       when IDLE0 =>
 		-- RESET STATE
 		charUnit_en_var_next <='0'; --Disable next digit unit
 		charUnit_get_next_var_next <='0';
 			
+		intern_buff_stage_pos_next <= 0;
 		calc_stage	   	 := 0;
 		operators_serial_next <= 1;
-		intern_buff_stage_pos_next <= 0;
 		global_digit_neg_next <='0';
 		
 		char_state_next		<= IDLE0;
@@ -274,8 +269,6 @@ end process next_state;
 		parse_new_data <= '0';
 		
 		b2bcd_en<= '0';
-		
-      
       when PARSE_INIT =>
 		-- PARSER INIT
 		charUnit_en_var_next	<= '1' ;
@@ -284,64 +277,53 @@ end process next_state;
 			op_buff_next(i)	<= NOP;
 		end loop;
 		
+		
 		parser_internal_status_next <= RUNNING;
 		char_state_next		<= ANALYZE_NEXT;
-		
-	  
-	  
       when DIGIT =>
 		charUnit_get_next_var_next <= '0';
 		
 		if operators_serial>0 then --reset serial operators
 			operators_serial_next<=1;
 		end if;
-		calc_data <= calc_buff(intern_buff_stage_pos);
-		data1_next <= calc_buff(intern_buff_stage_pos);
-		calc_data2<= to_signed(10, SIZEI);
-		data2_next <= to_signed(10, SIZEI);
+		calc_data_var_next <= calc_buff(intern_buff_stage_pos);
+		calc_data2_var_next<= to_signed(10, SIZEI);
 		calc_operator<= MULTIPLIKATION;
 		operator_next <= MULTIPLIKATION;
 		char_state_next <= CALC_DIGIT;
-		
-	 
 	when DIGIT_CALC_STAGE1 =>
 		calc_start <= '1';
-	
 	when DIGIT_PREPARE_STAGE2 =>
 		calc_start <= '0';
-		calc_data <= calc_result;
-		data1_next <= calc_result;
-		calc_data2<= to_signed(charUnit_digit, SIZEI);
-		data2_next <= to_signed(charUnit_digit, SIZEI);
+		calc_data_var_next <= calc_result;
+		calc_data2_var_next<= to_signed(charUnit_digit, SIZEI);
 		calc_operator<= ADDITION;
 		operator_next <= ADDITION;
 		char_state_next <= CALC_DIGIT;
-      
-
       	when DIGIT_CALC_STAGE2 =>
 		calc_start <= '1';
-		
 	when DIGIT_SAVE_CALCED =>
 		calc_start <= '0';
 	  	calc_buff_next(intern_buff_stage_pos) <= calc_result;
-      
-	when DIGIT_GETNEXT =>
+	when CHAR_GETNEXT =>
 		-- --Moved to next_state logic
 		--if parse_fsm_state'LAST_ACTIVE /= PARSE_INIT then
 		--	  char_firstOne_next	<= '0';
 		--end if;
 		charUnit_get_next_var_next <= '1';
 		char_state_next <= PROCESS_NEXT;
-		
-
 	when OP =>
-		---calc_buff(intern_buff_stage_pos);
+		-----------------------------------------------------------------
+		----- When to calc decision logic
+		-- increment buff_stage whenever next stage will be a CALC stage
+		-----------------------------------------------------------------
 		charUnit_get_next_var_next <= '0'; 
 		
 		
 		if charUnit_char_type= CEOL then
-			intern_do_calc_stage:= 	0;
-			char_state_next <= 	CALC_THIS;
+			intern_do_calc_stage_next	<= 1;
+			char_state_next 		<= CALC_THIS;
+			intern_buff_stage_pos_next	<= intern_buff_stage_pos+1;
 		elsif (operators_serial>=2) then
 			----------------------------------------------
 			-- Handling of two or more operators in series
@@ -357,29 +339,27 @@ end process next_state;
 			end if;
 			char_state_next <= ANALYZE_NEXT;
 		else
-			----------------------------------------------
-			-- When to calc decision logic
-			----------------------------------------------
 			case intern_buff_stage_pos is
-				when 0=> char_state_next <= ANALYZE_NEXT;
+				when 0=> 
+					char_state_next <= ANALYZE_NEXT;
 				when 1=>
 					if charUnit_op = ADDITION or charUnit_op = SUBTRAKTION then
 						char_state_next <= 	CALC_THIS;
-						intern_do_calc_stage:= 	1;
+						intern_do_calc_stage_next <= 	1;
 					else
 						char_state_next <= ANALYZE_NEXT;
-						intern_do_calc_stage:= (STAGES_TOP-1);
+						intern_do_calc_stage_next <= (STAGES_TOP-1);
 					end if;
 				when 2=>
 					if charUnit_op = ADDITION or charUnit_op = SUBTRAKTION then
 						char_state_next <= 	CALC_THIS;
-						intern_do_calc_stage:= 0;
+						intern_do_calc_stage_next <= 1;
 					elsif charUnit_op = MULTIPLIKATION or charUnit_op = DIVISION then
 						char_state_next <= 	CALC_THIS;
-						intern_do_calc_stage:= 1;
+						intern_do_calc_stage_next <= 2;
 					else
 						char_state_next <= ANALYZE_NEXT;
-						intern_do_calc_stage:= (STAGES_TOP-1);
+						intern_do_calc_stage_next <= (STAGES_TOP-1);
 					end if;
 				when others => 
 					--coverage off
@@ -389,83 +369,60 @@ end process next_state;
 			op_buff_next(intern_buff_stage_pos) <= charUnit_op;
 			operators_serial_next<= operators_serial+1;
 			intern_buff_stage_pos_next <= intern_buff_stage_pos+1;
+			
 		end if;
-			
-			
--- 		-- WHEN TO CALC decisions
--- 		char_state := 	CALC_THIS WHEN intern_buff_stage_pos=1 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  			CALC_THIS WHEN intern_buff_stage_pos=2 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  			CALC_THIS WHEN intern_buff_stage_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
--- 	  			ANALYZE_NEXT;
--- 	  	
--- 	  	-- CALC STAGE decisions
--- 	  	intern_do_calc_stage:= 	1 WHEN intern_buff_stage_pos=1 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  				0 WHEN intern_buff_stage_pos=2 AND charUnit_op = (ADDITION | SUBTRAKTION) ELSE
--- 	  				1 WHEN intern_buff_stage_pos=2 AND charUnit_op = (MULTIPLIKATION | DIVISION) ELSE
--- 	  				(STAGES_TOP-1);
-	  
 	when OP_JMP =>
-	  	null;
-	  
+	  	if char_state = CALC_THIS then
+			intern_buff_stage_pos_next <= intern_buff_stage_pos-1;
+		end if;
 	when PRE_INVERT_SECOND_DATA=>
-	  	intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
-	  
+	  	null;
 	when INVERT_SECOND_DATA=>
 		----------------------------------------------
 		-- Inverting of the second SIGNED
 		----------------------------------------------
-		
 		calc_start <= '0';
 		global_digit_neg_next<= '0';
-		calc_data <= calc_buff(intern_buff_stage_pos);
-		data1_next <= calc_buff(intern_buff_stage_pos);
-		calc_data2<= to_signed(-1, SIZEI);
-		data2_next <= to_signed(-1, SIZEI);
+		calc_data_var_next <= calc_buff(intern_buff_stage_pos);
+		calc_data2_var_next<= to_signed(-1, SIZEI);
 		calc_operator<= MULTIPLIKATION;
 		operator_next <= MULTIPLIKATION;
-		
 	when WAIT_INVERTATION_SECOND_DATA =>
 		calc_start <= '1';
-	  
 	when HANDLE_INVERTATION =>
 		calc_start <='0';
 		calc_buff_next(intern_buff_stage_pos) <= calc_result;
-		intern_buff_stage_pos_next<= intern_buff_stage_pos+1;
-			
-	  
 	when CALC =>
-		if intern_buff_stage_pos >1 then --EOL Handling
-			intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
+		if intern_buff_stage_pos >=1 then --EOL Handling
+			--intern_buff_stage_pos_next<= intern_buff_stage_pos-1;
 			-- give data to ALU
-			calc_data <=  calc_buff(intern_buff_stage_pos-1-1);
-			data1_next <= calc_buff(intern_buff_stage_pos-1-1);
-			calc_data2 <= calc_buff(intern_buff_stage_pos-1);
-			data2_next <= calc_buff(intern_buff_stage_pos-1);
-			calc_operator <= op_buff(intern_buff_stage_pos-1-1);
-			operator_next <= op_buff(intern_buff_stage_pos-1-1);
+			calc_data_var_next <=  calc_buff(intern_buff_stage_pos-1);
+			calc_data2_var_next <= calc_buff(intern_buff_stage_pos);
+			calc_operator <= op_buff(intern_buff_stage_pos-1);
+			operator_next <= op_buff(intern_buff_stage_pos-1);
 		else
 			-- give data to ALU
-			calc_data <=  	calc_buff(intern_buff_stage_pos-1);
-			data1_next <= calc_buff(intern_buff_stage_pos-1);
-			calc_data2 <= 	calc_buff(intern_buff_stage_pos);
-			data2_next <= calc_buff(intern_buff_stage_pos);
+			calc_data_var_next <=  	calc_buff(intern_buff_stage_pos-1);
+			calc_data2_var_next <= 	calc_buff(intern_buff_stage_pos);
 			calc_operator <= op_buff(intern_buff_stage_pos-1);
 			operator_next <= op_buff(intern_buff_stage_pos-1);
 			assert charUnit_char_type= CEOL
-				report "buff stage invalid" severity error;
+				report "BUFF stage invalid" severity error;
 		end if;
-		
-		
-		
+
 		assert calc_stage<2
 			--coverage off
-			report "calc stage size exceeded" severity error;
+			report "CALC stage size exceeded" severity error;
 			--coverage on
-	  
-	  
 	when WAIT_CALC_RESULT =>
 		calc_start <= '1';
-      
+	when PRE_SAVE_CALC_RESULT =>
+		--Another stage to calc?
+		if intern_do_calc_stage< intern_buff_stage_pos then
+			char_state_next <= 	CALC_THIS;
+		else
+			char_state_next <= ANALYZE_NEXT;
+		end if;
 	when SAVE_CALC_RESULT =>
 		calc_start <= '0';
 		
@@ -474,17 +431,9 @@ end process next_state;
 		calc_buff_next(intern_buff_stage_pos-1) <= calc_result;
 		op_buff_next(intern_buff_stage_pos-1) <= op_buff(intern_buff_stage_pos);
 		op_buff_next(intern_buff_stage_pos) <= NOP;
-		
-		--Another stage to calc?
-		if intern_do_calc_stage< intern_buff_stage_pos-1 then
-			char_state_next <= 	CALC_THIS;
-		else
-			char_state_next <= ANALYZE_NEXT;
-		end if;
-		
-		
-		
-		
+		if char_state = CALC_THIS then
+			intern_buff_stage_pos_next <= intern_buff_stage_pos-1;
+		end if;		
 	when PRE_PREPARE_RESULT =>
 		pars_state_next <= PGOOD;
 		parse_state <= PGOOD;
@@ -493,10 +442,8 @@ end process next_state;
 			b2bcd_data_neg<= '1';
 			data_neg_next <= '1';
 			intern_b2bcd_data_neg_next <= true;
-			calc_data <= calc_buff(intern_buff_stage_pos-1);
-			data1_next <= calc_buff(intern_buff_stage_pos-1);
-			calc_data2 <= to_signed(-1, SIZEI);
-			data2_next <= to_signed(-1, SIZEI);
+			calc_data_var_next <= calc_buff(intern_buff_stage_pos-1);
+			calc_data2_var_next <= to_signed(-1, SIZEI);
 			calc_operator <= MULTIPLIKATION;
 			operator_next <= MULTIPLIKATION;
 		else
@@ -509,8 +456,6 @@ end process next_state;
 	
 	when PREPARE_RESULT =>
 		null;
-		
-	
 	when WAITFOR_INVERTED_RESULT =>
 		calc_start <= '1';
 		
@@ -564,22 +509,25 @@ end process next_state;
       parse_fsm_state <= parse_fsm_state_next;
       
       
-      intern_buff_stage_pos<= intern_buff_stage_pos_next;
-      operators_serial<= operators_serial_next;
-      charUnit_get_next<= charUnit_get_next_var_next;
-      charUnit_get_next_var<= charUnit_get_next_var_next;
-      charUnit_en<= charUnit_en_var_next;
-      charUnit_en_var<= charUnit_en_var_next;
-      global_digit_neg<= global_digit_neg_next;
-      char_firstOne<= char_firstOne_next;
-
+	intern_buff_stage_pos<= intern_buff_stage_pos_next;
+	operators_serial<= operators_serial_next;
+	charUnit_get_next<= charUnit_get_next_var_next;
+	charUnit_get_next_var<= charUnit_get_next_var_next;
+	charUnit_en<= charUnit_en_var_next;
+	charUnit_en_var<= charUnit_en_var_next;
+	global_digit_neg<= global_digit_neg_next;
+	char_firstOne<= char_firstOne_next;
+	
+	intern_do_calc_stage <= intern_do_calc_stage_next;
+	calc_data 	<= calc_data_var_next;
+	calc_data_var	<= calc_data_var_next;
+	calc_data2 	<= calc_data2_var_next;
+	calc_data2_var	<= calc_data2_var_next;
 	char_state <= char_state_next;
 	pars_state <= pars_state_next;
 	parser_internal_status <= parser_internal_status_next;
 	calc_buff <= calc_buff_next;
 	op_buff <= op_buff_next;
-	data1 <= data1_next;
-	data2 <= data2_next;
 	operator <= operator_next;
 	data_neg <= data_neg_next;
 	intern_b2bcd_data_neg <= intern_b2bcd_data_neg_next;
