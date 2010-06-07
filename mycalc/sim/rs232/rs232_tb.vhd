@@ -65,21 +65,21 @@ begin
 	wait for 90 ns;
 
 	-- BEGIN TESTS
-	--Receive Byte
+	--Receive Byte - 01101000
 	wait for 10 us;
 	uart_rx <= '0';
 	wait for 8.68 us;
-	uart_rx <= '1';			--1 Bit
+	uart_rx <= '0';			--1 Bit
 	wait for 8.68 us;
 	uart_rx <= '0';			--2 Bit
 	wait for 8.68 us;
-	uart_rx <= '1';			--3 Bit
+	uart_rx <= '0';			--3 Bit
 	wait for 8.68 us;
-	uart_rx <= '0';			--4 Bit
+	uart_rx <= '1';			--4 Bit
 	wait for 8.68 us;
-	uart_rx <= '1';			--5 Bit
+	uart_rx <= '0';			--5 Bit
 	wait for 8.68 us;
-	uart_rx <= '0';			--6 Bit
+	uart_rx <= '1';			--6 Bit
 	wait for 8.68 us;
 	uart_rx <= '1';			--7 Bit
 	wait for 8.68 us;

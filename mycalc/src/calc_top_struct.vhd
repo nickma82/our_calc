@@ -44,8 +44,9 @@ architecture struct of calc_top is
 	--signal data : std_logic_vector (7 downto 0);
 
 	--VGA
-	signal vga_free:std_logic;
-	signal vga_clk:std_logic;
+	signal vga_free		: std_logic;
+	signal vga_clk		: std_logic;
+	signal sync_uart_rx	: std_logic;
 
 	--Input
 	signal ps2_new_data : std_logic := '0';
@@ -171,6 +172,21 @@ begin
 		g => g,
 		b => b
 	);
+
+	--Synchronizer
+	sync_inst : sync
+	generic map
+	(
+		SYNC_STAGES => 2,
+		RESET_VALUE => RES_N_DEFAULT_VALUE
+	)
+	port map
+	(
+		sys_clk => sys_clk,
+		sys_res_n => sys_res_n,
+		data_in => uart_rx,
+		data_out => sync_uart_rx
+	);
 	
 	--Input
 	input_inst : input_ent
@@ -238,7 +254,7 @@ begin
 		tx_data => tx_data,
 		rx_recv => rx_recv,
 		rx_data => rx_data,
-		uart_rx => uart_rx,
+		uart_rx => sync_uart_rx,
 		uart_tx => uart_tx
 	);
 

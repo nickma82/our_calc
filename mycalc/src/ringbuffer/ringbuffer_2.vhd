@@ -40,7 +40,7 @@ end entity ringbuffer2_ent;
 -- ARCHITECTURE
 architecture ringbuffer2_arc of ringbuffer2_ent is
 
-type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE, WRITE_RAM, READ_RAM, WAIT_RAM, PARS_REQ, PARS_RDY, WRITE_RESULT);
+type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE, WRITE_RAM, READ_RAM, WAIT_RAM, PARS_REQ, PARS_RDY, WRITE_RESULT, RESET_NEW_LINE);
 
 --signals
 signal ringbuffer_fsm_state, ringbuffer_fsm_state_next : RINGBUFFER_FSM_STATE_TYPE;
@@ -144,7 +144,11 @@ begin
 		when PARS_RDY =>
 			ringbuffer_fsm_state_next <= READY;
 		when NEW_LINE =>
-			ringbuffer_fsm_state_next <= READY;
+			ringbuffer_fsm_state_next <= RESET_NEW_LINE;
+		when RESET_NEW_LINE =>
+			if charPointer >= LINE_LENGTH - 1 then
+				ringbuffer_fsm_state_next <= READY;
+			end if;
 		when WRITE_RAM =>
 			ringbuffer_fsm_state_next <= READY;
 		when READ_RAM =>
@@ -228,7 +232,6 @@ begin
 		when NEW_LINE =>
 			rb_busy <= '0';
 			--Der Zeiger auf die Zeile wird um eins erhöht und auf Überlauf kontrolliert
-			--TODO Die neue Zeile muss gelöscht werden
 			if linePointer >= LINE_NUMB - 1 then
 				linePointer_next <= 0;
 			else
@@ -236,6 +239,16 @@ begin
 			end if;
 			--Der Char Zeiger wird auf 0 zurückgesetzt
 			charPointer_next <= 0;
+		when RESET_NEW_LINE =>
+			rb_busy <= '0';
+			if charPointer < LINE_LENGTH - 1 then
+				wr <= '1';
+				data_in <= x"00";
+				address <= charPointer+linePointer * LINE_LENGTH;
+				charPointer_next <= charPointer + 1;
+			else 
+				charPointer_next <= 0;
+			end if;
 		when WRITE_RAM =>
 			rb_busy <= '0';
 			if charPointer < LINE_LENGTH - 1 then
