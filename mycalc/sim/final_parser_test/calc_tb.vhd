@@ -150,9 +150,10 @@ begin --behave
 	
 	wait for 100 us;
 	ps_start<='0'; 
-	rb_read_data(0) <= x"31";
-	rb_read_data(1) <= x"33";
-	rb_read_data(2) <= x"00";
+	rb_read_data(0) <= x"33";
+	rb_read_data(1) <= x"2D";
+	rb_read_data(2) <= x"33";
+	rb_read_data(3) <= x"00";
 	wait for 500 ns;
 	ps_start <= '1';
 	

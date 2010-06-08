@@ -177,13 +177,13 @@ begin
 	when PRE_PREPARE_RESULT =>
 		parse_fsm_state_next<= PREPARE_RESULT;
 	when PREPARE_RESULT =>
-		if intern_b2bcd_data_neg then
-			if calc_finished = '0' then 
-				parse_fsm_state_next<= WAITFOR_INVERTED_RESULT;
-			end if;
-		else 
+-- 		if intern_b2bcd_data_neg then
+-- 			if calc_finished = '0' then 
+-- 				parse_fsm_state_next<= WAITFOR_INVERTED_RESULT;
+-- 			end if;
+-- 		else 
 			parse_fsm_state_next<= WAIT_RESULT;
-		end if;
+-- 		end if;
 	when WAITFOR_INVERTED_RESULT =>
 		if calc_finished = '1' then
 			parse_fsm_state_next<= PUSH_INVERTED_RESULT;

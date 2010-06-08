@@ -111,9 +111,9 @@ begin
 		end if;
 		
 		--Invertiere
-		--calc_data: SIGNED((SIZEI-1) downto 0);
 		if calc_data(calc_data'LENGTH-1)= '1' then
 			tmp_data1 := resize(calc_data, tmp_data1'LENGTH);
+			--to pos
 			div_number_var_next <= std_logic_vector(resize(not(calc_data), div_number_var_next'LENGTH) +1 );
 		else
 			div_number_var_next<= std_logic_vector(resize(calc_data, div_number_var_next'LENGTH) );
