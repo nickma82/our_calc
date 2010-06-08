@@ -60,7 +60,7 @@ vcom -work work calc_tb.vhd
 #coverage zeigt %des Codes der Simuliert ist
 # EIN START SIM cmd
 #vsim -coverage work.conf
-vsim -voptargs=+acc work.parser_tb
+vsim -coverage -voptargs=+acc work.parser_tb
 
 view -undock wave
 
