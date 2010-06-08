@@ -104,7 +104,7 @@ begin
 				state_after_wait_next <= NEW_LINE;
 				resultCounter_next <= 10;	
 				position_next <= "0000000";
-			elsif inp_del = '1' then 
+			elsif inp_del = '1' and position > 0 then 
 				output_fsm_state_next <= WAIT_STATE;
 				state_after_wait_next <= DELETE;
 			end if;
