@@ -121,12 +121,12 @@ begin
 				parse_fsm_state_next <= CHAR_GETNEXT;
 			end if;
 		elsif char_state = CALC_THIS then
-			if global_digit_neg= '1' then
-				--negative Handling
-				parse_fsm_state_next <= PRE_INVERT_SECOND_DATA;
-			else
+-- 			if global_digit_neg= '1' then
+-- 				--negative Handling
+-- 				parse_fsm_state_next <= INVERT_SECOND_DATA;
+-- 			else
 				parse_fsm_state_next <= CALC;
-			end if;
+-- 			end if;
 		end if;
 	when PRE_INVERT_SECOND_DATA=>
     		parse_fsm_state_next <= INVERT_SECOND_DATA;
@@ -292,10 +292,16 @@ end process next_state;
 		calc_start <= '1';
 	when DIGIT_PREPARE_STAGE2 =>
 		calc_start <= '0';
+		if global_digit_neg='1' then
+			--- subtract result if the char should be negative
+			calc_operator<= SUBTRAKTION;
+			operator_next <= SUBTRAKTION;
+		else
+			calc_operator<= ADDITION;
+			operator_next <= ADDITION;
+		end if;
 		calc_data_var_next <= calc_result;
 		calc_data2_var_next<= to_signed(charUnit_digit, SIZEI);
-		calc_operator<= ADDITION;
-		operator_next <= ADDITION;
 		char_state_next <= CALC_DIGIT;
       	when DIGIT_CALC_STAGE2 =>
 		calc_start <= '1';
@@ -321,8 +327,18 @@ end process next_state;
 		charUnit_get_next_var_next <= '0';
 		space_after_digit_next<= False;
 		
-		if (char_firstOne='1' and charUnit_op/= SUBTRAKTION) then
-			output_internal_status_next <= INVALID_OP_SEQUENCE; --E: first OP isn't a minus
+		if charUnit_lastChar_type= CDIGIT then
+			global_digit_neg_next <= '0';
+		end if;
+		
+		if char_firstOne='1' then
+			if charUnit_op/= SUBTRAKTION then
+				output_internal_status_next <= INVALID_OP_SEQUENCE; --E: first OP isn't a minus
+			else
+				char_state_next <= ANALYZE_NEXT;
+				global_digit_neg_next<= '1';
+			end if;
+			
 		elsif charUnit_char_type= CEOL then
 			if charUnit_lastChar_type= COP then
 				output_internal_status_next <= INVALID_OP_SEQUENCE; --E: EOL after an operator
@@ -449,6 +465,7 @@ end process next_state;
 		end if;		
 	when PRE_PREPARE_RESULT =>
 		parse_state_var_next <= PGOOD;
+		
 		if calc_buff(intern_buff_stage_pos-1)< to_signed(0, SIZEI) then
 			--set Flag and Prepare inverted Result if result negative
 			b2bcd_data_neg<= '1';

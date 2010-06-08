@@ -168,6 +168,25 @@ begin --behave
 	wait for 500 ns;
 	ps_start <= '1';
 	
+	-- -2147483648
+	wait for 100 us;
+	ps_start<='0'; 
+	rb_read_data(0) <= x"2D"; -- -
+	rb_read_data(1) <= x"32"; 
+	rb_read_data(2) <= x"31"; 
+	rb_read_data(3) <= x"34";
+	rb_read_data(4) <= x"37";
+	rb_read_data(5) <= x"34";
+	rb_read_data(6) <= x"38";
+	rb_read_data(7) <= x"33";
+	rb_read_data(8) <= x"36";
+	rb_read_data(9) <= x"34";
+	rb_read_data(10) <=x"38";
+	rb_read_data(11) <=x"00"; --eol
+
+	wait for 500 ns;
+	ps_start <= '1';
+	
 	
     wait for 200 us;
     stop <= true;

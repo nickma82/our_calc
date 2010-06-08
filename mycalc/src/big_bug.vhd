@@ -13,8 +13,6 @@ package big_pkg is
 	subtype CALCSIGNED is SIGNED((SIZEI-1) downto 0);
 	
 -- 	subtype MINMAX_TYPE is INTEGER range -2147483647 TO 2147483647;
-	constant CALCMAX: INTEGER:=  2147483647; --  (2**(SIZEI-1))-1 , minmax'right;
-	constant CALCMIN: INTEGER:= -2147483647; -- -(2**(SIZEI-1));,   minmax'left;
 	constant MINTOP:  CALCSIGNED :=((SIZEI-1)=> '1', others =>'0');
 	constant MAXTOP:  CALCSIGNED :=((SIZEI-1)=> '0', others =>'1');
 	
