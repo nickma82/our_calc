@@ -251,7 +251,6 @@ end process next_state;
 		charUnit_en_var_next <='0'; --Disable next digit unit
 		charUnit_get_next_var_next <='0';
 			
-		intern_buff_stage_pos_next <= 0;
 		calc_stage	   	 := 0;
 		operators_serial_next <= 1;
 		global_digit_neg_next <='0';
@@ -263,6 +262,10 @@ end process next_state;
 		
 		b2bcd_en<= '0';
 		space_after_digit_next <= false;
+		
+		calc_buff_next <= (others => (others => '0'));
+		intern_do_calc_stage_next <= (STAGES_TOP-1);
+		intern_buff_stage_pos_next <= 0;
 	when PARSE_INIT =>
 		-- PARSER INIT
 		charUnit_en_var_next	<= '1' ;

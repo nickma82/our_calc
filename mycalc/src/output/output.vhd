@@ -37,7 +37,7 @@ architecture output_arc of output_ent is
 
 --type
 type OUTPUT_FSM_STATE_TYPE is
-    (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE, DELETE2, DELETE3, WAIT_STATE, PREPARE_RESULT, NEW_LINE, NEW_POSITION);
+    (INIT, READY, WRITE_CHAR, WRITE_RESULT, DELETE, DELETE2, DELETE3, WAIT_STATE, PREPARE_RESULT, NEW_LINE, NEW_POSITION, RESET_SCREEN, RESET_POSITION);
 
 --constants
 constant RED : std_logic_vector(23 downto 0) := x"0000FF";
@@ -91,7 +91,9 @@ begin
 		when INIT => 
 			if vga_free = '0' then
 				position_next <= "0000000";
-				output_fsm_state_next <= READY;
+				lineNr_next <= (others => '0');
+				output_fsm_state_next <= WAIT_STATE;
+				state_after_wait_next <= RESET_SCREEN;
 			end if;
 		when READY =>
 			if inp_new_data = '1' then 
@@ -170,6 +172,22 @@ begin
 					result_rdy_next <= '0';
 				end if;
 			end if;
+		when RESET_SCREEN =>
+			if vga_free = '0' then
+				if lineNr <= 29 then
+					output_fsm_state_next <= WAIT_STATE;
+					state_after_wait_next <= RESET_SCREEN;
+					lineNr_next <= lineNr + 1;
+				else
+					output_fsm_state_next <= WAIT_STATE;
+					state_after_wait_next <= RESET_POSITION;
+					lineNr_next <= (others => '0');
+				end if;
+			end if;
+		when RESET_POSITION =>
+			if vga_free = '0' then
+				output_fsm_state_next <= READY;
+			end if;
 		when others => null;
 	end case;
 end process next_state;
@@ -235,6 +253,12 @@ begin
 				end if;
 			when NEW_POSITION =>
 				vga_command_next <= COMMAND_SET_CURSOR_COLUMN;
+				vga_command_data_next <= (others => '0');
+			when RESET_SCREEN =>
+				vga_command_next <= COMMAND_SET_CHAR;
+				vga_command_data_next <= WHITE & x"0A";
+			when RESET_POSITION =>
+				vga_command_next <= COMMAND_SET_CURSOR_LINE;
 				vga_command_data_next <= (others => '0');
 			when others => null;
 		end case;

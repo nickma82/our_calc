@@ -90,7 +90,7 @@ begin
 	
 	case ringbuffer_fsm_state is
 		when INIT =>
-			ringbuffer_fsm_state_next <= READY;
+			ringbuffer_fsm_state_next <= RESET_NEW_LINE;--READY;
 		when READY =>
 			if inp_new_data = '1' and charPointer < 70 then
 				byte_buffer_next <= inp_data;
@@ -207,7 +207,7 @@ begin
 			resultCounter_next <= 11;
 		when DELETE_CHAR =>
 			rb_busy <= '0';
-			if charPointer >= 0 then
+			if charPointer > 0 then
 				wr <= '1';
 				data_in <= x"00";
 				address <= charPointer-1+linePointer * LINE_LENGTH;
