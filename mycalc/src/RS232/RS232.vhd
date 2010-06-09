@@ -56,7 +56,7 @@ begin
 
 end process sync;
 
-next_state : process(RS232_fsm_state, uart_rx, countBaud, countBit, sendBuffer, tx_go, tx_data)
+next_state : process(RS232_fsm_state, uart_rx, countBaud, countBit, sendBuffer, tx_go, tx_data, recvBuffer)
 begin
 	RS232_fsm_state_next <= RS232_fsm_state;
 	sendBuffer_next <= sendBuffer;
@@ -82,7 +82,7 @@ begin
 				RS232_fsm_state_next <= READY;
 			end if;
 		when RECV_INIT =>
-			if countBaud >= 434 then			-- 1,5 mal die Bitzeit
+			if countBaud >= 144 then			-- 1,5 mal die Bitzeit
 				RS232_fsm_state_next <= RECV_BIT;
 			end if;
 		when RECV_WAIT =>
@@ -103,14 +103,16 @@ begin
 			end if;
 		when RECV_DONE =>
 			if countBaud >= 289 then			-- 1 mal die Bitzeit
-				RS232_fsm_state_next <= SEND_BYTE;
-				--sendBuffer_next <= x"36";
-				--RS232_fsm_state_next <= SEND_INIT;
+				if recvBuffer = x"68" then
+					RS232_fsm_state_next <= SEND_BYTE;
+				else
+					RS232_fsm_state_next <= READY;
+					--sendBuffer_next <= x"68";
+					--RS232_fsm_state_next <= SEND_INIT;
+				end if;
 			end if;
 		when SEND_BYTE =>
-			--if tx_rdy = '1' then
-				RS232_fsm_state_next <= READY;
-			--end if;
+			RS232_fsm_state_next <= READY;
 	end case;
 end process next_state;
 
@@ -149,12 +151,16 @@ begin
 		when SEND_DONE =>
 			countBaud_next <= countBaud + 1;
 		when RECV_INIT =>
-			countBaud_next <= countBaud + 1;
-			countBit_next <= 0;
-			recvBuffer_next <= x"00";
+				countBaud_next <= countBaud + 1;
+				countBit_next <= 0;
+				recvBuffer_next <= x"00";
+				if countBaud >= 144 then
+					countBaud_next <= 0;
+				end if;
 		when RECV_BIT =>
 			if countBaud >= 289 then
 				recvBuffer_next(countBit) <= uart_rx;
+				
 				countBit_next <= countBit + 1;
 				countBaud_next <= 0;
 			else
@@ -170,7 +176,9 @@ begin
 			countBaud_next <= countBaud + 1;
 		when SEND_BYTE =>
 			rx_recv <= '1';
-			rx_data <= x"68";--recvBuffer;
+			--if recvBuffer = x"68" then
+			rx_data <= x"68";
+			--end if;
 		when RECV_WAIT =>
 			if countBaud >= 289 then
 				countBaud_next <= 0;

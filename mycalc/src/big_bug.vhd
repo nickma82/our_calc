@@ -12,12 +12,13 @@ package big_pkg is
 	
 	subtype CALCSIGNED is SIGNED((SIZEI-1) downto 0);
 	
-	subtype MINMAX is INTEGER range -2147483647 TO 2147483647;
-	constant CALCMAX: MINMAX:=  2147483647; --  (2**(SIZEI-1))-1 , minmax'right;
-	constant CALCMIN: MINMAX:= -2147483647; -- -(2**(SIZEI-1));,   minmax'left;
+-- 	subtype MINMAX_TYPE is INTEGER range -2147483647 TO 2147483647;
+	constant MINTOP:  CALCSIGNED :=((SIZEI-1)=> '1', others =>'0');
+	constant MAXTOP:  CALCSIGNED :=((SIZEI-1)=> '0', others =>'1');
 	
 	
 	--- PARSER
+	type PARSER_CHAR_TYPE is (CRESET, CDIGIT, COP, CEOL, CSPACE);--(RESET, DIGIT, OP, EOL);
 	type parser_status_TYPE is
 		(PRESET, PGOOD, PDIV_ZERO, POVERFLOW, PTOO_MUCH_OPS, PINVALID_OP_SEQUENCE);
 	--@TODO alu_operator_TYPE  ---- WARNING

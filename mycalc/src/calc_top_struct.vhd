@@ -44,8 +44,9 @@ architecture struct of calc_top is
 	--signal data : std_logic_vector (7 downto 0);
 
 	--VGA
-	signal vga_free:std_logic;
-	signal vga_clk:std_logic;
+	signal vga_free		: std_logic;
+	signal vga_clk		: std_logic;
+	signal sync_uart_rx	: std_logic;
 
 	--Input
 	signal ps2_new_data : std_logic := '0';
@@ -171,6 +172,21 @@ begin
 		g => g,
 		b => b
 	);
+
+	--Synchronizer
+	sync_inst : sync
+	generic map
+	(
+		SYNC_STAGES => 2,
+		RESET_VALUE => RES_N_DEFAULT_VALUE
+	)
+	port map
+	(
+		sys_clk => sys_clk,
+		sys_res_n => sys_res_n,
+		data_in => uart_rx,
+		data_out => sync_uart_rx
+	);
 	
 	--Input
 	input_inst : input_ent
@@ -185,10 +201,10 @@ begin
 		inp_del => inp_del,
 		inp_sendRS232 => inp_sendRS232,
 		pars_start => pars_start,
-		btn_a_sync => btn_a_sync,
-		pars_new_data => pars_new_data,
-		pars_data => pars_data,
-		pars_state => pars_state
+		btn_a_sync => btn_a_sync
+		--pars_new_data => pars_new_data,
+		--pars_data => pars_data,
+		--pars_state => pars_state
 	);
 
 	--Output
@@ -238,7 +254,7 @@ begin
 		tx_data => tx_data,
 		rx_recv => rx_recv,
 		rx_data => rx_data,
-		uart_rx => uart_rx,
+		uart_rx => sync_uart_rx,
 		uart_tx => uart_tx
 	);
 
@@ -255,7 +271,7 @@ begin
 		inp_new_data => inp_new_data,
 		inp_data => inp_data,
 		inp_del => inp_del,
-		rb_char_newline => rb_char_newline,
+		--rb_char_newline => rb_char_newline,
 		rb_read_en => rb_read_en,
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
@@ -281,23 +297,23 @@ begin
 	);
 
 	--Parser
-	--parser_top_inst : parser_top
-	--generic map
-	--(
-	--      RESET_VALUE => RES_N_DEFAULT_VALUE
-	--) 
-	--port map
-	--(
-	--	sys_clk	=> sys_clk,
-	--	sys_res_n => sys_res_n,
-	--	rb_busy => rb_busy,
-	--	rb_read_en => rb_pars_en,
-	--	rb_read_lineNr => rb_pars_lineNr,
-	--	rb_read_data_rdy => rb_pars_data_rdy,
-	--	rb_read_data => rb_read_data,
-	--	ps_start => pars_start,
-	--	parse_new_data => pars_new_data,
-	--	parse_data => pars_data,
-	--	parse_state => pars_state
-	--);
+	parser_top_inst : parser_top
+	generic map
+	(
+	      RESET_VALUE => RES_N_DEFAULT_VALUE
+	) 
+	port map
+	(
+		sys_clk	=> sys_clk,
+		sys_res_n => sys_res_n,
+		rb_busy => rb_busy,
+		rb_read_en => rb_pars_en,
+		rb_read_lineNr => rb_pars_lineNr,
+		rb_read_data_rdy => rb_pars_data_rdy,
+		rb_read_data => rb_read_data,
+		ps_start => pars_start,
+		parse_new_data => pars_new_data,
+		parse_data => pars_data,
+		parse_state => pars_state
+	);
 end architecture struct;

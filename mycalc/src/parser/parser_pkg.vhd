@@ -4,8 +4,7 @@ use ieee.numeric_std.all;
 use work.big_pkg.all;
 
 package parser_pkg is
-    type PARSER_CHAR_TYPE is
-      (RESET, DIGIT, OP, EOL);
+	--type PARSER_CHAR_TYPE is (RESET, DIGIT, OP, EOL);
     	
     	--subtype ONEDIGIT is SIGNED(7 downto 0);
     	subtype ONEDIGIT is INTEGER range 0 to 9;

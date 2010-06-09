@@ -20,7 +20,7 @@ ARCHITECTURE alu_fsm OF alu_fsm_ent IS
 	signal calc_status_var, calc_status_var_next: 	alu_calc_error_TYPE;
 	signal calc_finished_var, calc_finished_var_next: STD_LOGIC;
 	
-	signal intern_div_neg_sig_next, intern_div_neg_sig: boolean;
+	signal intern_neg_sig_next, intern_neg_sig: boolean;
 	signal div_en_var, div_en_var_next: STD_LOGIC;
 	signal calc_result_var, calc_result_var_next: CALCSIGNED;
 	signal div_number_var, div_number_var_next:	STD_LOGIC_VECTOR((SIZE - 1) downto 0);
@@ -68,7 +68,7 @@ begin
   
   
   
- output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status,div_dividend_var, div_number_var, calc_result_var, div_en_var, intern_div_neg_sig, intern_calc_finished, calc_status_var, calc_finished_var, div_result, intern_wait_div, intern_div_neg_sig_next)
+ output : process(alu_fsm_state, div_calc_finished, calc_operator, calc_data, calc_data2, div_calc_status,div_dividend_var, div_number_var, calc_result_var, div_en_var, intern_neg_sig, intern_calc_finished, calc_status_var, calc_finished_var, div_result, intern_wait_div, intern_neg_sig_next)
  	variable tmp_data1, tmp_data2, double_calcsigned: SIGNED((SIZEI*2-1) downto 0);
  	
   begin
@@ -81,7 +81,7 @@ begin
   	tmp_data2:= (others=>'0');
   	double_calcsigned:= (others=>'0');
   	div_en_var_next<= div_en_var; 
-  	intern_div_neg_sig_next<= intern_div_neg_sig;
+  	intern_neg_sig_next<= intern_neg_sig;
   	intern_calc_finished_next<= intern_calc_finished;
   	calc_status_var_next<= calc_status_var;
   	calc_finished_var_next <= calc_finished_var;
@@ -91,7 +91,7 @@ begin
 		calc_finished_var_next <='0';
 		intern_calc_finished_next <= '0';
 		intern_wait_div_next <= '0';
-		intern_div_neg_sig_next <= false;
+		intern_neg_sig_next <= false;
 		
 		--port resets
 		div_en_var_next <= '0';
@@ -102,27 +102,28 @@ begin
 	if calc_operator= DIVISION then
 		-- Setze negativ flag
 		if (calc_data<0 and calc_data2<0) then
-			--intern_div_neg_sig_next <= resize( intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
-			intern_div_neg_sig_next<= false;
+			--intern_neg_sig_next <= resize( intern_neg_sig*to_signed(-1, 2), intern_neg_sig'LENGTH );
+			intern_neg_sig_next<= false;
 		elsif calc_data<0 then
-			intern_div_neg_sig_next<= true;
+			intern_neg_sig_next<= true;
 		elsif calc_data2<0 then
-			intern_div_neg_sig_next<= true;
+			intern_neg_sig_next<= true;
 		end if;
 		
 		--Invertiere
-		if calc_data<0 then
-			--calc_data: SIGNED((SIZEI-1) downto 0);
-			div_number_var_next <= std_logic_vector( resize(calc_data* to_signed(-1 , calc_data'LENGTH ), calc_data'LENGTH ) );
+		if calc_data(calc_data'LENGTH-1)= '1' then
+			tmp_data1 := resize(calc_data, tmp_data1'LENGTH);
+			--to pos
+			div_number_var_next <= std_logic_vector(resize(not(calc_data), div_number_var_next'LENGTH) +1 );
 		else
-			div_number_var_next<= std_logic_vector( calc_data);
+			div_number_var_next<= std_logic_vector(resize(calc_data, div_number_var_next'LENGTH) );
 		end if;
 		
 		if calc_data2<0 then
-			--intern_div_neg_sig_next <= resize(intern_div_neg_sig*to_signed(-1, 2), intern_div_neg_sig'LENGTH );
-			div_dividend_var_next<= std_logic_vector( resize(calc_data2*to_signed(-1 , calc_data2'LENGTH ), calc_data2'LENGTH ));
+			--intern_neg_sig_next <= resize(intern_neg_sig*to_signed(-1, 2), intern_neg_sig'LENGTH );
+			div_dividend_var_next<= std_logic_vector( resize(not(calc_data2), div_dividend_var_next'LENGTH) +1 );
 		else
-			div_dividend_var_next<= std_logic_vector(calc_data2);
+			div_dividend_var_next<= std_logic_vector(resize(calc_data2, div_dividend_var_next'LENGTH) );
 		end if;
 	end if;
       		
@@ -131,8 +132,8 @@ begin
       when CALC =>
         	case calc_operator is
         		when ADDITION | SUBTRAKTION | MULTIPLIKATION =>
-        			tmp_data1 := resize(calc_data, SIZE*2);
-        			tmp_data2 := resize(calc_data2, SIZE*2);
+        			tmp_data1 := resize(calc_data, tmp_data1'LENGTH);
+        			tmp_data2 := resize(calc_data2, tmp_data2'LENGTH);
         			
 					if calc_operator = ADDITION then
 						double_calcsigned := (tmp_data1 + tmp_data2);
@@ -143,8 +144,8 @@ begin
 					end if;
 					
 					--Checks ob Range VALID
-					if (double_calcsigned > CALCMAX) or
-						(double_calcsigned < CALCMIN ) then
+					if (double_calcsigned > MAXTOP) or
+						(double_calcsigned < MINTOP ) then
 						calc_status_var_next <= OVERFLOW;
 						--assert false report "overflow" severity error;
 					else
@@ -154,21 +155,14 @@ begin
 					intern_calc_finished_next <= '1';
         			
 			when DIVISION =>
-				--------------------------------------------------------------------------------------------
-				-- Speichert Vorzeichen, wandelt in positive Zahlen und wandelt danach in std_logic_vector's
-				--------------------------------------------------------------------------------------------
-				
-				
-				
--- 				if calc_data2>=0 then
--- 					div_dividend_var_next<= std_logic_vector(calc_data2);
--- 				end if;
 				intern_wait_div_next <= '1';
-			-- coverage off
+			when NOP =>
+				double_calcsigned := tmp_data1;
+				calc_status_var_next <= GOOD;
+				intern_calc_finished_next <= '1';
 			when others =>
 				assert false report
     					"Case not supported" severity error;
-    			-- coverage on
 		end case;
 		
 		
@@ -176,15 +170,24 @@ begin
       when DIV_WAIT =>
 		div_en_var_next <= '1';
 		if div_calc_finished = '1' then
+			
 			----------------------------------------
 			-- Restore Vorzeichen, wandeln in signed
 			----------------------------------------
-			calc_status_var_next <= div_calc_status;
-			if intern_div_neg_sig_next then
-				--std_logic_vector( resize(calc_data* to_signed(-1 , calc_data'LENGTH ), calc_data'LENGTH ) )
-				calc_result_var_next <= resize( signed(div_result)* to_signed(-1 , div_result'LENGTH ), calc_result'LENGTH);
+			if intern_neg_sig then
+				--- negate
+				calc_result_var_next <= resize( signed(not(div_result))+1 , calc_result'LENGTH);
+				
+				calc_status_var_next <= div_calc_status;
 			else
-				calc_result_var_next<= signed(div_result);
+				-----   Check if valid and set the output state
+				-- not valid in case of -(2^31)/-1
+				if (div_result(31) = '1') then
+					calc_status_var_next <= OVERFLOW;
+				else
+					calc_status_var_next <= div_calc_status;
+				end if;
+				calc_result_var_next<= resize(signed(div_result), calc_result'LENGTH );
 			end if;
 			
 			intern_calc_finished_next <= '1';
@@ -211,7 +214,7 @@ begin
       calc_result_var<= calc_result_var_next;
       div_en<=  div_en_var_next;
       div_en_var<=  div_en_var_next;
-      intern_div_neg_sig <= intern_div_neg_sig_next;
+      intern_neg_sig <= intern_neg_sig_next;
       intern_wait_div <= intern_wait_div_next;
       intern_calc_finished <= intern_calc_finished_next;
       calc_finished    <= calc_finished_var_next;

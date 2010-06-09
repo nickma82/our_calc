@@ -22,8 +22,8 @@ entity char_unit_ent is
 	charUnit_next_valid:	OUT STD_LOGIC := '0';
 	charUnit_digit: 		OUT ONEDIGIT; 		-- INTEGER 0 bis 9
 	charUnit_op:		OUT alu_operator_TYPE := NOP; 	-- (ADDITION, SUBTRAKTION, MULTIPLIKATION, DIVISION, NOP);
-	charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := RESET;--(RESET, DIGIT, OP, EOL);
-	charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := RESET	--(RESET, DIGIT, OP, EOL);
+	charUnit_lastChar_type : OUT PARSER_CHAR_TYPE  := CRESET;--(RESET, DIGIT, OP, EOL);
+	charUnit_char_type: 	OUT PARSER_CHAR_TYPE  := CRESET	--(RESET, DIGIT, OP, EOL);
 	
   );
 end char_unit_ent;

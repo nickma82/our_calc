@@ -54,7 +54,6 @@ ring : entity work.ringbuffer2_ent
 		inp_new_data => inp_new_data,
 		inp_data => inp_data,
 		inp_del => inp_del,
-		rb_char_newline => rb_char_newline,
 		rb_read_en => rb_read_en,
 		rb_read_lineNr => rb_read_lineNr,
 		rb_read_data_rdy => rb_read_data_rdy,
@@ -159,7 +158,7 @@ begin
 	--Zeile abfragen
 	rb_read_lineNr <= x"31";
 	wait for 30 ns;
-	rb_read_en <= '1';
+	--rb_read_en <= '1';
 	wait for 30 ns;
 	rb_read_en <= '0';
 	wait for 60 ns;

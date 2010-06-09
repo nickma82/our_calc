@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 
 
 architecture struct of alu_top is 
-	constant SIZE: INTEGER := 32;
+	constant SIZE: INTEGER := 33;
 	--signal sys_clk, sys_res_n:    std_logic;
 	--Division Module Signals
 	signal div_en, division_by_zero, div_calc_finished: std_logic;

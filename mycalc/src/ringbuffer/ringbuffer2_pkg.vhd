@@ -16,7 +16,7 @@ package ringbuffer2_pkg is
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
-		rb_char_newline	: in std_logic;
+		--rb_char_newline	: in std_logic;
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;

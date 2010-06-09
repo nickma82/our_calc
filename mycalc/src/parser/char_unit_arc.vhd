@@ -20,9 +20,8 @@ signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH - 1;
 
 signal digit, digit_next 		: ONEDIGIT := 0;
 signal op, op_next			: alu_operator_TYPE := NOP;
-signal lastChar, lastChar_next		: PARSER_CHAR_TYPE  := RESET;
-signal char, char_next			: PARSER_CHAR_TYPE  := RESET;
-
+signal lastChar, lastChar_next		: PARSER_CHAR_TYPE  := CRESET;
+signal char, char_next			: PARSER_CHAR_TYPE  := CRESET;
 
 begin
 
@@ -78,11 +77,27 @@ begin
 end process next_state;
   
 
-output : process(charunit_fsm_state, charPointer, currentLine)
+output : process(charunit_fsm_state, charPointer, currentLine, op, char, lastChar, digit)
 begin
 	charUnit_next_valid <= '0';
 	rb_read_en <= '0';
 	rb_read_lineNr <= x"00";
+
+	--Operator setzen
+	op_next <= op;
+	charUnit_op <= op;
+
+	--Zeichen setzen
+	char_next <= char;
+	charUnit_char_type <= char;
+
+	--letztes Zeichen setzen
+	lastChar_next <= lastChar;
+	charUnit_lastChar_type <= lastChar;
+
+	--Zahl setzen
+	digit_next <= digit;
+	charUnit_digit <= digit;
 
 	charPointer_next <= charPointer;
 	case charunit_fsm_state is
@@ -90,7 +105,7 @@ begin
 		rb_read_en <= '0'; --weak low
 	 	rb_read_lineNr <= x"00"; 
       		charUnit_next_valid <= '0';
-      		next_ok <= '0';     
+      		--next_ok <= '0';     
 		charPointer_next <= 0;
 	when LINE_REQ =>			--Zeile 0 anfordern
 		rb_read_lineNr <= x"00"; 
@@ -104,73 +119,130 @@ begin
 		--parsen der einzelnen Chars
 		--next_ok <= '1';
 		charUnit_next_valid <= '0';
+
+		--lastChar setzen
+		charUnit_lastChar_type <= char;
+		lastChar_next <= char;
+
 		case currentLine(charPointer) is
 			when x"00" =>		--EOL
 				charUnit_digit <= 0;
+				digit_next <= 0;
 				charUnit_op <= NOP;
-				charUnit_char_type <= EOL;
+				op_next <= NOP;
+				charUnit_char_type <= CEOL;
+				char_next <= CEOL;
 			when x"30" =>		-- 0
 				charUnit_digit <= 0;
+				digit_next <= 0;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"31" =>		-- 1
 				charUnit_digit <= 1;
+				digit_next <= 1;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"32" =>		-- 2
 				charUnit_digit <= 2;
+				digit_next <= 2;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"33" =>		-- 3
 				charUnit_digit <= 3;
+				digit_next <= 3;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"34" =>		-- 4
 				charUnit_digit <= 4;
+				digit_next <= 4;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"35" =>		-- 5
 				charUnit_digit <= 5;
+				digit_next <= 5;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"36" =>		-- 6
 				charUnit_digit <= 6;
+				digit_next <= 6;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"37" =>		-- 7
 				charUnit_digit <= 7;
+				digit_next <= 7;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"38" =>		-- 8
 				charUnit_digit <= 8;
+				digit_next <= 8;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"39" =>		-- 9
 				charUnit_digit <= 9;
+				digit_next <= 9;
 				charUnit_op <= NOP;
-				charUnit_char_type <= DIGIT;
+				op_next <= NOP;
+				charUnit_char_type <= CDIGIT;
+				char_next <= CDIGIT;
 			when x"2B" =>		-- +
 				charUnit_digit <= 0;
+				digit_next <= 0;
 				charUnit_op <= ADDITION;
-				charUnit_char_type <= OP;
+				op_next <= ADDITION;
+				charUnit_char_type <= COP;
+				char_next <= COP;
 			when x"2D" =>		-- -
 				charUnit_digit <= 0;
+				digit_next <= 0;
 				charUnit_op <= SUBTRAKTION;
-				charUnit_char_type <= OP;
+				op_next <= SUBTRAKTION;
+				charUnit_char_type <= COP;
+				char_next <= COP;
 			when x"2A" =>		-- *
 				charUnit_digit <= 0;
+				digit_next <= 0;
 				charUnit_op <= MULTIPLIKATION;
-				charUnit_char_type <= OP;
+				op_next <= MULTIPLIKATION;
+				charUnit_char_type <= COP;
+				char_next <= COP;
 			when x"2F" =>		-- /
 				charUnit_digit <= 0;
+				digit_next <= 0;
 				charUnit_op <= DIVISION;
-				charUnit_char_type <= OP;
+				op_next <= DIVISION;
+				charUnit_char_type <= COP;
+				char_next <= COP;
+			when x"20" =>		-- Space
+				charUnit_digit <= 0;
+				digit_next <= 0;
+				charUnit_op <= NOP;
+				op_next <= NOP;
+				charUnit_char_type <= CSPACE;
+				char_next <= CSPACE;
 			when others => null;
 		end case;
 		charPointer_next <= charPointer + 1;
 	when CHAR_VALID =>
 		charUnit_next_valid <= '1';
-		charUnit_lastChar_type <= EOL;
+		--charUnit_lastChar_type <= CEOL;
 	when others => null;
 	end case;
 end process output;
@@ -187,7 +259,8 @@ sync : process(sys_clk, sys_res_n)
 
 			op <= op_next;
 			char <= char_next;
-			
+			lastChar <= lastChar_next;
+			digit <= digit_next;
  		end if;
 end process sync;
 

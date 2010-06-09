@@ -22,7 +22,7 @@ entity ringbuffer2_ent is
 		inp_new_data	: in std_logic;
 		inp_data	: in std_logic_vector(7 downto 0);
 		inp_del		: in std_logic;
-		rb_char_newline	: in std_logic;
+		--rb_char_newline	: in std_logic;
 		rb_read_en	: in std_logic;
 		rb_read_lineNr	: in std_logic_vector(7 downto 0);
 		rb_read_data_rdy: out std_logic;
@@ -40,7 +40,7 @@ end entity ringbuffer2_ent;
 -- ARCHITECTURE
 architecture ringbuffer2_arc of ringbuffer2_ent is
 
-type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE, WRITE_RAM, READ_RAM, WAIT_RAM, PARS_REQ, PARS_RDY, WRITE_RESULT);
+type RINGBUFFER_FSM_STATE_TYPE is (INIT, READY, DELETE_CHAR, LINE_REQ, LINE_RDY, NEW_LINE, WRITE_RAM, READ_RAM, WAIT_RAM, PARS_REQ, PARS_RDY, WRITE_RESULT, RESET_NEW_LINE);
 
 --signals
 signal ringbuffer_fsm_state, ringbuffer_fsm_state_next : RINGBUFFER_FSM_STATE_TYPE;
@@ -54,6 +54,7 @@ signal lineRead, lineRead_next 		: integer range 0 to LINE_NUMB -1;				--Speiche
 signal writeNextState, writeNextState_next	: RINGBUFFER_FSM_STATE_TYPE;
 signal resultLine, resultLine_next	: RESULT_LINE;
 signal resultCounter, resultCounter_next	: integer range -1 to LINE_LENGTH;
+signal reqPars, reqPars_next		: std_logic := '0';
 
 begin
 
@@ -73,17 +74,19 @@ begin
 		writeNextState <= writeNextState_next;
 		resultLine <= resultLine_next;
 		resultCounter <= resultCounter_next;
+		reqPars <= reqPars_next;
 	end if;
 
 end process sync;
 
-next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, rb_char_newline, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine, pars_state, resultCounter)
+next_state : process(ringbuffer_fsm_state, inp_new_data, pars_new_data, rb_read_en, inp_del, inp_data, pars_data, charPointer, byte_buffer, writeNextState, lineRead, linePointer, rb_read_lineNr, rb_pars_en, lineCounter, resultLine, pars_state, resultCounter, reqPars)
 begin
 	ringbuffer_fsm_state_next <= ringbuffer_fsm_state;
 	byte_buffer_next <= byte_buffer;
 	lineRead_next <= lineRead;
 	writeNextState_next <= writeNextState;
 	resultLine_next <= resultLine;
+	reqPars_next <= reqPars;
 	
 	case ringbuffer_fsm_state is
 		when INIT =>
@@ -111,7 +114,8 @@ begin
 						ringbuffer_fsm_state_next <= WRITE_RESULT;
 					when others => null;
 				end case;
-			elsif rb_read_en = '1' then 
+			elsif rb_read_en = '1' then
+				reqPars_next <= '0';
 				ringbuffer_fsm_state_next <= READ_RAM;
 				writeNextState_next <= LINE_REQ;
 				if linePointer + rb_read_lineNr >= LINE_NUMB then
@@ -119,12 +123,13 @@ begin
 				else
 					lineRead_next <= conv_integer((rb_read_lineNr+linePointer));
 				end if;
-			elsif rb_pars_en = '1' then 
+			elsif rb_pars_en = '1' then
+				reqPars_next <= '1';
 				ringbuffer_fsm_state_next <= READ_RAM;
 				writeNextState_next <= PARS_REQ;
 				lineRead_next <= conv_integer((linePointer));
 			elsif inp_del = '1' then ringbuffer_fsm_state_next <= DELETE_CHAR;
-			elsif rb_char_newline = '1' then ringbuffer_fsm_state_next <= NEW_LINE;
+			--elsif rb_char_newline = '1' then ringbuffer_fsm_state_next <= NEW_LINE;
 			end if;
 		when DELETE_CHAR =>
 			ringbuffer_fsm_state_next <= READY;
@@ -139,14 +144,22 @@ begin
 		when PARS_RDY =>
 			ringbuffer_fsm_state_next <= READY;
 		when NEW_LINE =>
-			ringbuffer_fsm_state_next <= READY;
+			ringbuffer_fsm_state_next <= RESET_NEW_LINE;
+		when RESET_NEW_LINE =>
+			if charPointer >= LINE_LENGTH - 1 then
+				ringbuffer_fsm_state_next <= READY;
+			end if;
 		when WRITE_RAM =>
 			ringbuffer_fsm_state_next <= READY;
 		when READ_RAM =>
 			ringbuffer_fsm_state_next <= WAIT_RAM;
 		when WAIT_RAM =>
 			if lineCounter >= LINE_LENGTH - 1 then
-				ringbuffer_fsm_state_next <= LINE_REQ;
+				if reqPars = '0' then
+					ringbuffer_fsm_state_next <= LINE_REQ;
+				else
+					ringbuffer_fsm_state_next <= PARS_REQ;
+				end if;
 			else
 				ringbuffer_fsm_state_next <= READ_RAM;
 			end if;
@@ -219,7 +232,6 @@ begin
 		when NEW_LINE =>
 			rb_busy <= '0';
 			--Der Zeiger auf die Zeile wird um eins erhöht und auf Überlauf kontrolliert
-			--TODO Die neue Zeile muss gelöscht werden
 			if linePointer >= LINE_NUMB - 1 then
 				linePointer_next <= 0;
 			else
@@ -227,6 +239,16 @@ begin
 			end if;
 			--Der Char Zeiger wird auf 0 zurückgesetzt
 			charPointer_next <= 0;
+		when RESET_NEW_LINE =>
+			rb_busy <= '0';
+			if charPointer < LINE_LENGTH - 1 then
+				wr <= '1';
+				data_in <= x"00";
+				address <= charPointer+linePointer * LINE_LENGTH;
+				charPointer_next <= charPointer + 1;
+			else 
+				charPointer_next <= 0;
+			end if;
 		when WRITE_RAM =>
 			rb_busy <= '0';
 			if charPointer < LINE_LENGTH - 1 then

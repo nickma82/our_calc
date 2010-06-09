@@ -24,7 +24,7 @@ signal inp_del : std_logic := '0';
 signal inp_sendRS232 : std_logic := '0';
 signal pars_start : std_logic := '0';
 signal ps2_data, inp_data : std_logic_vector(7 downto 0) := x"00";
-signal btn_a_sync : std_logic;
+signal btn_a_sync : std_logic := '1';
 
 
 begin --behave
@@ -56,7 +56,7 @@ end process clkgenerator;
 
 process
 begin
-	btn_a_sync <= '0';	
+	btn_a_sync <= '1';	
 	--inp_data <= x"00";	
 
 	sys_res_n <= '0';

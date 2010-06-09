@@ -67,7 +67,7 @@ next_state : process(div_fsm_state, div_en, internal_calc_done, sys_clk)
   
 
   --result, sm, calc_finished, internal_calc_done, calc_status, calc_status_var_next, buf, dbuf
-output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, buf, dbuf, sm, rm_var, calc_finished_var, calc_status_var)
+output : process(div_fsm_state, sys_clk, number, dividend, internal_calc_done, buf, dbuf, sm, rm_var, calc_finished_var, calc_status_var, result_var)
   begin
    	sm_next <= sm;
    	internal_calc_done_next <= internal_calc_done;
