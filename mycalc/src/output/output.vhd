@@ -47,7 +47,7 @@ constant BLUE : std_logic_vector(23 downto 0) := x"FF0000";
 --signals
 signal output_fsm_state, output_fsm_state_next, state_after_wait, state_after_wait_next : OUTPUT_FSM_STATE_TYPE;
 signal position, position_next		: std_logic_vector(6 downto 0);
-signal lineNr, lineNr_next		: std_logic_vector(4 downto 0);
+signal lineNr, lineNr_next		: std_logic_vector(5 downto 0);
 signal vga_command_next			: std_logic_vector(7 downto 0);
 signal vga_command_data_next		: std_logic_vector(31 downto 0);
 signal resultLine, resultLine_next	: RESULT_LINE :=(others => (others => '0'));
@@ -63,7 +63,7 @@ begin
 		state_after_wait <= INIT;
 		position <= "0000000";
 		result_rdy <= '0';
-		lineNr <= "00000";
+		lineNr <= (others=> '0');
 	elsif rising_edge(sys_clk) then
 		output_fsm_state <= output_fsm_state_next;
 		vga_command <= vga_command_next;
@@ -174,7 +174,7 @@ begin
 			end if;
 		when RESET_SCREEN =>
 			if vga_free = '0' then
-				if lineNr <= 29 then
+				if lineNr <= 59 then
 					output_fsm_state_next <= WAIT_STATE;
 					state_after_wait_next <= RESET_SCREEN;
 					lineNr_next <= lineNr + 1;
@@ -249,7 +249,7 @@ begin
 					vga_command_data_next <= WHITE & x"0A";
 				else
 					vga_command_next <= COMMAND_SET_CURSOR_LINE;
-					vga_command_data_next <= x"000000"&"000"&(lineNr+1);
+					vga_command_data_next <= x"000000"&"00"&(lineNr+1);
 				end if;
 			when NEW_POSITION =>
 				vga_command_next <= COMMAND_SET_CURSOR_COLUMN;
