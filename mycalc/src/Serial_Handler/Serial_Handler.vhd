@@ -41,7 +41,7 @@ type Serial_Handler_FSM_STATE_TYPE is
 --signals
 signal Serial_Handler_fsm_state, Serial_Handler_fsm_state_next : Serial_Handler_FSM_STATE_TYPE;
 signal linePointer, linePointer_next : integer range 0 to LINE_NUMB - 1;				
-signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH + 1;
+signal charPointer, charPointer_next : integer range 0 to LINE_LENGTH + 2;
 signal currentLine, currentLine_next : RAM_LINE;
 
 
@@ -102,9 +102,9 @@ begin
 		when WAIT_CHAR =>
 			if currentLine(0) = x"00" then
 				Serial_Handler_fsm_state_next <= DONE;
-			elsif linePointer <= 0 and charPointer >= 81 then
+			elsif linePointer <= 0 and charPointer >= 84 then
 				Serial_Handler_fsm_state_next <= DONE;
-			elsif charPointer >= 81 then
+			elsif charPointer >= 84 then
 				Serial_Handler_fsm_state_next <= REQ_LINE;
 			elsif tx_rdy = '1' then Serial_Handler_fsm_state_next <= WRITE_CHAR;
 			end if;
@@ -147,14 +147,14 @@ begin
 			if linePointer > 0 then linePointer_next <= linePointer - 1;
 			end if;
 		when WRITE_CHAR =>
-			if charPointer = 80 then
+			if charPointer = 83 then
 				tx_data <= x"0D";
 				tx_go <= '1';
-				charPointer_next <= 81;
-			elsif charPointer = 79 or currentLine(charPointer) = x"00" then
+				charPointer_next <= 84;
+			elsif charPointer = 82 or currentLine(charPointer) = x"00" then
 				tx_data <= x"0A";
 				tx_go <= '1';
-				charPointer_next <= 80; --79
+				charPointer_next <= 83; --79
 			elsif rb_busy = '1' then
 				tx_data <= currentLine(charPointer);
 				tx_go <= '1';
