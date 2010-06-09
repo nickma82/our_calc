@@ -24,7 +24,7 @@ signal intern_isneg, intern_isneg_next:	BOOLEAN;
 
 begin
 
-next_state : process(b2bcd_fsm_state, b2bcd_en, rb_busy, count)
+next_state : process(b2bcd_fsm_state, b2bcd_en, rb_busy, count, b2bcd_data)
 	begin
   		b2bcd_fsm_state_next <= b2bcd_fsm_state;
 	case b2bcd_fsm_state is
@@ -60,7 +60,7 @@ next_state : process(b2bcd_fsm_state, b2bcd_en, rb_busy, count)
 end process next_state;
 
 
-calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg, prs_dat_var, b2bcd_data, intern_isneg)
+calc : process(b2bcd_fsm_state, count, scratch, b2bcd_data, b2bcd_data_neg, prs_dat_var, intern_isneg)
 	variable scratch_tmp	: std_logic_vector(75 downto 0) := (others =>'0');
 	variable move_reg	: integer range 0 to SIZEI_BCD_CHARS := 0;
 	variable move_lock	: boolean:= false;
